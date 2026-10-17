@@ -1,0 +1,11 @@
+test_actual_replies_restore_the_intended_recipients (test_note_metadata.SharedNoteMetadataTests.test_actual_replies_restore_the_intended_recipients) ... ok
+test_complete_corpus_receipts_and_chronology (test_note_metadata.SharedNoteMetadataTests.test_complete_corpus_receipts_and_chronology) ... ok
+test_conflicting_header_and_filename_are_rejected (test_note_metadata.SharedNoteMetadataTests.test_conflicting_header_and_filename_are_rejected) ... ok
+test_general_mentions_do_not_become_directed_messages (test_note_metadata.SharedNoteMetadataTests.test_general_mentions_do_not_become_directed_messages) ... ok
+test_notes_only_does_not_regenerate_conversations (test_note_metadata.SharedNoteMetadataTests.test_notes_only_does_not_regenerate_conversations) ... ok
+test_reply_authors_are_not_their_recipients (test_note_metadata.SharedNoteMetadataTests.test_reply_authors_are_not_their_recipients) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.340s
+
+OK

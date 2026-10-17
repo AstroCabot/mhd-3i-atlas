@@ -3,8 +3,9 @@ import { siteUrl } from './site-paths.js';
  * await mountSolarPlayers({root,manifestUrl,models,field,playing,speed,progress,onTime,onState})
  * Returns {ready,manifest,play,pause,setSpeed,setProgress,setField,setModel,getState,destroy}.
  * Two persistent predecoded image layers crossfade at requestAnimationFrame cadence.
- * Physical samples are interpolated before colour mapping at 30 min display support;
- * intermediate opacity blending adds visual continuity, not native information.
+ * Claude support uses verified native 30 min solver outputs; the other models
+ * interpolate original native samples to that shared support before colour mapping.
+ * Intermediate opacity blending adds visual continuity, not native information.
  */
 const NS = 'http://www.w3.org/2000/svg';
 const clamp = (v, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, v));
@@ -100,6 +101,13 @@ export async function mountSolarPlayers(options = {}) {
   const signalController = new AbortController();
   const signal = signalController.signal;
   const sequence = model => manifest.models[model].frameSequence;
+  const formatCadence = hours => hours < 1 ? `${hours * 60} min` : `${hours} h`;
+  const cadence = model => formatCadence(manifest.models[model].nominalCadenceHours);
+  const cadenceLabel = () => {
+    const hours = panels.map(panel=>manifest.models[panel.model].nominalCadenceHours);
+    const low = Math.min(...hours), high = Math.max(...hours);
+    return low === high ? formatCadence(low) : `${formatCadence(low)}–${formatCadence(high)}`;
+  };
   function getState() {return {playing,requestedPlaying,status,field,speed,progress,error:loadingError,engine:'persistent-images'};}
   function onState() {
     if (disposed) return;
@@ -111,8 +119,10 @@ export async function mountSolarPlayers(options = {}) {
     }
     for (const panel of panels) panel.wrap.dataset.playbackStatus = status;
     for (const node of root.querySelectorAll('[data-playback-status-label],span[data-playback-status]')) {
-      node.textContent = ({playing:'Continuous display · native cadence 3–6 h',loading:'Loading retained fields…',seeking:'Seeking…',paused:'Paused',stalled:'Loading next field…',error:'Animation unavailable'})[status] || status;
-      node.title = loadingError || '768 px · 30 min interpolated display support; native samples every 3–6 h.';
+      node.textContent = ({playing:`Continuous display · native output ${cadenceLabel()}`,loading:'Loading fields…',seeking:'Seeking…',paused:'Paused',stalled:'Loading next field…',error:'Animation unavailable'})[status] || status;
+      node.title = loadingError || (manifest.models.claude.temporalRefinement
+        ? '768 px · 30 min common display support. Claude uses verified native 30 min solver outputs; Argon and Codex interpolate their original approximately 3 h and 6 h samples.'
+        : '768 px · 30 min interpolated display support; original native samples every approximately 3–6 h.');
     }
     options.onState?.(getState());
   }
@@ -166,17 +176,20 @@ export async function mountSolarPlayers(options = {}) {
     const heading = panel.wrap.querySelector('.canvas-label strong');
     if (heading) {heading.textContent = model.name; heading.style.color = options.modelColors?.[panel.model] || 'var(--text, #e5e3da)';}
     const plane = panel.wrap.querySelector('[data-plane]');
-    if (plane) plane.textContent = `${panel.model === 'argon' ? '−6.455° cone' : 'Ecliptic'} · ${model.nativeSliceDimensions.join(' × ')} retained samples · ${model.nominalCadenceHours} h`;
+    if (plane) plane.textContent = `${panel.model === 'argon' ? '−6.455° cone' : 'Ecliptic'} · ${model.nativeSliceDimensions.join(' × ')} samples · ${cadence(panel.model)}${model.temporalRefinement ? ' solver output' : ' retained'}`;
     const title = panel.wrap.querySelector('[data-bar-title]');
     if (title) title.textContent = field === 'contrast' ? 'nₚv × r² / cm⁻² s⁻¹ AU²' : `${panel.model === 'claude' ? 'nₚvᵣ' : 'nₚ|v|'} / cm⁻² s⁻¹`;
     const min = panel.wrap.querySelector('[data-bar-min]');
     const mid = panel.wrap.querySelector('[data-bar-mid]');
     const max = panel.wrap.querySelector('[data-bar-max]');
-    if (min) min.textContent = '10⁷';
+    if (min) min.textContent = '≤10⁷';
     if (mid) mid.textContent = field === 'contrast' ? '1.4×10⁸' : '5.5×10⁸';
-    if (max) max.textContent = field === 'contrast' ? '2×10⁹' : '3×10¹⁰';
+    if (max) max.textContent = field === 'contrast' ? '≥2×10⁹' : '≥3×10¹⁰';
     const gradient = panel.wrap.querySelector('.gradient');
-    if (gradient) gradient.style.background = `linear-gradient(90deg,${manifest.palette.map(color => `rgb(${color.join(',')})`).join(',')})`;
+    if (gradient) {
+      gradient.style.background = `linear-gradient(90deg,${manifest.palette.map(color => `rgb(${color.join(',')})`).join(',')})`;
+      gradient.title = 'Colours saturate at both displayed limits. Values below the lower limit use the darkest colour; unsupported pixels use the separate dark-grey background.';
+    }
     panel.svg.setAttribute('aria-label', `${model.name} solar-wind ${field === 'contrast' ? 'flux times radius squared' : 'proton flux'}; ${model.nativePlane}; retained ${model.nativeSliceDimensions.join(' by ')} samples`);
   }
   for (const svg of root.querySelectorAll('[data-solar]')) {

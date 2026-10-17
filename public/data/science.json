@@ -5,7 +5,7 @@
     "immutableSource": "../mhd_llm",
     "dateWindow": "2025-12-03–04",
     "obsId": "0963720201",
-    "sourcePolicy": "Read-only extraction; no MHD reruns; no fabricated samples.",
+    "sourcePolicy": "Quantitative comparisons are extracted from unchanged archived runs. Claude’s finer-cadence animation is regenerated separately from the original executable and boundary inputs; its verification is recorded in the animation provenance.",
     "rebuild": "python scripts/build_science.py",
     "software": {
       "numpy": "2.3.5",

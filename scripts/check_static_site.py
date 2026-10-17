@@ -24,7 +24,7 @@ def check(directory):
     directory = Path(directory).resolve()
     required = ('index.html', '.nojekyll', 'app.js', 'site-paths.js', 'solar-player.js',
                 'styles.css', 'theme.js', 'data/science.json', 'data/models.json',
-                'data/transcripts.json', 'data/animation-v2.json', 'data/equations.json')
+                'data/transcripts.json', 'data/physics-comparison.json', 'data/animation-v2.json', 'data/equations.json')
     for name in required:
         if not (directory / name).is_file():
             raise SystemExit(f'Missing packaged file: {name}')

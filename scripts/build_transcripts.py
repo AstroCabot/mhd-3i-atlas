@@ -415,6 +415,47 @@ def parse_note_time(filename):
     return timestamp.isoformat().replace("+00:00", "Z"), "second" if len(time) == 6 else "minute"
 
 
+def note_author(filename, text):
+    """Read the author component, never names in a reply's subject or recipients."""
+    prefix = re.match(r"^(?:20\d{6}T\d{4}(?:\d{2})?Z[_-])?(argon|codex|claude)(?=[_.-]|$)", filename, re.I)
+    header_authors = set()
+    for line in text.splitlines()[:15]:
+        clean = re.sub(r"[*`#]", "", line).strip().lstrip("- ")
+        match = re.match(r"(?:\|\s*(?:author|agent)\s*\||(?:author|agent)\s*:)\s*(argon|codex|claude)\b", clean, re.I)
+        if match:
+            header_authors.add(match[1].lower())
+    author = prefix[1].lower() if prefix else next(iter(header_authors), "unknown")
+    if len(header_authors) > 1 or header_authors and header_authors != {author}:
+        raise ValueError(f"Conflicting shared-note author metadata: {filename}")
+    return author
+
+
+def note_addresses(text, author):
+    """Detect address clauses, excluding incidental names later in the same line."""
+    recipients, excerpts = set(), []
+    agent_pattern = r"\b(?:argon|codex|claude)\b"
+    for line in text.splitlines():
+        clean = re.sub(r"[*`#]", "", line).strip()
+        clauses = []
+        # A reply can have a sender tag or heading before its address clause.
+        for match in re.finditer(r"\b(?:reply\s+to|response\s+to|question\s+for|request\s+for|etiquette\s+for|thanks\s+to|cross-check\s+for)\s+([^:;\n]+)", clean, re.I):
+            # Parenthetical subject descriptions and following prose are not addresses.
+            clauses.append(re.split(r"\s*\(|\s+(?:for|about|regarding)\s+", match[1], maxsplit=1, flags=re.I)[0])
+        address = re.match(r"(?:to|for|cc|dear|attention)\s*[:\-]?\s*((?:argon|codex|claude)\b[^:;\n]*)", clean, re.I)
+        if address:
+            clauses.append(address[1])
+        direct = re.match(r"(argon|codex|claude)\s*[:,—-]", clean, re.I)
+        if direct:
+            clauses.append(direct[1])
+        clauses.extend(match[1] for match in re.finditer(r"@(argon|codex|claude)\b", clean, re.I))
+        clauses.extend(match[1] for match in re.finditer(r"\b(?:argon|codex|claude)\s*(?:→|->|to)\s*(argon|codex|claude)\b", clean, re.I))
+        addressed = {match[0].lower() for clause in clauses for match in re.finditer(agent_pattern, clause, re.I)} - {author}
+        if addressed:
+            recipients.update(addressed)
+            excerpts.append(line)
+    return sorted(recipients), "\n".join(excerpts)[:1200] if recipients else None
+
+
 def build_notes():
     notes = []
     for path in sorted((RESEARCH / "shared_notes").iterdir()):
@@ -426,25 +467,22 @@ def build_notes():
             continue
         text = redact(raw)
         timestamp, precision = parse_note_time(path.name)
-        author = next((agent for agent in ("argon", "codex", "claude") if agent in path.name.lower()), "unknown")
+        author = note_author(path.name, text)
         title = next((line.strip().lstrip("# ") for line in text.splitlines() if line.strip()), path.name)
-        addressed = directed(text)
-        # An agent's own name in an address/signature is not a recipient.
-        addressed = [agent for agent in addressed if agent != author]
-        exchange_lines = [line for line in text.splitlines() if directed(line)]
+        addressed, exchange_excerpt = note_addresses(text, author)
         notes.append({
             "id": path.stem, "filename": path.name, "author": author,
             "timestamp": timestamp, "timestamp_precision": precision,
             "timestamp_source": "filename" if timestamp else None,
             "title": title[:200], "text": text, "directed_to": addressed,
-            "exchange_excerpt": "\n".join(exchange_lines)[:1200] if addressed else None,
+            "exchange_excerpt": exchange_excerpt,
             "source": "mhd_llm/shared_notes/" + path.name,
             "source_sha256": hashlib.sha256(raw.encode()).hexdigest(),
         })
     notes.sort(key=lambda n: (n["timestamp"] or "", n["filename"]))
     for note in notes:
         note["references"] = [other["id"] for other in notes if other["id"] != note["id"] and (other["filename"] in note["text"] or other["id"] in note["text"])]
-    write_json(OUT / "shared-notes.json", {"generated_at": utc_now(), "disclosure": "Full readable shared_notes files, with credential redaction where necessary. Filename timestamps preserve the recorded precision; they are not filesystem modification times. Directed recipients are conservatively detected from address lines.", "notes": notes})
+    write_json(OUT / "shared-notes.json", {"generated_at": utc_now(), "disclosure": "Full readable shared_notes files, with credential redaction where necessary. Filename timestamps preserve the recorded precision; they are not filesystem modification times. Authors come from filename author prefixes, checked against explicit author headers. Directed recipients are conservatively detected from address clauses; incidental mentions do not establish an exchange.", "notes": notes})
     return {"url": "/data/shared-notes.json", "count": len(notes), "directed_count": sum(bool(n["directed_to"]) for n in notes)}
 
 
@@ -452,8 +490,19 @@ def main():
     global OUT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=OUT)
+    parser.add_argument("--notes-only", action="store_true", help="Refresh shared-note metadata without reading or regenerating conversation sessions")
     args = parser.parse_args()
     OUT = args.output.resolve()
+    if args.notes_only:
+        metadata = build_notes()
+        index_path = OUT / "transcripts.json"
+        if index_path.exists():
+            index = json.loads(index_path.read_text())
+            if index.get("notes") != metadata:
+                index["notes"] = metadata
+                write_json(index_path, index)
+        print(f"Refreshed {metadata['count']} shared notes; {metadata['directed_count']} explicitly addressed notes")
+        return
     all_sessions = []
     codex_paths = list((HOME / ".codex/sessions").rglob("*.jsonl"))
     codex_selected = []

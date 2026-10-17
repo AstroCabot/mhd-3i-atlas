@@ -19,6 +19,8 @@ try {
  assert.equal(await page.locator('video').count(),0);
  assert.equal(await page.locator('[data-solar-image]').count(),6);
  assert.ok(await page.locator('[data-solar-image]').evaluateAll(images=>images.every(image=>image.complete&&image.naturalWidth===768)));
+ assert.ok(await page.locator('[data-bar-min]').evaluateAll(labels=>labels.every(label=>label.textContent==='≤10⁷')));
+ assert.ok(await page.locator('[data-bar-max]').evaluateAll(labels=>labels.every(label=>label.textContent==='≥3×10¹⁰')));
  record('Three panels preload and decode genuine 768px fields without native video APIs');
  await page.evaluate(()=>{
   window.childChanges=0;window.imageChanges=0;
@@ -41,7 +43,8 @@ try {
  assert.ok(await page.locator('[data-solar-image]').evaluateAll(images=>images.every(image=>image.complete&&image.dataset.frameUrl.includes('contrast'))));
  record('Pause, synchronized scrub and decoded field swap preserve exact physical UTC');
  await page.evaluate(async()=>{await window.player.setModel('claude',0)});
- assert.match(await page.locator('[data-plane]').first().innerText(),/320 × 360.*3 h/);
+ const claudeRefined=await page.evaluate(()=>Boolean(window.player.manifest.models.claude.temporalRefinement));
+ assert.match(await page.locator('[data-plane]').first().innerText(),claudeRefined?/320 × 360.*30 min solver output/:/320 × 360.*3 h retained/);
  assert.equal(await page.locator('.canvas-label strong').first().innerText(),'Claude');
  assert.ok(Math.abs(await page.evaluate(()=>window.player.getState().progress)-before)<.0001);
  record('Model swap updates native support and heading while preserving the epoch');

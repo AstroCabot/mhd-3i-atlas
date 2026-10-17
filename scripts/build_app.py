@@ -25,7 +25,7 @@ for name in ('data','assets'):
     shutil.copytree(ROOT/'public'/name,DIST/name,dirs_exist_ok=True,copy_function=copy_changed)
 if (ROOT/'docs').exists():
     shutil.copytree(ROOT/'docs',DIST/'docs',dirs_exist_ok=True,copy_function=copy_changed)
-for name in ('science.json','models.json','transcripts.json','equations.json','animation-v2.json'):
+for name in ('science.json','models.json','transcripts.json','equations.json','animation-v2.json','physics-comparison.json'):
     with (DIST/'data'/name).open() as f:json.load(f)
 models=json.loads((DIST/'data/models.json').read_text())
 math=json.loads((DIST/'data/equations.json').read_text())['equations']

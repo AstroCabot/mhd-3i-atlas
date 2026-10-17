@@ -33,15 +33,26 @@ Python 3.10+ serves the packaged application. Fonts, equations, charts, fields a
 
 The app supports both account-root and repository-prefixed GitHub Pages URLs. The included [deployment workflow](.github/workflows/pages.yml) packages the precomputed assets with Python and publishes them on pushes to `main`. Follow the [publishing instructions](docs/github-pages.md) to connect from your Mac to WSL, authenticate your personal GitHub account, create the repository and enable **Settings → Pages → Source → GitHub Actions**. No repository has been created or published automatically.
 
+## Saved manila dashboard
+
+The deployed dashboard before the notebook refinements is preserved by the Git tag [`manila-dashboard-2026-10-17`](https://github.com/AstroCabot/mhd-3i-atlas/tree/manila-dashboard-2026-10-17), commit `2396a71`. To inspect that version without changing the current checkout:
+
+```bash
+git worktree add ../mhd-manila-dashboard manila-dashboard-2026-10-17
+```
+
 ## Revision and independent audits
 
 The revised presentation follows the numbered scientific sections, TeX Gyre Schola typography, ruled figures and restrained colour use of the [Henyey source site](https://oklo.github.io/Henyey/source.html). Its prose identifies quantities, methods and limitations directly. The layout removes the large introductory banner and promotional cards and uses larger chart labels, compact tables and figure captions.
 
-Three independent reviews cover prose, layout and animation:
+Independent reviews cover prose, layout, scientific interpretation and animation:
 
 - `docs/editorial-audit.md`: online style references, all eight views, model prose and the rendered-copy review. Original transcript and shared-note text remains verbatim.
 - `docs/layout-audit.md`: reference inspection, layout measurements, typography and viewport review.
 - `docs/animation-audit.md`: archived spatial/time support, interpolation, player behaviour and numerical checks.
+- `docs/scientific-review.md`: selected CME forcing, common comparison quantities and source-specific limits.
+- `docs/shared-note-metadata-audit.md`: corrected authors and addressed recipients, with original text preserved.
+- `docs/notebook-review.md`: consistency of the notebook presentation, integrated comparison tables and archive entry points.
 
 The original 128², six-hour, stepwise image display has been replaced with 768² fields rendered directly from the native binary/NPY slices. The portable player uses 373 native-derived display epochs per field at 30-minute spacing, persistent predecoded image layers and continuous display interpolation. It preserves the previous decoded field until the next is ready. The 2,238 WebP frames occupy 42.5 MB and are fetched as needed. It does not recreate the SVG or remove the visible image on each frame. The six 30 fps, 48-second H.264 videos remain available as standalone exports.
 
@@ -56,7 +67,7 @@ The header’s theme switch selects the existing dark palette or a manila-paper 
 3. **Verification:** native benchmark profiles, convergence curves and registered numerical controls.
 4. **Observations:** common hourly spacecraft samples/residual masks, WSA boundary map and coronal-replication evidence.
 5. **X-ray comparison:** eight measured PN rates with uncertainties, common exposure matching, arrival-clock normalization and native/report mean reconciliation.
-6. **Research record:** 18 sessions, 16,745 paginated entries, full-session term search, 85 shared notes and recorded agent settings. Encrypted material is marked unavailable; credential patterns are redacted.
+6. **Agent conversations:** 18 sessions, 16,745 paginated entries, full-session term search, 85 shared notes and recorded agent settings. Direct links open main conversations, explicitly addressed exchanges and a four-note CME input-audit case study. Encrypted material is marked unavailable; credential patterns are redacted.
 7. **Model physics:** precompiled LaTeX/MathML equations, formulations, boundary conditions, calibration and limitations.
 8. **Resources and provenance:** scoped CPU/GPU/token accounting, source discrepancies and SHA-256 receipts.
 

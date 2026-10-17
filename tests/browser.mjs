@@ -16,6 +16,9 @@ try {
  await page.evaluate(()=>window.testFieldImage=document.querySelector('[data-solar-image]'));
  console.log('App ready');assert.match(await page.locator('h1').innerText(),/Solar-wind reconstructions at 3I\/ATLAS/);
  assert.equal(await page.locator('[data-model-toggle][aria-pressed=true]').count(),3);
+ assert.deepEqual(await page.locator('#common-results thead th').allTextContents(),['Quantity / convention',' Argon',' Codex',' Claude']);
+ assert.deepEqual(await page.locator('#common-results tbody tr').last().locator('td').allTextContents(),['Absent','Absent','DONKI cones']);
+ assert.equal(await page.locator('.record-entrypoints a').count(),3);
  await page.locator('[data-model-toggle=codex]').evaluate(el=>el.click());
  assert.equal(await page.locator('[data-model-toggle=codex]').getAttribute('aria-pressed'),'false');
  await page.locator('[data-model-toggle=codex]').evaluate(el=>el.click());
@@ -88,6 +91,22 @@ try {
    await page.locator('#record-role').selectOption('directed');
    await page.waitForFunction(()=>document.querySelectorAll('.note-card').length>0,null,{polling:100});
    assert.ok(await page.locator('.note-card').count()>0);
+   await page.locator('[data-record-view=exchanges]').evaluate(el=>el.click());
+   await page.waitForFunction(()=>window.__HELIOS__.state.recordMode==='notes'&&window.__HELIOS__.state.role==='directed',null,{polling:100});
+   await page.waitForSelector('.note-card');
+   assert.equal(await page.locator('.note-card').count(),14);
+   assert.match(await page.locator('#note-claude_20261016T2244Z_reply_codex_argon .note-meta').innerText(),/CLAUDE/);
+   await page.locator('.record-guide a').evaluate(el=>el.click());
+   await page.waitForFunction(()=>window.__HELIOS__.state.recordThread==='cme',null,{polling:100});
+   await page.waitForSelector('.note-card');
+   assert.equal(await page.locator('.note-card').count(),4);
+   assert.match(await page.locator('.record-guide').innerText(),/provisional claims/);
+   await page.goto(base+'/#transcripts?mode=sessions&agent=claude',{waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>window.__HELIOS__.state.recordAgent==='claude'&&window.__HELIOS__.state.recordMode==='sessions',null,{polling:100});
+   await page.waitForSelector('.message');
+   assert.equal(await page.locator('#record-agent').inputValue(),'claude');
+   results.push('agent exchanges, corrected note attribution and direct conversation links');
+
   }
   if(route==='resources'){assert.equal(await page.locator('.source-manifest [role=region][tabindex="0"]').count(),1);assert.ok(await page.locator('.source-manifest tr').count()>100);}
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,`${route} desktop overflow`);
