@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "nativeHalfHourStates": 373,
+  "originalCoincidentStatesFieldBitwiseEqual": 63,
+  "originalCoincidentTimestampsBitwiseEqual": 62,
+  "maximumCoincidentTimestampDifferenceSeconds": 1.862645149230957e-08,
+  "additionalStatesComparedWithThreeHourBlends": 310,
+  "relativeL1DifferenceFromThreeHourBlends": {
+    "minimum": 0.008269090044244627,
+    "median": 0.03466947264193988,
+    "maximum": 0.5359354269724059
+  },
+  "sourceHashChecks": [
+    "claude/src/mhd/helio",
+    "claude/src/mhd/helio.cu",
+    "claude/src/mhd/core.cuh",
+    "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/cfg.txt",
+    "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/bnd.bin",
+    "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/tracks.bin",
+    "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/cme.txt",
+    "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/slices.bin",
+    "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/probes.bin"
+  ],
+  "newArchiveSha256": "fc278cf2c09feff83db8d2c7e6ec33886a29451817a51fe07370d5976e833d9c",
+  "minimumCadenceSeconds": 1799.999999737367,
+  "maximumCadenceSeconds": 1800.0000002430752,
+  "movingProbeVerification": {
+    "recordsCompared": 1105,
+    "bodies": 12,
+    "fieldsPerBody": 10,
+    "allPrimitiveValuesBitwiseIdentical": true,
+    "maximumTimestampDifferenceSeconds": 1.862645149230957e-08
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "errors": [],
+  "links": [
+    {
+      "model": "argon",
+      "field": "flux",
+      "url": "http://127.0.0.1:8081/assets/animation-v2/argon-flux.mp4",
+      "status": 200
+    },
+    {
+      "model": "argon",
+      "field": "contrast",
+      "url": "http://127.0.0.1:8081/assets/animation-v2/argon-contrast.mp4",
+      "status": 200
+    },
+    {
+      "model": "codex",
+      "field": "flux",
+      "url": "http://127.0.0.1:8081/assets/animation-v2/codex-flux.mp4",
+      "status": 200
+    },
+    {
+      "model": "codex",
+      "field": "contrast",
+      "url": "http://127.0.0.1:8081/assets/animation-v2/codex-contrast.mp4",
+      "status": 200
+    },
+    {
+      "model": "claude",
+      "field": "flux",
+      "url": "http://127.0.0.1:8081/assets/animation-v2/claude-native30m-flux.mp4",
+      "status": 200
+    },
+    {
+      "model": "claude",
+      "field": "contrast",
+      "url": "http://127.0.0.1:8081/assets/animation-v2/claude-native30m-contrast.mp4",
+      "status": 200
+    }
+  ],
+  "planes": [
+    "−6.455° cone · 160 × 180 samples · 3 h retained",
+    "Ecliptic · 512 × 512 samples · 6 h retained",
+    "Ecliptic · 320 × 360 samples · 30 min solver output"
+  ],
+  "manifest": {
+    "nominal": 0.5,
+    "nativeSupport": true,
+    "receipt": {
+      "receipt": "/data/claude-temporal-refinement.json",
+      "nativeCadenceMinutes": 30,
+      "coincidentOriginalSlices": 63,
+      "allCoincidentSlicesBitwiseEqual": true,
+      "generatedArchiveSha256": "fc278cf2c09feff83db8d2c7e6ec33886a29451817a51fe07370d5976e833d9c",
+      "integrationBoundaryPolicy": "The original probe and slice clocks and their floating-point accumulation are unchanged. Extra read-only extraction after probe callbacks introduces no new timestep boundary."
+    }
+  },
+  "forcingRows": [
+    "Explicit CME injection\tAbsent\tAbsent\tDONKI hydrodynamic cones",
+    "Coronal forcing\tTime-averaged coronal map; rotating structure\tEvolving coronal maps\tEvolving coronal maps and explicit cone transients",
+    "Thermodynamics\tEffective gamma = 1.5\tEffective gamma = 1.5\tGamma = 5/3; no explicit heating",
+    "Reference grid (r × θ × φ)\t224 × 48 × 240\t156 × 40 × 192\t512 × 120 × 360",
+    "Movie uses reference run\tNo; 160 × 32 × 180 baseline\tYes\tYes",
+    "Movie surface\tSolar-latitude −6.455° cone projected into ecliptic axes\tEcliptic plane\tEcliptic plane",
+    "Movie field\tnₚ |v|\tnₚ |v|\tnₚ vᵣ (radial flux proxy)",
+    "Original archive cadence\tAbout 3 h\tAbout 6 h\tExactly 3 h",
+    "Current viewer native cadence\t3 h · original archive\t6 h · original archive\t30 min · regenerated solver output"
+  ],
+  "overviewCaption": "Fig. 1. Projected solar-wind field from the selected model. Claude uses verified half-hour solver outputs; Argon and Codex interpolate their original archives. The source surface and flux definition remain model-specific. Compare all models.",
+  "passed": true
+}

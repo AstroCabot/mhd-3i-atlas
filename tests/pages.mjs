@@ -27,10 +27,10 @@ try {
     await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
     const origin = `http://127.0.0.1:${server.address().port}`;
     const page = await browser.newPage({viewport:{width:1280,height:900},reducedMotion:'reduce'});
-    const errors = [], requests = [];
+    const errors = [], requests = [], requestUrls = [];
     page.on('pageerror',error=>errors.push(error.message));
     page.on('response',response=>{if(response.status()>=400)errors.push(`${response.status()} ${response.url()}`);});
-    page.on('request',request=>{if(request.url().startsWith(origin))requests.push(new URL(request.url()).pathname);});
+    page.on('request',request=>{if(request.url().startsWith(origin)){const url=new URL(request.url());requests.push(url.pathname);requestUrls.push(url);}});
     try {
       await page.goto(origin+prefix+'#overview',{waitUntil:'domcontentloaded'});
       await page.waitForFunction(()=>window.__HELIOS__?.player?.getState().status==='paused',null,{polling:100,timeout:30000});
@@ -76,8 +76,18 @@ try {
       assert.ok(await page.locator('.katex').count()>=8);
       assert.ok(requests.some(path=>path.endsWith('texgyreschola-regular.otf')),'The scientific body font must load locally');
       assert.ok(requests.every(path=>path.startsWith(prefix)),'A request escaped the repository prefix');
+      const entry = requestUrls.find(url=>url.pathname===prefix+'app.js');
+      const version = entry?.searchParams.get('v');
+      assert.match(version||'',/^[a-f0-9]{12}$/,'The deployed entry point must be content-versioned');
+      for(const name of ['solar-player.js','site-paths.js','theme.js']) {
+        const module=requestUrls.find(url=>url.pathname===prefix+name);
+        assert.equal(module?.searchParams.get('v'),version,`${name} must share the deployment version`);
+      }
+      const jsonRequests=requestUrls.filter(url=>url.pathname.startsWith(prefix+'data/')&&url.pathname.endsWith('.json'));
+      assert.ok(jsonRequests.length>=7,'The routes must request packaged scientific and archive data');
+      assert.ok(jsonRequests.every(url=>url.searchParams.get('v')===version),'Data requests must revalidate with the deployed modules');
       assert.deepEqual(errors,[],'JavaScript or HTTP failure');
-      results.push({prefix,passed:true,requests:requests.length,checks:['eight views','768 px images and field switching','six video downloads','equations and local fonts','data and methods downloads','transcript chunks, search and notes','hash deep-link reload','no escaped-prefix requests']});
+      results.push({prefix,passed:true,requests:requests.length,checks:['eight views','768 px images and field switching','six video downloads','equations and local fonts','data and methods downloads','transcript chunks, search and notes','hash deep-link reload','no escaped-prefix requests','consistent module and JSON deployment versions']});
       console.log(`PASS: strict static host at ${prefix}; ${requests.length} repository-relative requests.`);
     } finally {
       await page.close();

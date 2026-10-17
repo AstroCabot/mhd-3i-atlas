@@ -1,5 +1,7 @@
 # Publish this application on GitHub Pages
 
+The current copy is already live at [astrocabot.github.io/mhd-3i-atlas](https://astrocabot.github.io/mhd-3i-atlas/), deployed from [AstroCabot/mhd-3i-atlas](https://github.com/AstroCabot/mhd-3i-atlas). Pushes to its `main` branch publish automatically. The setup below is for a new copy under a different account; an existing deployment does not need to repeat repository creation or authentication.
+
 The application is a static site. The included workflow packages the committed `public/` datasets, fonts, equations and animation frames using Python, then deploys `dist/` to GitHub Pages. It needs no API keys, Node server, MHD solver, original research directory or access to the local session archives. Publishing includes the research record already present in the application.
 
 Both project sites (`https://YOUR_USERNAME.github.io/mhd-3i-atlas/`) and an account site (`https://YOUR_USERNAME.github.io/`) work. Paths resolve relative to the application, including fonts, transcript chunks, animation frames and downloads. Navigation uses URL fragments such as `#methods`, so a page reload requires no server rewrite.

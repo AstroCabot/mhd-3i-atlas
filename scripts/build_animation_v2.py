@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Render retained native solar-wind samples to continuous, provenance-bearing videos.
 
-Read-only access to ../mhd_llm. No MHD integrations or existing 128px tiles are
-used. Output video frames interpolate *physical flux*, not RGB or log flux,
-between consecutive archived epochs, then apply a fixed logarithmic colour map.
+Read-only access to ../mhd_llm. Claude's optional app-owned 30-minute solver
+replay is verified by refine_claude_movie.py against the original archive.
+Output frames interpolate *physical flux*, not RGB or log flux, between
+consecutive native epochs, then apply a fixed logarithmic colour map.
 """
 from __future__ import annotations
 
@@ -31,6 +32,7 @@ PALETTE = [[0, 0, 4], [31, 12, 72], [85, 15, 109], [136, 34, 106],
 BACKGROUND = [12, 16, 20]
 LIMITS = {'flux': [1e7, 3e10], 'contrast': [1e7, 2e9]}
 RECEIPTS = {}
+REFINEMENT = APP / 'public/data/claude-temporal-refinement.json'
 
 
 def digest(path):
@@ -55,7 +57,7 @@ def periodic_sample(r, p, a, radius, longitude):
         np.column_stack([radius.ravel(), longitude.ravel()])).reshape(radius.shape).astype(np.float32)
 
 
-def load_native(model, xx, yy):
+def load_native(model, xx, yy, *, retained=False):
     radius = np.hypot(xx, yy)
     longitude = np.arctan2(yy, xx) % (2 * np.pi)
     if model == 'argon':
@@ -90,7 +92,21 @@ def load_native(model, xx, yy):
                 'qualification': 'Retained movie is the baseline run; the quantitative comet reference is the separate 224 × 48 × 240 run.',
                 'supportRadiusAu': [float(r[0]), float(r[-1])]}
     elif model == 'claude':
-        path = source('claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/slices.bin')
+        refinement = None
+        original_path = source('claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/slices.bin')
+        if REFINEMENT.exists() and not retained:
+            refinement = json.loads(REFINEMENT.read_text())
+            generated = refinement['generatedArchive']
+            path = APP / generated['path']
+            if not path.exists():
+                raise FileNotFoundError('Regenerate the verified Claude native archive with '
+                                        'python scripts/refine_claude_movie.py before rebuilding animations.')
+            assert path.stat().st_size == generated['bytes'] and digest(path) == generated['sha256']
+            assert refinement['originalInputsUnchanged']
+            assert refinement['allCoincidentSlicesBitwiseEqual'], 'Refined movie must reproduce every coincident original slice bit for bit.'
+            assert len(refinement['coincidentComparisons']) == 63
+        else:
+            path = original_path
         with path.open('rb') as f:
             nr, nphi, nf = struct.unpack('3i', f.read(12))
             ri, ro = struct.unpack('2f', f.read(8))
@@ -104,7 +120,7 @@ def load_native(model, xx, yy):
         with path.open('rb') as f:
             f.seek(20)
             for i in range(count):
-                t = struct.unpack('d', f.read(8))[0] / 86400 + 60949
+                t = round(struct.unpack('d', f.read(8))[0] / 86400 + 60949, 10)
                 a = np.frombuffer(f.read(record_bytes - 8), np.float32).reshape(nf, nr, nphi)
                 times.append(t)
                 native.append((a[0] * a[1] * 1e5) if START - .126 <= t <= END + .126 else None)
@@ -114,8 +130,20 @@ def load_native(model, xx, yy):
         meta = {'name': 'Claude', 'reference': 'prod_da3_ccmc_prod_t4_L1ref_L2', 'solverDimensions': [512, 120, 360],
                 'nativeSliceDimensions': [nr, nphi], 'nativeSliceAxes': ['radius', 'longitude'],
                 'nativePlane': 'J2000 ecliptic z = 0', 'definition': 'nₚ vᵣ, radial proton-flux proxy',
-                'nominalCadenceHours': 3, 'qualification': 'The saved slice contains radial speed rather than the complete velocity vector.',
+                'nominalCadenceHours': .5 if refinement else 3,
+                'originalRetainedCadenceHours': 3,
+                'temporalSource': ('Verified replay of the selected production solver with 30-minute slice output at existing 30-minute probe boundaries.'
+                                   if refinement else 'Original retained production archive at three-hour cadence.'),
+                'qualification': 'The saved slice contains radial speed rather than the complete velocity vector.',
                 'supportRadiusAu': [float(r[0]), float(r[-1])]}
+        if refinement:
+            meta['temporalRefinement'] = {
+                'receipt': '/data/claude-temporal-refinement.json',
+                'nativeCadenceMinutes': refinement['nativeCadenceMinutes'],
+                'coincidentOriginalSlices': len(refinement['coincidentComparisons']),
+                'allCoincidentSlicesBitwiseEqual': refinement['allCoincidentSlicesBitwiseEqual'],
+                'generatedArchiveSha256': refinement['generatedArchive']['sha256'],
+                'integrationBoundaryPolicy': refinement['integrationBoundaryPolicy']}
     else:
         base = 'codex/results/ct156_w30_theta40_phi192/'
         index = pd.read_csv(source(base + 'snapshots.csv'))
@@ -177,10 +205,11 @@ def render(model, size, fps, seconds):
     axis = np.linspace(-2.4, 2.4, size, dtype=np.float32)
     xx, yy = np.meshgrid(axis, axis)
     times, arrays, radius, meta = load_native(model, xx, yy)
+    basename = f'{model}-native30m' if meta.get('temporalRefinement') else model
     tables = lookup_table()
     frame_count = round(fps * seconds)
     video_times = np.linspace(START, END, frame_count)
-    writers = {field: encoder(DEST / f'{model}-{field}.mp4', size, fps) for field in LIMITS}
+    writers = {field: encoder(DEST / f'{basename}-{field}.mp4', size, fps) for field in LIMITS}
     posters = {0, int(np.argmin(np.abs(video_times - 61012.75)))}
     valid_counts = []
     max_relative_error = 0.0
@@ -208,7 +237,7 @@ def render(model, size, fps, seconds):
                 writer.stdin.write(rgb.tobytes())
                 if i in posters:
                     label = 'first' if i == 0 else 'observation'
-                    Image.fromarray(rgb).save(DEST / f'{model}-{field}-{label}.jpg', quality=93)
+                    Image.fromarray(rgb).save(DEST / f'{basename}-{field}-{label}.jpg', quality=93)
             if i % (fps * 8) == 0:
                 print(f'{model}: {i}/{frame_count} frames', flush=True)
     finally:
@@ -218,7 +247,7 @@ def render(model, size, fps, seconds):
             assert writer.wait() == 0, 'ffmpeg failed'
     meta['media'] = {}
     for field in LIMITS:
-        path = DEST / f'{model}-{field}.mp4'
+        path = DEST / f'{basename}-{field}.mp4'
         probe = json.loads(subprocess.check_output(['ffprobe', '-v', 'error', '-show_streams', '-show_format', '-of', 'json', str(path)]))
         stream = probe['streams'][0]
         assert int(stream['nb_frames']) == frame_count
@@ -226,8 +255,8 @@ def render(model, size, fps, seconds):
         assert stream['r_frame_rate'] == f'{fps}/1'
         assert abs(float(probe['format']['duration']) - seconds) < 1 / fps
         meta['media'][field] = {'url': f'/assets/animation-v2/{path.name}', 'bytes': path.stat().st_size,
-                               'sha256': digest(path), 'poster': f'/assets/animation-v2/{model}-{field}-observation.jpg',
-                               'firstPoster': f'/assets/animation-v2/{model}-{field}-first.jpg',
+                               'sha256': digest(path), 'poster': f'/assets/animation-v2/{basename}-{field}-observation.jpg',
+                               'firstPoster': f'/assets/animation-v2/{basename}-{field}-first.jpg',
                                'codec': stream['codec_name'], 'frames': frame_count, 'fps': fps,
                                'width': size, 'height': size, 'durationSeconds': float(probe['format']['duration'])}
     meta['verification'] = {'physicalInterpolationMaxRelativeError': max_relative_error,
@@ -244,7 +273,8 @@ def render_image_sequence(model, size, seconds):
     times, arrays, radius, meta = load_native(model, xx, yy)
     display_times = np.linspace(START, END, round((END - START) * 48) + 1)
     tables = lookup_table()
-    directory = DEST / 'frames' / model
+    basename = f'{model}-native30m' if meta.get('temporalRefinement') else model
+    directory = DEST / 'frames' / basename
     directory.mkdir(parents=True, exist_ok=True)
     sequences = {field: [] for field in LIMITS}
     for i, t in enumerate(display_times):
@@ -259,13 +289,16 @@ def render_image_sequence(model, size, seconds):
             rgb = colorize(values, valid, tables[field])
             path = directory / f'{field}-{i:03d}.webp'
             Image.fromarray(rgb).save(path, format='WEBP', quality=84, method=4)
-            sequences[field].append({'url': f'/assets/animation-v2/frames/{model}/{path.name}',
+            sequences[field].append({'url': f'/assets/animation-v2/frames/{basename}/{path.name}',
                 'frame': i, 'timeMjd': float(t), 'bytes': path.stat().st_size, 'sha256': digest(path)})
         if i % 60 == 0:
             print(f'{model}: {i}/{len(display_times)} portable frames', flush=True)
+    native_support = bool(meta.get('temporalRefinement'))
     return {'width': size, 'height': size, 'frameCount': len(display_times), 'durationSeconds': seconds,
         'displayCadenceMinutes': 30, 'timeMjd': display_times.tolist(), 'fields': sequences,
-        'physicalInterpolation': 'Bounded linear interpolation of physical flux between actual native epochs before logarithmic colour mapping.',
+        'supportEpochsAreNativeSolverOutputs': native_support,
+        'physicalInterpolation': ('Every 30-minute display-support epoch is a native solver output from the verified production replay; only continuous browser playback blends adjacent image colours.'
+                                  if native_support else 'Bounded linear interpolation of physical flux between actual native epochs before logarithmic colour mapping.'),
         'browserInterpolation': 'Linear RGB opacity crossfade between adjacent 30 min display-support images at requestAnimationFrame cadence; a display interpolation, not a new physical sample.',
         'format': 'WebP', 'quality': 84}
 
@@ -277,7 +310,10 @@ def main():
     parser.add_argument('--seconds', type=float, default=48)
     parser.add_argument('--model', choices=['argon', 'codex', 'claude'])
     parser.add_argument('--images-only', action='store_true', help='Add portable image sequences to the existing native-video manifest.')
+    parser.add_argument('--with-images', action='store_true', help='Build videos and portable images before publishing one coherent manifest.')
     args = parser.parse_args()
+    if args.images_only and args.with_images:
+        parser.error('--images-only and --with-images are mutually exclusive')
     assert shutil.which('ffmpeg') and shutil.which('ffprobe')
     DEST.mkdir(parents=True, exist_ok=True)
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
@@ -289,7 +325,8 @@ def main():
         'timeMjd': np.arange(START, END + 1e-8, .125).tolist(),
         'clock': 'Physical geometric UTC, not photon-arrival UTC.',
         'timeMapping': 'video frame i corresponds to startMjd + i/(frameCount−1) × (endMjd−startMjd). Displayed UTC clamps at the final encoded frame.',
-        'temporalInterpolation': 'Bounded linear interpolation of physical flux between each model’s consecutive actual retained epochs before logarithmic colour mapping. 30 fps display adds no native simulation information; shared 3 h support timestamps interpolate the ~6 h Codex archive.',
+        'temporalInterpolation': ('Claude uses verified native 30-minute solver re-outputs; Argon and Codex retain their original approximately 3-hour and 6-hour archives. Between native epochs, bounded linear physical-flux interpolation precedes logarithmic colour mapping. Display fps adds no independent simulation information.'
+                                  if REFINEMENT.exists() else 'Bounded linear physical-flux interpolation between consecutive original native epochs precedes logarithmic colour mapping. Native support is approximately three hours for Argon and Claude, and six hours for Codex. Display fps adds no independent simulation information.'),
         'spatialInterpolation': 'Bilinear interpolation from native retained plane samples directly to the 768² display raster; no 128² tile input, no extrapolation. Spatial display pixels are not independent solver cells.',
         'extentAu': [-2.4, 2.4, -2.4, 2.4],
         'projection': 'Sun-centred fixed-J2000 ecliptic x/y, viewed from ecliptic north; vernal equinox to the right. Argon cone is projected, not replaced by an ecliptic sample.',
@@ -307,12 +344,18 @@ def main():
                                 for axis in ('x', 'y')} for name, row in science['tracks'].items()}
     for model in ([args.model] if args.model else ['argon', 'codex', 'claude']):
         if args.images_only:
+            if model == 'claude' and REFINEMENT.exists() and not manifest['models'][model].get('temporalRefinement'):
+                raise SystemExit('Promote the refined Claude videos and metadata together: --model claude --with-images')
             manifest['models'][model]['frameSequence'] = render_image_sequence(model, args.size, args.seconds)
-            manifest['defaultPlayback'] = 'Persistent paired 768px WebP layers, 30 min physically interpolated display support, continuous browser opacity crossfade. Native video downloads retained separately.'
+            manifest['defaultPlayback'] = 'Persistent paired 768px WebP layers, 30 min native or physically interpolated display support, continuous browser opacity crossfade. Native video downloads retained separately.'
             print(f'{model}: portable images encoded', flush=True)
         else:
             manifest['models'][model] = render(model, args.size, args.fps, args.seconds)
             print(f'{model}: videos encoded and checked', flush=True)
+            if args.with_images:
+                manifest['models'][model]['frameSequence'] = render_image_sequence(model, args.size, args.seconds)
+                manifest['defaultPlayback'] = 'Persistent paired 768px WebP layers, 30 min native or physically interpolated display support, continuous browser opacity crossfade. Native video downloads retained separately.'
+                print(f'{model}: portable images encoded', flush=True)
     prior = {item['path']: item for item in manifest.get('sourceReceipts', [])}
     prior.update(RECEIPTS)
     manifest['sourceReceipts'] = list(prior.values())
@@ -321,7 +364,9 @@ def main():
         assert path.stat().st_size == item['bytes'] and digest(path) == item['sha256'], 'Native input changed'
     manifest['verification'] = {'sourceHashesUnchanged': True, 'sharedLimitsAndProjection': True,
                                'nativeDimensionsReadFromArchive': True, 'sourceReadOnly': True}
-    MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n')
+    temporary = MANIFEST.with_suffix('.json.tmp')
+    temporary.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n')
+    temporary.replace(MANIFEST)
     print(f'{MANIFEST.relative_to(APP)}; source receipts {len(manifest["sourceReceipts"])}', flush=True)
 
 

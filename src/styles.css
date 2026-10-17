@@ -371,6 +371,12 @@ a.insight:hover h3 { color: var(--accent); }
 .message.user .message-role { color: var(--codex); }
 .message.tool .message-role { color: var(--dim); }
 .message.tool pre { color: var(--muted); font-size: 10px; }
+.tool-entry { margin-top: 2px; }
+.tool-entry summary { padding: 3px 0; color: var(--muted); cursor: pointer; font: 12px/1.6 var(--serif); }
+.tool-entry summary::marker { color: var(--dim); }
+.tool-entry summary:hover, .tool-entry[open] > summary { color: var(--text); }
+.tool-entry summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.tool-entry[open] > pre { margin-top: 8px; padding-left: 10px; border-left: 1px solid var(--line2); }
 .message .directed { margin-bottom: 9px; padding: 7px 10px; border-left: 2px solid var(--accent); background: var(--selected); color: var(--text); font: 11px/1.5 var(--mono); }
 .message mark { background: var(--highlight-bg); color: var(--highlight-text); }
 .pager { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 11px 14px; color: var(--muted); font: 10px/1.5 var(--mono); }

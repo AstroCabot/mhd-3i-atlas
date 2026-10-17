@@ -31,7 +31,7 @@ Python 3.10+ serves the packaged application. Fonts, equations, charts, fields a
 
 ## Publish on GitHub Pages
 
-The app supports both account-root and repository-prefixed GitHub Pages URLs. The included [deployment workflow](.github/workflows/pages.yml) packages the precomputed assets with Python and publishes them on pushes to `main`. Follow the [publishing instructions](docs/github-pages.md) to connect from your Mac to WSL, authenticate your personal GitHub account, create the repository and enable **Settings → Pages → Source → GitHub Actions**. No repository has been created or published automatically.
+The live application is at **https://astrocabot.github.io/mhd-3i-atlas/**; its repository is [AstroCabot/mhd-3i-atlas](https://github.com/AstroCabot/mhd-3i-atlas). The included [deployment workflow](.github/workflows/pages.yml) packages the precomputed assets with Python and publishes pushes to `main`. Viewing the public site needs no SSH tunnel or running WSL machine. The [publishing instructions](docs/github-pages.md) also explain how to publish a separate copy under another personal account. Both account-root and repository-prefixed Pages URLs are supported.
 
 ## Saved manila dashboard
 
@@ -54,9 +54,9 @@ Independent reviews cover prose, layout, scientific interpretation and animation
 - `docs/shared-note-metadata-audit.md`: corrected authors and addressed recipients, with original text preserved.
 - `docs/notebook-review.md`: consistency of the notebook presentation, integrated comparison tables and archive entry points.
 
-The original 128², six-hour, stepwise image display has been replaced with 768² fields rendered directly from the native binary/NPY slices. The portable player uses 373 native-derived display epochs per field at 30-minute spacing, persistent predecoded image layers and continuous display interpolation. It preserves the previous decoded field until the next is ready. The 2,238 WebP frames occupy 42.5 MB and are fetched as needed. It does not recreate the SVG or remove the visible image on each frame. The six 30 fps, 48-second H.264 videos remain available as standalone exports.
+The original 128², six-hour, stepwise image display has been replaced with 768² fields rendered directly from the native binary/NPY slices. The portable player uses 373 display epochs per field at 30-minute spacing, persistent predecoded image layers and continuous display interpolation. It preserves the previous decoded field until the next is ready. The 2,238 WebP frames are fetched as needed. The six 30 fps, 48-second H.264 videos remain available as standalone exports.
 
-**Physical resolution remains limited by the archive.** Argon retains 160×180 radial/longitude samples at about three-hour cadence, Claude 320×360 at three hours, and Codex a 512² interpolation of its native CT grid at about six hours. Higher display resolution and interpolation do not create new physical information. All three retain the same geometric-UTC clock, projected extent, colour scales and source-specific sampling qualifications.
+**Claude now uses genuine 30-minute solver output.** An output-only replay of its selected production setup retains 373 half-hour states, with all 63 coincident three-hour field arrays byte-identical to the original archive. Its slice has 320×360 radial/longitude samples. Argon retains 160×180 samples at about three-hour cadence; Codex retains a 512² interpolation of its native CT grid at about six hours. Their intermediate display epochs remain interpolated. All three use the same geometric-UTC clock, projected extent and colour scales, with their distinct physical support stated beside each field. Higher display resolution does not add spatial information.
 
 The header’s theme switch selects the existing dark palette or a manila-paper light palette. The choice is saved in the browser and applied before the page is drawn. Charts, tables, equations and exports follow the selected palette; switching themes preserves field playback and chart zoom.
 
@@ -84,6 +84,7 @@ scripts/build_science.py        common science extraction, no solver reruns
 scripts/build_models.py         model descriptions and source receipts
 scripts/build_transcripts.py    allowlisted session and shared-note extraction
 scripts/build_animation_v2.py   direct native-slice rendering
+scripts/refine_claude_movie.py  verified output-only CUDA replay for finer movie cadence
 scripts/compile_math.mjs        build-time KaTeX compilation to HTML/MathML
 scripts/build_app.py            incremental standalone packaging and asset checks
 scripts/serve.py                static server with gzip, byte ranges and health endpoint
@@ -96,7 +97,7 @@ For presentation-only changes:
 python scripts/build_app.py
 ```
 
-The existing server serves updated files; reload the browser. The index uses content-versioned script/style URLs and the server revalidates application files. Changing typography or layout does not rerun scientific analysis. A staging build can be served separately:
+The existing server serves updated files; reload the browser. Scripts, styles, imported modules and packaged JSON requests carry the same content version. Changing typography or layout does not rerun scientific analysis. A staging build can be served separately:
 
 ```bash
 python scripts/build_app.py --output runtime/review
@@ -108,15 +109,26 @@ To regenerate source-derived products:
 ```bash
 python -m pip install -r requirements-analysis.txt
 python scripts/build_models.py
+python scripts/build_physics_comparison.py
 python scripts/build_science.py
 python scripts/apply_editorial_metadata.py --input public/data/science.json
 python scripts/build_transcripts.py
-python scripts/build_animation_v2.py
+python scripts/build_animation_v2.py --with-images
 node scripts/compile_math.mjs
 python scripts/build_app.py
 ```
 
 Animation rendering also needs ffmpeg. Transcript extraction needs the identified local session logs under `~/.codex`, `~/.claude` and `~/.gemini/antigravity-cli`. The packaged site works without those originals. The extraction allowlist excludes the application-building conversation and unrelated sessions.
+
+To reproduce Claude's finer native movie, first run the output-only replay on a compatible NVIDIA GPU with nvcc and the original research inputs available, then render its two display products:
+
+```bash
+python scripts/refine_claude_movie.py
+python scripts/build_animation_v2.py --model claude --with-images
+python scripts/build_app.py
+```
+
+The replay writes only to application-owned runtime storage and verifies the original inputs and coincident states. Its [verification receipt](public/data/claude-temporal-refinement.json) records source hashes, compiler settings and runtime. This additional movie computation is separate from the original research resource counters and quantitative comet/probe results. The published site and its Pages build use committed display assets and need no GPU or solver.
 
 ## Verification
 

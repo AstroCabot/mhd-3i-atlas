@@ -29,6 +29,12 @@ class Animation(unittest.TestCase):
         self.assertEqual(MANIFEST['models']['codex']['nativeSliceDimensions'], [512, 512])
         self.assertEqual(MANIFEST['models']['claude']['nativeSliceDimensions'], [320, 360])
         self.assertEqual(MANIFEST['models']['codex']['nominalCadenceHours'], 6)
+        if MANIFEST['models']['claude'].get('temporalRefinement'):
+            claude = MANIFEST['models']['claude']
+            self.assertEqual(claude['nominalCadenceHours'], .5)
+            self.assertEqual(claude['originalRetainedCadenceHours'], 3)
+            self.assertTrue(claude['temporalRefinement']['allCoincidentSlicesBitwiseEqual'])
+            self.assertEqual(claude['temporalRefinement']['coincidentOriginalSlices'], 63)
         self.assertTrue(np.allclose(np.diff(MANIFEST['timeMjd']), .125))
         for model in MANIFEST['models'].values():
             self.assertLessEqual(model['usedNativeTimeMjd'][0], MANIFEST['startMjd'])
@@ -57,6 +63,9 @@ class Animation(unittest.TestCase):
             self.assertEqual(sequence['timeMjd'][0], MANIFEST['startMjd'])
             self.assertEqual(sequence['timeMjd'][-1], MANIFEST['endMjd'])
             self.assertTrue(np.allclose(np.diff(sequence['timeMjd']), 1/48))
+            if model.get('temporalRefinement'):
+                self.assertTrue(sequence['supportEpochsAreNativeSolverOutputs'])
+                self.assertTrue(np.allclose(sequence['timeMjd'], model['nativeTimeMjd']))
             for rows in sequence['fields'].values():
                 self.assertEqual(len(rows), 373)
                 for row in rows:
@@ -69,25 +78,28 @@ class Animation(unittest.TestCase):
         indices = np.array([149, 227, 305, 462, 540, 618])
         axis = np.linspace(-2.4, 2.4, 768, dtype=np.float32)
         xx, yy = np.meshgrid(axis[indices], axis[indices])
-        t = MANIFEST['models']['argon']['frameSequence']['timeMjd'][186]
         tables = builder.lookup_table()
         for model in ('argon', 'codex', 'claude'):
             times, fields, radius, _ = builder.load_native(model, xx, yy)
-            hi = np.searchsorted(times, t, side='right')
-            lo = hi - 1
-            weight = (t-times[lo])/(times[hi]-times[lo])
-            values = fields[lo]*np.float32(1-weight)+fields[hi]*np.float32(weight)
-            valid = np.isfinite(fields[lo]) & np.isfinite(fields[hi]) & (fields[lo] > 0) & (fields[hi] > 0)
-            for field in ('flux', 'contrast'):
-                physical = values if field == 'flux' else values*radius*radius
-                expected = builder.colorize(physical, valid, tables[field])[::-1]
-                row = MANIFEST['models'][model]['frameSequence']['fields'][field][186]
-                with Image.open(ROOT / 'public' / row['url'].lstrip('/')) as image:
-                    decoded = np.asarray(image)
-                actual = decoded[(767-indices)[:,None],indices[None,:]]
-                error = np.abs(actual.astype(float)-expected.astype(float))[valid]
-                self.assertLess(np.median(error), 5, (model,field))
-                self.assertLess(np.percentile(error,95), 18, (model,field))
+            # Include a half-hour support point absent from the original Claude
+            # archive, as well as the centre of the common interval.
+            for frame in (1, 186):
+                t = MANIFEST['models'][model]['frameSequence']['timeMjd'][frame]
+                hi = np.searchsorted(times, t, side='right')
+                lo = hi - 1
+                weight = (t-times[lo])/(times[hi]-times[lo])
+                values = fields[lo]*np.float32(1-weight)+fields[hi]*np.float32(weight)
+                valid = np.isfinite(fields[lo]) & np.isfinite(fields[hi]) & (fields[lo] > 0) & (fields[hi] > 0)
+                for field in ('flux', 'contrast'):
+                    physical = values if field == 'flux' else values*radius*radius
+                    expected = builder.colorize(physical, valid, tables[field])[::-1]
+                    row = MANIFEST['models'][model]['frameSequence']['fields'][field][frame]
+                    with Image.open(ROOT / 'public' / row['url'].lstrip('/')) as image:
+                        decoded = np.asarray(image)
+                    actual = decoded[(767-indices)[:,None],indices[None,:]]
+                    error = np.abs(actual.astype(float)-expected.astype(float))[valid]
+                    self.assertLess(np.median(error), 5, (model,field,frame))
+                    self.assertLess(np.percentile(error,95), 18, (model,field,frame))
 
     def test_encoded_colour_matches_native_physical_interpolation(self):
         # Decode a middle display epoch and compare scattered covered pixels to

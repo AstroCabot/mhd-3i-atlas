@@ -3,6 +3,7 @@ from pathlib import Path
 import argparse
 import hashlib
 import json
+import re
 import shutil
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -51,8 +52,21 @@ for model in manifest['models'].values():
                 raise SystemExit(f'Missing or incomplete display frame {path}')
             if hashlib.sha256(path.read_bytes()).hexdigest()!=row['sha256']:
                 raise SystemExit(f'Display-frame checksum differs: {path}')
-# A changed source produces a new module/stylesheet request on ordinary reload.
-fingerprint=hashlib.sha256(b''.join((DIST/name).read_bytes() for name in ('app.js','styles.css','solar-player.js','site-paths.js','theme.js'))).hexdigest()[:12]
+# Source or data changes produce new requests on an ordinary browser reload.
+version_hash=hashlib.sha256()
+version_files=[ROOT/'src'/name for name in ('app.js','styles.css','solar-player.js','site-paths.js','theme.js')]
+version_files.extend(sorted((ROOT/'public/data').rglob('*.json')))
+for path in version_files:
+    version_hash.update(path.relative_to(ROOT).as_posix().encode()+b'\0')
+    version_hash.update(path.read_bytes())
+fingerprint=version_hash.hexdigest()[:12]
+# Version imported modules as well as the entry point. A cached old player or
+# manifest must not hide a newly published native animation product.
+for path in DIST.glob('*.js'):
+    source=path.read_text()
+    versioned=re.sub(r"(\bfrom\s+['\"])(\./[^'\"?]+\.js)(['\"])",
+                     lambda match: f'{match[1]}{match[2]}?v={fingerprint}{match[3]}', source)
+    if versioned!=source:path.write_text(versioned)
 index=(ROOT/'index.html').read_text().replace('/styles.css',f'/styles.css?v={fingerprint}').replace('/app.js',f'/app.js?v={fingerprint}')
 (DIST/'index.html').write_text(index)
 (DIST/'.nojekyll').touch()

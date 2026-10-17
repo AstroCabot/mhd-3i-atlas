@@ -553,7 +553,7 @@ def main():
         animation=animation_product(tracks)
     result={'schemaVersion':1,
         'meta':{'title':'3I/ATLAS comparative heliospheric reconstruction','immutableSource':'../mhd_llm',
-            'dateWindow':'2025-12-03–04','obsId':'0963720201','sourcePolicy':'Quantitative comparisons are extracted from unchanged archived runs. Claude’s finer-cadence animation is regenerated separately from the original executable and boundary inputs; its verification is recorded in the animation provenance.',
+            'dateWindow':'2025-12-03–04','obsId':'0963720201','sourcePolicy':'Quantitative comparisons are extracted from unchanged archived runs. Claude’s finer-cadence animation is regenerated separately with unchanged numerical kernels and retained boundary inputs, using an output-only host hook; its verification is recorded in the animation provenance.',
             'rebuild':'python scripts/build_science.py','software':{'numpy':np.__version__,'pandas':pd.__version__}},
         'models':[{'id':'argon','name':'Argon','reference':'res_fine_224x48x240'},
                   {'id':'codex','name':'Codex','reference':'ct156_w30_theta40_phi192'},

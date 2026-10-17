@@ -1,0 +1,489 @@
+{
+  "schemaVersion": 1,
+  "method": "Selected production solver and retained boundary inputs; output-only hook extracts slices after existing 1800 s probe callbacks. Original 10800 s slice clock and all numerical kernels remain unchanged.",
+  "originalRun": "prod_da3_ccmc_prod_t4_L1ref_L2",
+  "solverDimensions": [
+    512,
+    120,
+    360
+  ],
+  "sliceDimensions": [
+    320,
+    360,
+    5
+  ],
+  "startMjd": 61006.25,
+  "endMjd": 61014.0,
+  "nativeCadenceMinutes": 30,
+  "slices": 373,
+  "originalCadenceMinutes": 180,
+  "probeCadenceUnchangedSeconds": 1800,
+  "integrationBoundaryPolicy": "The original probe and slice clocks and their floating-point accumulation are unchanged. Extra read-only extraction after probe callbacks introduces no new timestep boundary.",
+  "originalInputsUnchanged": true,
+  "sourceReceipts": [
+    {
+      "path": "claude/src/mhd/helio",
+      "bytes": 2157720,
+      "sha256": "bf43b2710dde6534e7116b672bb9d22bc77bb67629c34e9d0eed8a87c61a05df"
+    },
+    {
+      "path": "claude/src/mhd/helio.cu",
+      "bytes": 49641,
+      "sha256": "824fdb6ed9353cf03b5fbf383b4066b2cb225fe8114c9dcf4e280637639c9b71"
+    },
+    {
+      "path": "claude/src/mhd/core.cuh",
+      "bytes": 8454,
+      "sha256": "7d2cb61bb7ca8db2be604b46de1b4924237ebc6afcce50a7e1a78bbaa512769d"
+    },
+    {
+      "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/cfg.txt",
+      "bytes": 1086,
+      "sha256": "f1ef5bbe5f8adeb44400cc3530573d77a90797bb26fadbd81b3b195207df1615"
+    },
+    {
+      "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/bnd.bin",
+      "bytes": 14580388,
+      "sha256": "57d59688426ddb43dcbcb6175e0063e803b1e0cd2275cc2cc9c61f8a3647ab69"
+    },
+    {
+      "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/tracks.bin",
+      "bytes": 292000,
+      "sha256": "c9a974afd226c502b685f1e13859e8ccd0ab70aac75cd01b59d6985d6d07b0ef"
+    },
+    {
+      "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/cme.txt",
+      "bytes": 5179,
+      "sha256": "d8087b4a7c344aa8fd7733cde8768eae81f5197bc92c01c54ee8f54dfd12feee"
+    },
+    {
+      "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/slices.bin",
+      "bytes": 499969756,
+      "sha256": "df803d89c0e58a46d94e2d5e7c6eb0dfa65717aa5b7d82c1be3155e282973d44"
+    },
+    {
+      "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/probes.bin",
+      "bytes": 632944,
+      "sha256": "032aef551b8578ca066126a3416261a1020288ba7ad36d60aaaf671cf606ef04"
+    }
+  ],
+  "coincidentComparisons": [
+    {
+      "timeMjd": 61006.25,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61006.375,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61006.5,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61006.625,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61006.75,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61006.875,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61007.0,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61007.125,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61007.25,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61007.375,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61007.5,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61007.625,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61007.75,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61007.875,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61008.0,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61008.125,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61008.25,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61008.375,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61008.5,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61008.625,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61008.75,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61008.875,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61009.0,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61009.125,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61009.25,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61009.375,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61009.5,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61009.625,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61009.75,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61009.875,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61010.0,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61010.125,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61010.25,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61010.375,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61010.5,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61010.625,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61010.75,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61010.875,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61011.0,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61011.125,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61011.25,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61011.375,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61011.5,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61011.625,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61011.75,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61011.875,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61012.0,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61012.125,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61012.25,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61012.375,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61012.5,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61012.625,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61012.75,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61012.875,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61013.0,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61013.125,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61013.25,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61013.375,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61013.5,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61013.625,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61013.75,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61013.875,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": 0.0
+    },
+    {
+      "timeMjd": 61014.0,
+      "bitwiseEqual": true,
+      "maximumRelativeDifference": 0.0,
+      "timestampDifferenceSeconds": -1.862645149230957e-08
+    }
+  ],
+  "allCoincidentSlicesBitwiseEqual": true,
+  "generatedArchive": {
+    "path": "runtime/claude-30min/slices.bin",
+    "bytes": 859395004,
+    "sha256": "fc278cf2c09feff83db8d2c7e6ec33886a29451817a51fe07370d5976e833d9c"
+  },
+  "compilerFlags": [
+    "-O3",
+    "-arch=sm_89",
+    "-std=c++17",
+    "--use_fast_math",
+    "-lineinfo"
+  ],
+  "outputHookBuilderSha256": "34d70df5c4e6f496d8e1301c5fea3fcf695198a7888f3b96946dab5bac9a4e91",
+  "compiledExecutableSha256": "5c6a1ca3b023410a172a5abf2638e41b1da0553d7049d8eb8236b3741238cd9b",
+  "patchedSourceSha256": "80711c9d5236a6d01ab85e23cf0b883afd9bf0e35e049caa13fb7f83df18409f",
+  "runtimeEnvironment": {
+    "gpu": "NVIDIA GeForce RTX 4080 SUPER, 591.86, 16376 MiB",
+    "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2023 NVIDIA Corporation\nBuilt on Fri_Jan__6_16:45:21_PST_2023\nCuda compilation tools, release 12.0, V12.0.140\nBuild cuda_12.0.r12.0/compiler.32267302_0",
+    "effectiveConfigSha256": "4236951baa0d4aa600120a999e5020dfb8dd69c251b93f1538eb65bd24bfc3d1"
+  },
+  "probeVerification": {
+    "allPrimitiveValuesBitwiseIdentical": true,
+    "recordsCompared": 1105,
+    "bodies": 12,
+    "fieldsPerBody": 10,
+    "maximumTimestampDifferenceSeconds": 1.862645149230957e-08,
+    "timestampQualification": "Stopping exactly at the movie endpoint clamps the last timestamp; primitive values remain bitwise identical.",
+    "bytesCompared": 539248,
+    "originalSha256": "032aef551b8578ca066126a3416261a1020288ba7ad36d60aaaf671cf606ef04",
+    "generatedSha256": "ca431207ec8bc80cb7895b61cd1339e79f2191ba492361bdc5400d7e2e5fba94",
+    "retainedPath": "runtime/claude-30min/probes.bin"
+  },
+  "wallSeconds": 2154.1293342113495,
+  "solverWallSeconds": 2067.41,
+  "receiptVerificationSeconds": 6.8612000942230225,
+  "rebuild": "python scripts/refine_claude_movie.py",
+  "bitwiseEqualityScope": "The five primitive-field arrays; timestamp bytes are checked separately.",
+  "maximumTimestampDifferenceSeconds": 1.862645149230957e-08
+}

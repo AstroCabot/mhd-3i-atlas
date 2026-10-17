@@ -1,0 +1,10 @@
+test_intermediate_states_are_not_interpolated_three_hour_frames (test_animation_refinement.ClaudeNativeRefinement.test_intermediate_states_are_not_interpolated_three_hour_frames) ... ok
+test_replay_preserves_selected_physics_and_original_states (test_animation_refinement.ClaudeNativeRefinement.test_replay_preserves_selected_physics_and_original_states) ... ok
+test_thirty_minute_native_clock_and_generated_archive_receipt (test_animation_refinement.ClaudeNativeRefinement.test_thirty_minute_native_clock_and_generated_archive_receipt) ... ok
+test_three_dimensional_moving_probe_values_are_unchanged (test_animation_refinement.ClaudeNativeRefinement.test_three_dimensional_moving_probe_values_are_unchanged) ... ok
+test_extra_extraction_changes_no_numerical_kernel_or_timestep_expression (test_animation_refinement.OutputHook.test_extra_extraction_changes_no_numerical_kernel_or_timestep_expression) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 3.836s
+
+OK
