@@ -1,6 +1,7 @@
 {
   "passed": true,
   "checks": [
+    "keyboard theme switch, persistent preference and uninterrupted field view",
     "overview and model visibility",
     "solar-wind",
     "verification",
@@ -13,5 +14,5 @@
     "mobile navigation, layout and equations"
   ],
   "errors": [],
-  "date": "2026-10-17T16:19:43.886Z"
+  "date": "2026-10-17T16:50:16.602Z"
 }

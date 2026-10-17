@@ -23,7 +23,7 @@ class Assets(HTMLParser):
 def check(directory):
     directory = Path(directory).resolve()
     required = ('index.html', '.nojekyll', 'app.js', 'site-paths.js', 'solar-player.js',
-                'styles.css', 'data/science.json', 'data/models.json',
+                'styles.css', 'theme.js', 'data/science.json', 'data/models.json',
                 'data/transcripts.json', 'data/animation-v2.json', 'data/equations.json')
     for name in required:
         if not (directory / name).is_file():

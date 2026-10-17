@@ -21,6 +21,24 @@ try {
  await page.locator('[data-model-toggle=codex]').evaluate(el=>el.click());
  assert.equal(await page.evaluate(()=>window.testFieldImage===document.querySelector('[data-solar-image]')),true,'Model visibility controls must preserve field image nodes');
  await page.waitForFunction(()=>document.querySelector('[data-image-ready=true]')&&window.__HELIOS__.player?.getState().status==='paused',null,{polling:100});
+ // A theme change must recolour the current view without remounting playback.
+ const darkAxis=await page.evaluate(()=>window.__HELIOS__.state.charts[0].chart.getOption().xAxis[0].axisLabel.color);
+ await page.locator('#theme-toggle').focus();await page.keyboard.press('Space');
+ assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
+ assert.equal(await page.locator('#theme-toggle').getAttribute('aria-checked'),'true');
+ assert.equal(await page.evaluate(()=>localStorage.getItem('3i-atlas-theme')),'light');
+ assert.equal(await page.evaluate(()=>getComputedStyle(document.body).backgroundColor),'rgb(234, 215, 177)');
+ assert.equal(await page.evaluate(()=>window.testFieldImage===document.querySelector('[data-solar-image]')),true,'Theme switch must preserve the field image');
+ assert.notEqual(await page.evaluate(()=>window.__HELIOS__.state.charts[0].chart.getOption().xAxis[0].axisLabel.color),darkAxis);
+ assert.equal(await page.evaluate(()=>window.__HELIOS__.state.charts[0].chart.getOption().series[0].itemStyle.color),await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--argon').trim()));
+ await takeShot(page,'tests/screenshots/overview-light-desktop.png');
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>window.__HELIOS__?.player?.getState().status==='paused',null,{polling:100});
+ assert.equal(await page.locator('html').getAttribute('data-theme'),'light','Light mode must survive a page reload');
+ assert.equal(await page.locator('meta[name=theme-color]').getAttribute('content'),'#ead7b1');
+ await page.locator('#theme-toggle').evaluate(el=>el.click());
+ assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+ results.push('keyboard theme switch, persistent preference and uninterrupted field view');
  await takeShot(page,'tests/screenshots/overview-desktop.png');results.push('overview and model visibility');console.log('Checked overview');
  for(const route of ['solar-wind','verification','observations','xray','methods','resources','transcripts']){
   await page.locator(`[data-nav=${route}]`).evaluate(el=>el.click());
@@ -73,6 +91,20 @@ try {
   }
   if(route==='resources'){assert.equal(await page.locator('.source-manifest [role=region][tabindex="0"]').count(),1);assert.ok(await page.locator('.source-manifest tr').count()>100);}
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,`${route} desktop overflow`);
+  const beforeTheme=await page.evaluate(()=>{
+   const charts=window.__HELIOS__.state.charts;
+   if(window.__HELIOS__.state.route==='solar-wind')charts[0].chart.dispatchAction({type:'dataZoom',start:20,end:70});
+   window.themePlayer=window.__HELIOS__.player;window.themeImages=[...document.querySelectorAll('[data-solar-image]')];
+   return charts.map(({chart})=>{const o=chart.getOption();return {data:o.series.map(s=>s.data.map(p=>p?.value??p)),zoom:o.dataZoom?.map(z=>({start:z.start,end:z.end,startValue:z.startValue,endValue:z.endValue})),map:o.visualMap?.map(v=>v.inRange.color)};});
+  });
+  await page.locator('#theme-toggle').evaluate(el=>el.click());
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
+  const afterTheme=await page.evaluate(()=>window.__HELIOS__.state.charts.map(({chart})=>{const o=chart.getOption();return {data:o.series.map(s=>s.data.map(p=>p?.value??p)),zoom:o.dataZoom?.map(z=>({start:z.start,end:z.end,startValue:z.startValue,endValue:z.endValue})),map:o.visualMap?.map(v=>v.inRange.color)};}));
+  assert.deepEqual(afterTheme,beforeTheme,`${route} theme change must preserve data, zoom and scientific colour maps`);
+  assert.equal(await page.evaluate(()=>window.themePlayer===window.__HELIOS__.player&&window.themeImages.every((img,i)=>img===document.querySelectorAll('[data-solar-image]')[i])),true);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,`${route} light mode overflow`);
+  await takeShot(page,`tests/screenshots/${route}-light-desktop.png`);
+  await page.locator('#theme-toggle').evaluate(el=>el.click());
   await takeShot(page,`tests/screenshots/${route}-desktop.png`);results.push(route);console.log('Checked',route);
  }
  const download=page.waitForEvent('download');await page.locator('[data-export]').first().evaluate(el=>el.click());assert.ok((await download).suggestedFilename().endsWith('.json'));results.push('dataset export');
@@ -81,6 +113,10 @@ try {
  await page.waitForFunction(()=>!!window.__HELIOS__,null,{polling:100});
  await page.waitForFunction(()=>window.__HELIOS__.player?.getState().status==='paused',null,{polling:100});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'Overview must not overflow horizontally');
+ await page.locator('#theme-toggle').evaluate(el=>el.click());
+ assert.equal(await page.locator('#theme-toggle').isVisible(),true);
+ await takeShot(page,'tests/screenshots/overview-light-mobile.png');
+ await page.locator('#theme-toggle').evaluate(el=>el.click());
  await takeShot(page,'tests/screenshots/overview-mobile.png');
  await page.waitForFunction(()=>window.__HELIOS__.state.route==='overview',null,{polling:100});await page.locator('#menu').evaluate(el=>el.click());assert.equal(await page.locator('#menu').getAttribute('aria-expanded'),'true');
  await page.locator('[data-nav=methods]').evaluate(el=>el.click());await page.waitForFunction(()=>window.__HELIOS__.state.route==='methods',null,{polling:100});assert.equal(await page.locator('#menu').getAttribute('aria-expanded'),'false');

@@ -52,7 +52,7 @@ for model in manifest['models'].values():
             if hashlib.sha256(path.read_bytes()).hexdigest()!=row['sha256']:
                 raise SystemExit(f'Display-frame checksum differs: {path}')
 # A changed source produces a new module/stylesheet request on ordinary reload.
-fingerprint=hashlib.sha256(b''.join((DIST/name).read_bytes() for name in ('app.js','styles.css','solar-player.js','site-paths.js'))).hexdigest()[:12]
+fingerprint=hashlib.sha256(b''.join((DIST/name).read_bytes() for name in ('app.js','styles.css','solar-player.js','site-paths.js','theme.js'))).hexdigest()[:12]
 index=(ROOT/'index.html').read_text().replace('/styles.css',f'/styles.css?v={fingerprint}').replace('/app.js',f'/app.js?v={fingerprint}')
 (DIST/'index.html').write_text(index)
 (DIST/'.nojekyll').touch()

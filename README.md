@@ -47,6 +47,8 @@ The original 128², six-hour, stepwise image display has been replaced with 768�
 
 **Physical resolution remains limited by the archive.** Argon retains 160×180 radial/longitude samples at about three-hour cadence, Claude 320×360 at three hours, and Codex a 512² interpolation of its native CT grid at about six hours. Higher display resolution and interpolation do not create new physical information. All three retain the same geometric-UTC clock, projected extent, colour scales and source-specific sampling qualifications.
 
+The header’s theme switch selects the existing dark palette or a manila-paper light palette. The choice is saved in the browser and applied before the page is drawn. Charts, tables, equations and exports follow the selected palette; switching themes preserves field playback and chart zoom.
+
 ## Application views
 
 1. **Overview:** incident-flux curves, common exposure-weighted density/speed/flux table and selected solver configurations.

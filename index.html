@@ -1,9 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#191a1b" />
+  <script>
+    try {
+      if (localStorage.getItem('3i-atlas-theme') === 'light') {
+        document.documentElement.dataset.theme = 'light';
+        document.querySelector('meta[name="theme-color"]').content = '#ead7b1';
+      }
+    } catch {}
+  </script>
   <meta name="description" content="Compare three MHD reconstructions of the solar wind at interstellar comet 3I/ATLAS: verification, observations, X-ray context, and the research record." />
   <title>3I/ATLAS — Solar-wind model comparison</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
