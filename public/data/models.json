@@ -1,0 +1,994 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-17T15:52:20.036874+00:00",
+  "sourceRoot": "../mhd_llm (read-only)",
+  "comparisonPolicy": [
+    "Normalize physical units, plotting limits, UTC labels and exposure integration before comparing curves. Preserve each model's forcing, calibration history and native numerical definitions.",
+    "The three reconstructions use different forcing, calibration histories and numerical configurations. Benchmark errors and runtimes must be interpreted within each recorded setup.",
+    "Numerical verification tests the implementation; finite refinement tests numerical sensitivity; withheld spacecraft test empirical transfer. None directly measures plasma at the comet.",
+    "Ensemble and physical-control ranges describe sensitivity to the selected scenarios; their probability coverage has not been calibrated. Missing resource telemetry is recorded as unknown."
+  ],
+  "sharedPhysics": [
+    {
+      "title": "Three-dimensional stream interaction",
+      "body": "Fast solar wind catches slower wind, forming a stream interaction region (SIR; a corotating interaction region when recurrent). Compression redistributes density, speed and magnetic pressure. Straight-line ballistic propagation cannot reproduce the nonlinear compression or the associated timing changes."
+    },
+    {
+      "title": "Modeled domain and variables",
+      "body": "All three implementations solve ideal, single-fluid solar-wind transport from about 0.1 AU to beyond the comet at roughly 1.87 AU. They differ in coronal-map handling, assimilation, thermal closure, magnetic-divergence control and resolution. They calculate the incident wind and omit the cometary plasma interaction."
+    },
+    {
+      "title": "Arrival time and accepted XMM exposure",
+      "body": "The EPIC-pn observation accepts 45 good-time intervals, totaling 21,362.284 s across eight frames. A narrow compression peak can fall in rejected time or a different frame after a shift of a few hours. The accepted-exposure mean, continuous-frame-window mean and whole-pointing mean are different quantities."
+    }
+  ],
+  "commonEquations": [
+    {
+      "label": "Conservation of mass",
+      "latex": "\\frac{\\partial\\rho}{\\partial t}+\\nabla\\!\\cdot(\\rho\\mathbf v)=0",
+      "explanation": "Plasma density changes as wind flows into or out of a volume. A steady radial wind with constant speed has density proportional to 1/r²."
+    },
+    {
+      "label": "Momentum, magnetic pressure and solar gravity",
+      "latex": "\\frac{\\partial(\\rho\\mathbf v)}{\\partial t}+\\nabla\\!\\cdot\\left[\\rho\\mathbf v\\mathbf v+\\left(p+\\frac{B^2}{2\\mu_0}\\right)\\mathbf I-\\frac{\\mathbf B\\mathbf B}{\\mu_0}\\right]=-\\rho\\frac{GM_\\odot\\mathbf r}{r^3}",
+      "explanation": "Gas pressure and magnetic stresses accelerate or redirect the wind, while solar gravity decelerates it. Fast wind can catch slow wind and form a compressed stream interaction region."
+    },
+    {
+      "label": "Total energy",
+      "latex": "E=\\frac{p}{\\gamma-1}+\\frac{\\rho |\\mathbf v|^2}{2}+\\frac{B^2}{2\\mu_0},\\qquad\\frac{\\partial E}{\\partial t}+\\nabla\\!\\cdot\\left[\\left(E+p+\\frac{B^2}{2\\mu_0}\\right)\\mathbf v-\\frac{(\\mathbf v\\!\\cdot\\!\\mathbf B)\\mathbf B}{\\mu_0}\\right]=-\\rho GM_\\odot\\frac{\\mathbf v\\!\\cdot\\!\\mathbf r}{r^3}",
+      "explanation": "Internal, kinetic and magnetic energy evolve together. The adopted gamma controls expansion cooling; these gamma-law fluids do not resolve separate electron heating or heat conduction."
+    },
+    {
+      "label": "Ideal magnetic induction",
+      "latex": "\\frac{\\partial\\mathbf B}{\\partial t}=\\nabla\\!\\times(\\mathbf v\\times\\mathbf B),\\qquad\\nabla\\!\\cdot\\mathbf B=0",
+      "explanation": "The field is transported by the conducting plasma. Argon and Claude add a divergence-cleaning field; Codex uses staggered constrained transport to preserve discrete magnetic flux balance."
+    },
+    {
+      "label": "Flux incident on the moving comet",
+      "latex": "\\Phi_{p,\\mathrm{helio}}=n_p|\\mathbf v_{\\mathrm{SW}}|,\\qquad\\Phi_{p,\\mathrm{incident}}=n_p|\\mathbf v_{\\mathrm{SW}}-\\mathbf v_c|",
+      "explanation": "Density in cm⁻³ and speed in km s⁻¹ require a factor 10⁵ to produce cm⁻² s⁻¹. The comet's outward radial motion reduces the incident speed; the full vector difference also includes its tangential motion."
+    },
+    {
+      "label": "Exposure-weighted comparison",
+      "latex": "\\langle\\Phi\\rangle_{\\mathrm{GTI}}=\\frac{\\sum_k\\int_{t_{k,\\mathrm{start}}}^{t_{k,\\mathrm{stop}}}\\Phi(t)\\,dt}{\\sum_k(t_{k,\\mathrm{stop}}-t_{k,\\mathrm{start}})}",
+      "explanation": "Average over the detector's accepted good-time intervals, including exact endpoints. A continuous-window mean or median weights a transient differently and must be labeled separately."
+    },
+    {
+      "label": "From upstream ions to charge-exchange X-rays",
+      "latex": "I_X\\ \\propto\\ \\int n_{\\mathrm{neutral}}\\sum_q n_q\\,v_{\\mathrm{rel}}\\,\\sigma_q(v_{\\mathrm{rel}})\\,Y_q\\,d\\ell",
+      "explanation": "X-ray brightness also requires the neutral coma, ion abundances and charge states, charge-exchange cross sections and yields, viewing geometry and instrumental response. Proton flux alone is an upstream driver, not an absolute X-ray prediction."
+    }
+  ],
+  "observationalContext": [
+    {
+      "title": "Photospheric magnetograms → coronal maps",
+      "body": "GONG synoptic magnetic maps feed WSA estimates of radial field and speed near 21.5 solar radii. These remote-sensing-derived boundary models do not directly measure wind at the comet; far-side history and coronal closure remain uncertainties.",
+      "sourceUrls": [
+        "https://gong.nso.edu/data/magmap/QR/zqs/",
+        "https://iswa.gsfc.nasa.gov/iswa_data_tree/model/solar/WSA5.4/R21.5/"
+      ]
+    },
+    {
+      "title": "Spacecraft plasma constraints",
+      "body": "STEREO-A is especially relevant because its heliographic latitude is close to the comet's. Wind/OMNI and Solar Orbiter constrain other sampled sectors. Each model uses some of these measurements in calibration; an assimilated residual must be labeled separately from a withheld prediction.",
+      "sourceUrls": [
+        "https://cdaweb.gsfc.nasa.gov/hapi/"
+      ]
+    },
+    {
+      "title": "Independent coronal-model checks",
+      "body": "Claude compares an in-house PFSS/Schatten/WSA reconstruction with the archived WSA maps and audits magnetogram age. Its memo excludes stale archived ADAPT-GONG inputs and describes IPS/EUV/coronagraph information as secondary constraints. These checks test the forcing chain, not a direct density measurement at 1.87 AU.",
+      "sourceUrls": [
+        "https://gong.nso.edu/adapt/maps/gong/",
+        "https://stsw1.isee.nagoya-u.ac.jp/ips_data-e.html"
+      ]
+    },
+    {
+      "title": "CCMC reference and CME provenance",
+      "body": "The comparison archive is Jan_Deca_120925_SH_1 (WSA 5.4 / ENLIL 2.8f). DONKI cone catalogues and the reference CCMC cone selection differ. The three implementations do not agree on the resulting transit/stream effects, so a small CME change in one calculation does not settle the event's physical importance.",
+      "sourceUrls": [
+        "https://ccmc.gsfc.nasa.gov/ror/results/viewrun.php?runnumber=Jan_Deca_120925_SH_1",
+        "https://ccmc.gsfc.nasa.gov/DONKI/WS/get/CMEAnalysis"
+      ]
+    },
+    {
+      "title": "Comet trajectory and observation clock",
+      "body": "JPL Horizons ephemerides supply the comet's trajectory and velocity. Its outward motion reduces incident proton flux relative to heliocentric flux. Codex explicitly applies photon light time to its XMM comparison, whereas native movie and spacecraft epochs are geometric UTC; this clock distinction must remain visible.",
+      "sourceUrls": [
+        "https://ssd.jpl.nasa.gov/horizons/manual.html"
+      ]
+    }
+  ],
+  "models": [
+    {
+      "id": "argon",
+      "name": "Argon",
+      "subtitle": "Custom CUDA · HLL + GLM",
+      "status": "Archived MHD reference",
+      "summary": "Argon uses a spherical GPU MHD solver with a rotating WSA boundary and spacecraft-based speed and density corrections. The fine reference predicts a trailing compression during the first half of the XMM observation, followed by fast, rarefied wind. Archived animations use the coarser baseline run.",
+      "selection": {
+        "reference": "res_fine_224x48x240",
+        "displayedSeries": "res_fine_224x48x240",
+        "animation": "model3_assimilated",
+        "description": "The comet and spacecraft comparisons use the fine 224×48×240 run. The archived animation uses the separate 160×32×180 baseline run."
+      },
+      "nativePlane": {
+        "kind": "constant solar latitude cone",
+        "latitudeDeg": -6.455,
+        "description": "The animation samples a constant heliographic latitude of approximately −6.455°, forming a cone through the comet's latitude. The display projects this conical surface onto the common ecliptic axes.",
+        "source": "argon/src/heliomhd3d.cu"
+      },
+      "sourceNativeMeans": {
+        "label": "Archived fine-reference PN-GTI summary",
+        "densityCm3": 4.058820285714286,
+        "speedKms": 594.7131367714286,
+        "heliocentricFluxCm2S": 227809741.14285713,
+        "incidentFluxCm2S": 210432390.57142857,
+        "timeConvention": "physical geometric UTC",
+        "averagingNote": "Native summary averages the 10-minute samples falling inside accepted GTIs. It does not perform the application's exact GTI endpoint integration or photon-arrival relabeling. Use the separately computed common means for direct comparisons.",
+        "source": "argon/outputs/summary_results.json"
+      },
+      "physics": [
+        {
+          "title": "Magnetized flow and gravity",
+          "body": "Three-dimensional ideal MHD evolves mass, momentum, total energy and the magnetic field in a solar-equatorial inertial frame, with solar gravity and spherical curvature terms. Gamma = 1.5 is an effective thermodynamic closure. Magnetic pressure and tension moderate stream compression; the B = 0 control changes the baseline GTI incident flux by about +75%."
+        },
+        {
+          "title": "Composition carried as a tracer",
+          "body": "A passive heavy-ion fraction follows an empirical boundary speed rule and is advected with the fluid. The prescribed fraction ranges from roughly 7.5×10⁻⁴ in slow wind to 3.8×10⁻⁴ in fast wind. The calculation omits charge-state evolution, the neutral coma and charge-exchange emission."
+        },
+        {
+          "title": "Input hierarchy",
+          "body": "Model 1 uses an uncalibrated WSA/CCMC-scale density. Model 2 raises the density normalization using spacecraft momentum-flux estimates. Model 3 blends observed speed and density structure into the WSA map. A separate holdout excludes Wind and ACE while retaining STEREO-A and Solar Orbiter."
+        }
+      ],
+      "equations": [
+        {
+          "label": "Divergence-cleaning extension",
+          "latex": "\\partial_t\\mathbf B=\\nabla\\times(\\mathbf v\\times\\mathbf B)-\\nabla\\psi,\\qquad\\partial_t\\psi+c_h^2\\nabla\\cdot\\mathbf B=-\\frac{\\psi}{\\tau}",
+          "explanation": "GLM transports and damps numerical magnetic divergence; it does not make the cell-centered field exactly solenoidal."
+        },
+        {
+          "label": "Passive heavy-ion fraction",
+          "latex": "\\partial_t(\\rho f_{\\mathrm{hi}})+\\nabla\\cdot(\\rho f_{\\mathrm{hi}}\\mathbf v)=0,\\qquad\\Phi_{\\mathrm{hi}}=f_{\\mathrm{hi}}\\Phi_{p,\\mathrm{incident}}",
+          "explanation": "The inferred heavy-ion flux inherits the assumed boundary abundance and does not resolve individual ion charge states."
+        },
+        {
+          "label": "Momentum-flux boundary closure",
+          "latex": "n_{p,0}=100\\,n_{400}\\left(\\frac{400\\ \\mathrm{km\\,s^{-1}}}{v_0}\\right)^2,\\qquad T_0=1.2\\times10^6\\left(\\frac{v_0}{650\\ \\mathrm{km\\,s^{-1}}}\\right)^2\\ \\mathrm K",
+          "explanation": "For Model 3 at 0.1 AU, v₀ is the blended map speed minus 30 km s⁻¹, clipped to 220–720 km s⁻¹. Bᵣ is 3.5 times the averaged WSA field. These prescriptions are calibration choices."
+        }
+      ],
+      "numerics": {
+        "method": "Custom CUDA C++ finite-volume solver; float32; HLL flux with an exact (Bnormal, psi) GLM sub-solve; piecewise-linear MC-limited reconstruction; SSP-RK2. Exact spherical volume/face factors and explicit geometric/gravity sources.",
+        "grid": "Fine: 224 × 48 × 240 = 2,580,480 cells; baseline/movie: 160 × 32 × 180 = 921,600 cells. The fine longitude spacing is 1.5° and latitude spacing is 2.5°.",
+        "domain": "Uniform radial mesh, 0.10–2.40 AU; latitude ±60°; full periodic longitude.",
+        "parameters": "Gamma 1.5; CFL 0.35; 10-day relaxation in the recorded suite. Fine weighted h|div B|/|B| diagnostic ≈ 0.00521, baseline ≈ 0.00744; these are native diagnostics, not directly comparable to CT flux-incidence residuals.",
+        "boundary": "One rotating Carrington map is built by Gaussian-weighting 25 WSA maps in time. Spacecraft samples are ballistically back-projected into that map, with longitude/latitude kernels of 12°/7° and maximum blend 0.85. Inner Parker Bphi and radial extrapolation are imposed in ghost cells; the outer ghosts use density/Br ∝ r⁻² and transverse B ∝ r⁻¹."
+      },
+      "calibration": {
+        "body": "Model 3 assimilates STEREO-A, Wind, ACE and Solar Orbiter observations over the retrospective source interval. Residuals against those observations measure calibration performance. A separate holdout run excludes Wind and ACE from map construction to test transfer. The static map omits temporal changes within the source interval.",
+        "validation": "Verification includes Brio–Wu shock tubes against a finer self-reference, spherical magnetized steady wind against an integrated ODE, and a rotating CIR experiment. Recorded controls vary the grid, CFL number, latitude extent, gravity, gamma, magnetic field and cone CMEs. Medium/fine GTI differences measure sensitivity to those two resolutions.",
+        "limitations": "The report and machine-readable summary disagree on several spacecraft, window and light-curve numbers. The application uses archived numeric series/JSON for quantitative comparisons and preserves the discrepancy as provenance."
+      },
+      "findings": [
+        "Assimilated stream compression produces more comet-incident proton flux than the uncalibrated WSA/CCMC-scale control. Input calibration and stream phase matter more than the last spatial refinement.",
+        "The trailing compression reaches the comet early in the observation in this implementation. That timing differs from Claude's narrow mid-window peak and Codex's smoother late increase.",
+        "The B = 0, no-gravity and gamma controls demonstrate model dependence. Their differences do not prove a single physical cause or establish a calibrated confidence interval."
+      ],
+      "caveats": [
+        "The spacecraft calibration and holdout comparisons use different input datasets. Only the holdout excludes the tested spacecraft from assimilation.",
+        "GLM leaves finite div B and the solver uses density/pressure floors; no complete floor-activation receipt accompanies the selected fine result.",
+        "The reported estimate uses the fine grid; the archived animation uses the baseline grid. Latitude and longitude spacings differ, so a single angular-resolution label is incomplete.",
+        "The movie samples a constant −6.455° solar-latitude cone. An ecliptic slice would require additional simulation output.",
+        "A speed-dependent heavy-ion tracer cannot establish contemporaneous charge states or uniquely explain X-ray variability.",
+        "The source report's X-ray interpretation exceeds the constraints from upstream proton flux. The application retains the measured frame uncertainties and integrates each model over the same accepted exposures."
+      ],
+      "resources": {
+        "rows": [
+          {
+            "label": "Project elapsed time",
+            "value": 1.3451666666666668,
+            "unit": "h",
+            "scope": "Elapsed first-prompt-to-monitor time; 2026-10-16 23:52:51 UTC snapshot.",
+            "source": "argon/monitor_status.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Reference solver wall time",
+            "value": 164.114,
+            "unit": "s",
+            "scope": "Fine 224×48×240 run only; shared RTX 4080 SUPER.",
+            "source": "argon/outputs/runs/res_fine_224x48x240_run_meta.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Baseline solver wall time",
+            "value": 45.9016,
+            "unit": "s",
+            "scope": "160×32×180 run supplying native movie slices and the original summary's spacecraft validation.",
+            "source": "argon/outputs/runs/model3_assimilated_run_meta.json",
+            "status": "recorded"
+          },
+          {
+            "label": "CPU core time",
+            "value": null,
+            "unit": "core h",
+            "scope": "No attributed project CPU integral in the final monitor.",
+            "source": "argon/monitor_status.json",
+            "status": "not recorded"
+          },
+          {
+            "label": "GPU exclusive time",
+            "value": null,
+            "unit": "h",
+            "scope": "System GPU utilization samples are shared and do not establish agent-specific GPU time.",
+            "source": "argon/monitor_history.jsonl",
+            "status": "not recorded"
+          },
+          {
+            "label": "Peak attributed host RAM",
+            "value": null,
+            "unit": "MiB",
+            "scope": "The monitor reports system RAM, not a per-process peak.",
+            "source": "argon/monitor_status.json",
+            "status": "not recorded"
+          },
+          {
+            "label": "Peak attributed VRAM",
+            "value": null,
+            "unit": "MiB",
+            "scope": "The monitor reports total shared-device VRAM; no reference-run allocation receipt is present.",
+            "source": "argon/monitor_status.json",
+            "status": "not recorded"
+          },
+          {
+            "label": "Input tokens",
+            "value": 759404,
+            "unit": "tokens",
+            "scope": "Monitor-derived session counter.",
+            "source": "argon/monitor_status.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Output tokens",
+            "value": 292625,
+            "unit": "tokens",
+            "scope": "Monitor-derived session counter.",
+            "source": "argon/monitor_status.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Cache-read tokens",
+            "value": 16332077,
+            "unit": "tokens",
+            "scope": "Repeated cached context reads are included; this is not fresh generation.",
+            "source": "argon/monitor_status.json",
+            "status": "recorded"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "label": "Final research report",
+          "path": "argon/REPORT.md"
+        },
+        {
+          "label": "Native numerical summary",
+          "path": "argon/outputs/summary_results.json"
+        },
+        {
+          "label": "Solver source",
+          "path": "argon/src/heliomhd3d.cu"
+        },
+        {
+          "label": "Boundary construction",
+          "path": "argon/scripts/prepare_inputs.py"
+        },
+        {
+          "label": "Recorded run suite",
+          "path": "argon/scripts/run_mhd_suite.sh"
+        },
+        {
+          "label": "Final monitor",
+          "path": "argon/monitor_status.json"
+        }
+      ]
+    },
+    {
+      "id": "claude",
+      "name": "Claude",
+      "subtitle": "Custom CUDA · HLLD + GLM · 4D assimilation",
+      "status": "Archived MHD reference",
+      "summary": "Claude uses a GPU MHD solver and passive source tracers to map spacecraft residuals back to daily coronal boundaries. Its 1° reference predicts a narrow compression peak during the XMM observation. A 12-member design ensemble varies arrival-time and calibration assumptions.",
+      "selection": {
+        "reference": "prod_da3_ccmc_prod_t4_L1ref_L2",
+        "displayedSeries": "prod_da3_ccmc_prod_t4_L1ref_L2",
+        "animation": "prod_da3_ccmc_prod_t4_L1ref_L2",
+        "description": "The final forward run uses a 1° 512×120×360 grid with boundary corrections refined at 2°. The displayed band transfers relative timing and amplitude differences from twelve 4° ensemble members onto the 1° reference."
+      },
+      "nativePlane": {
+        "kind": "ecliptic plane",
+        "description": "The producer samples a Cartesian ecliptic basis expressed in the solar-equatorial frame. This plane is distinct from Argon's constant solar-latitude cone and from the actual out-of-plane comet probe.",
+        "source": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/cfg.txt"
+      },
+      "sourceNativeMeans": {
+        "label": "Archived 1° reference PN-GTI summary",
+        "densityCm3": 3.3983827724859497,
+        "speedKms": 478.27289562952257,
+        "heliocentricFluxCm2S": 158725786.49448532,
+        "incidentFluxCm2S": 145477595.55793977,
+        "timeConvention": "physical geometric UTC",
+        "averagingNote": "The native summary uses a GTI-midpoint approximation on geometric UTC. The application integrates the accepted intervals on the photon-arrival clock. This changes the mean most strongly near the narrow compression peak.",
+        "source": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2.json"
+      },
+      "physics": [
+        {
+          "title": "Ideal MHD and hydrogen–helium composition",
+          "body": "Solar gravity and ideal MHD evolve a gamma = 5/3 fluid without explicit solar-wind heating. A fixed alpha-to-proton number ratio of 0.05 gives mass density ρ = 1.2 mₚ nₚ and total thermal pressure p = 2.15 nₚ kBT. This density convention must be respected when comparing ENLIL mass-density products."
+        },
+        {
+          "title": "Evolving coronal and CME inputs",
+          "body": "Daily WSA maps prescribe the rotating coronal structure. The reference includes selected DONKI hydrodynamic cone transients. No-CME and CCMC-list variants test catalogue choice. Cone geometry can perturb stream timing, but the cones do not reconstruct a magnetic flux rope or measured ion charge states."
+        },
+        {
+          "title": "Source tracing and inverse correction",
+          "body": "Passive tracers carry source longitude, latitude, emission time and WSA speed. They connect each simulated spacecraft sample to its boundary source, allowing iterative speed/log-density residual corrections with Gaussian kernels in longitude, latitude and source time."
+        }
+      ],
+      "equations": [
+        {
+          "label": "Hydrogen and helium fluid convention",
+          "latex": "\\rho=m_pn_p(1+4x_\\alpha),\\qquad p=n_pk_BT(2+3x_\\alpha),\\qquad x_\\alpha=0.05",
+          "explanation": "Proton number density is mass density divided by 1.2 mₚ; a plotted ρ/mₚ value would be 20% larger."
+        },
+        {
+          "label": "Boundary residual assimilation",
+          "latex": "w_i\\propto\\exp\\!\\left[-\\frac12\\left(\\frac{\\Delta\\phi_i^2}{\\sigma_\\phi^2}+\\frac{\\Delta\\lambda_i^2}{\\sigma_\\lambda^2}+\\frac{\\Delta t_{\\mathrm{src},i}^2}{\\sigma_t^2}\\right)\\right],\\quad\\sigma_\\phi=4^\\circ,\\ \\sigma_\\lambda=8^\\circ,\\ \\sigma_t=4\\ \\mathrm d",
+          "explanation": "The reference uses a prior weight of 3 and repeats the forward-model/correction cycle six times at 4°, then three times at 2°. Speed corrections are additive and density corrections multiplicative."
+        },
+        {
+          "label": "Assumed heavy-ion range",
+          "latex": "\\Phi_{\\mathrm{hi}}=f_{\\mathrm{hi}}\\Phi_{p,\\mathrm{incident}},\\qquad f_{\\mathrm{hi}}\\in[3,10]\\times10^{-4}",
+          "explanation": "The heavy-ion fraction is an assumed abundance range. Ion composition is not evolved, and the range has no assigned probability coverage."
+        }
+      ],
+      "numerics": {
+        "method": "Custom CUDA finite volume on spherical cells carrying Cartesian momentum and B; analytic vector face areas; face-basis MC/PLM reconstruction; HLLD with exact GLM sub-solve; SSP-RK2; float32. A dual-energy entropy switch is used when thermal energy falls below 10⁻³ of total energy.",
+        "grid": "1° reference: 512 × 120 × 360 = 22,118,400 cells. Refinement levels are 128×30×90 (4°), 256×60×180 (2°), and 512×120×360 (1°).",
+        "domain": "Uniform radial mesh, 0.10–2.50 AU; latitude ±60°; full longitude. Native slice products extend to 2.49 AU.",
+        "parameters": "Gamma 5/3; summed-direction CFL 0.8. An Alfvén-speed limiter at 3000 km s⁻¹ adds density in extreme cone wakes in the 1° run. It is reported inactive at 4°/2° and localized away from the comet sector at 1°.",
+        "boundary": "WSA speed is clipped and reduced to account for outward acceleration; density is initialized with n v² constant and nT pressure balance. Bᵣ = 4×WSA. A +9° longitude shift follows the compared ENLIL convention. Outer ghosts use Br ∝ r⁻², transverse B ∝ r⁻¹ and adiabatic pressure scaling; latitude edges copy spherical components."
+      },
+      "calibration": {
+        "body": "Hourly STEREO-A, L1 and Solar Orbiter speed/log-density residuals over Nov 12–Dec 8 are assimilated retrospectively. The 1° forward run reuses the final 2° boundary corrections. Leave-one-out tests and synthetic observing-system experiments assess transfer beyond the assimilated measurements.",
+        "validation": "Linear MHD waves, Sod, Brio–Wu, uniform-flow geometry, a Bernoulli/gravity wind and the Parker spiral test the equations and implementation. Pizzo and Wiengarten stream experiments provide separate literature comparisons. Leave-one-out speed improvements are reported at 4°; MAVEN at Mars is never assimilated and is not improved.",
+        "limitations": "The 12-member design ensemble supplies 4° timing and amplitude differences that are transferred onto the 1° reference. Its parameter choices have no posterior probability weights. The boundary is not retuned at 1°, and L1/Solar Orbiter residuals increase on refinement."
+      },
+      "findings": [
+        "Stream interaction compresses slow wind ahead of a high-speed stream; a ballistic remap cannot reproduce that nonlinear density spike.",
+        "The reference spike crosses around Dec 3.85, near the X-ray minimum. Its proton-flux curve is anti-correlated with the eight PN frames (native report r ≈ −0.75), so proton supply alone does not explain the X-ray variability.",
+        "Arrival-time shifts of roughly −7 to +20 hours across assimilation designs dominate the exposure-weighted estimate. The transferred ensemble retains that timing spread after removing the coarse-grid timing bias."
+      ],
+      "caveats": [
+        "Gamma = 5/3 without explicit heating makes protons too cold relative to spacecraft measurements; no pickup ions or composition evolution are included.",
+        "Cell-centered GLM leaves finite magnetic divergence and a known roughly 2% Parker-spiral angle error. This is distinct from Codex's CT incidence diagnostic.",
+        "The finest run uses a density/Alfvén-speed limiter in extreme CME wakes. The reported inactive comet sector does not establish global conservation without qualification.",
+        "The transferred 1° band measures sensitivity to the selected 4° assimilation designs. Probability coverage has not been calibrated.",
+        "The wind was reconstructed without fitting the X-ray light curve. Heavy-ion charge states, neutral-coma evolution and stream timing remain unresolved contributors to the observed variability."
+      ],
+      "resources": {
+        "rows": [
+          {
+            "label": "Project elapsed time",
+            "value": 4.704,
+            "unit": "h",
+            "scope": "First prompt to 2026-10-17 03:15:13 UTC monitor snapshot.",
+            "source": "claude/monitor/status.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Reference solver wall time",
+            "value": 3378.1018602848053,
+            "unit": "s",
+            "scope": "1° 512×120×360 reference, including time sharing of the shared GPU.",
+            "source": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2.json",
+            "status": "recorded"
+          },
+          {
+            "label": "CPU core time",
+            "value": 25.119,
+            "unit": "core h",
+            "scope": "Accumulated attributed CPU estimate from the project monitor.",
+            "source": "claude/monitor/status.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Sum of solver wall times",
+            "value": 10.572,
+            "unit": "h",
+            "scope": "204 completed solver runs; concurrent/time-shared run durations, not elapsed time or exclusive GPU occupancy.",
+            "source": "claude/monitor/gpu_accounting.json",
+            "status": "recorded"
+          },
+          {
+            "label": "GPU exclusive-equivalent time",
+            "value": 2.2282369514880003,
+            "unit": "h",
+            "scope": "Derived from recorded cell-updates × 2.7 ns uncontended benchmark; estimate rather than an occupancy measurement.",
+            "source": "claude/README.md",
+            "status": "estimated"
+          },
+          {
+            "label": "Reference GPU allocation",
+            "value": 3.83,
+            "unit": "GB",
+            "scope": "Solver-reported device allocation at run startup, not whole-device usage or a measured lifetime peak.",
+            "source": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/stdout.txt",
+            "status": "recorded"
+          },
+          {
+            "label": "Peak attributed host RAM",
+            "value": null,
+            "unit": "MiB",
+            "scope": "The README gives <1 GB per process; the selected reference has no recorded peak measurement.",
+            "source": "claude/README.md",
+            "status": "not recorded"
+          },
+          {
+            "label": "Fresh tokens",
+            "value": 5247690,
+            "unit": "tokens",
+            "scope": "Input + cache writes + output; monitor deduplicates message IDs across tracked transcripts.",
+            "source": "claude/monitor/status.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Output tokens",
+            "value": 547311,
+            "unit": "tokens",
+            "scope": "Part of the fresh-token total.",
+            "source": "claude/monitor/status.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Cache-read tokens",
+            "value": 346853073,
+            "unit": "tokens",
+            "scope": "Cached context reads; not fresh generation or a cross-provider billing equivalent.",
+            "source": "claude/monitor/status.json",
+            "status": "recorded"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "label": "Final model and limitations",
+          "path": "claude/README.md"
+        },
+        {
+          "label": "Selected reference summary",
+          "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2.json"
+        },
+        {
+          "label": "Reference configuration",
+          "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/cfg.txt"
+        },
+        {
+          "label": "Solver source",
+          "path": "claude/src/mhd/helio.cu"
+        },
+        {
+          "label": "Remote-sensing provenance",
+          "path": "claude/data/remote_sensing_memo.md"
+        },
+        {
+          "label": "Literature benchmark definitions",
+          "path": "claude/ref/literature_benchmarks.md"
+        },
+        {
+          "label": "Final monitor",
+          "path": "claude/monitor/status.json"
+        },
+        {
+          "label": "Completed solver accounting",
+          "path": "claude/monitor/gpu_accounting.json"
+        },
+        {
+          "label": "Wiengarten et al. MHD CIR benchmark",
+          "url": "https://arxiv.org/abs/1406.0293"
+        },
+        {
+          "label": "Pizzo hydrodynamic stream benchmark",
+          "url": "https://ntrs.nasa.gov/api/citations/19780020088/downloads/19780020088.pdf"
+        }
+      ]
+    },
+    {
+      "id": "codex",
+      "name": "Codex",
+      "subtitle": "Athena++ CPU · HLLD + constrained transport",
+      "status": "Archived CT reference",
+      "summary": "Codex uses a double-precision Athena++ solver with staggered constrained transport, a calibrated rotating boundary and compatible edge electric fields. The selected reference passes the recorded numerical criteria. Spacecraft comparisons retain substantial timing and proton-flux residuals.",
+      "selection": {
+        "reference": "ct156_w30_theta40_phi192",
+        "displayedSeries": "ct156_w30_theta40_phi192",
+        "animation": "ct156_w30_theta40_phi192",
+        "description": "The final reference is selected in results/reference_selection.json. The displayed curves, animation and numerical controls all use this CT implementation. Earlier GLM/Janhunen runs remain in the development archive."
+      },
+      "nativePlane": {
+        "kind": "ecliptic plane",
+        "description": "The selected CT movie samples the geometric ecliptic plane using the archived ecliptic-to-solar matrix. Physical movie epochs remain geometric UTC; the selected comet comparison curve uses photon-arrival UTC.",
+        "source": "codex/results/ct156_w30_theta40_phi192/run.cfg"
+      },
+      "sourceNativeMeans": {
+        "label": "Archived selected CT PN-GTI summary",
+        "densityCm3": 2.6633163862163998,
+        "speedKms": 485.0832594361762,
+        "heliocentricFluxCm2S": 129632642.41433248,
+        "incidentFluxCm2S": 119310003.88909604,
+        "timeConvention": "observer photon-arrival UTC at geometric Earth proxy",
+        "averagingNote": "The selected CT summary already integrates exact accepted PN intervals with endpoints on the observer-arrival clock. It should agree with the application's common integration up to interpolation and numerical rounding.",
+        "source": "codex/results/summary.json"
+      },
+      "physics": [
+        {
+          "title": "Ideal MHD with effective thermodynamics",
+          "body": "The selected model evolves three-dimensional ideal compressible MHD with solar gravity, gamma = 1.5 and a pure-hydrogen equal-electron/proton-temperature closure p = 2nₚkBTₚ. The effective gamma describes adopted thermodynamics; separate electron/proton heating, conduction and kinetic plasma effects are not resolved."
+        },
+        {
+          "title": "A divergence-consistent magnetic boundary",
+          "body": "WSA/GONG maps supply changing radial-field targets at about 0.1 AU. A full-sphere monopole removal and consumer-grid area averages define the target; interval changes are fitted with compatible edge electric fields around a Parker base. Active face-normal magnetic flux evolves through native CT. This explicit boundary closure is qualified numerically, not shown to be physically unique."
+        },
+        {
+          "title": "Ambient reference and conditional controls",
+          "body": "The final reference is ambient-only. Separate 12/24-hour cone-CME variants, field-free, frozen-map, density, speed and temperature controls are sensitivities. Several colder/gamma controls abort or fail qualification, so they cannot define an uncertainty envelope or establish thermal insensitivity."
+        }
+      ],
+      "equations": [
+        {
+          "label": "Staggered magnetic flux update",
+          "latex": "\\frac{d\\Phi_{B,f}}{dt}=-\\sum_{e\\in\\partial f}s_{fe}\\,\\mathcal E_e\\,\\ell_e,\\qquad(\\nabla\\cdot\\mathbf B)_V=\\frac{1}{V}\\sum_{f\\in\\partial V}s_{Vf}\\Phi_{B,f}",
+          "explanation": "A shared edge electric field makes neighboring face updates cancel around each volume. This is the discrete CT constraint; it does not determine whether the coronal forcing is empirically correct."
+        },
+        {
+          "label": "Selected thermal and density closure",
+          "latex": "p=2n_pk_BT_p,\\qquad n_{1\\mathrm{AU}}=\\frac{C}{v^2},\\qquad T_0=Dv^2",
+          "explanation": "The selected boundary uses C = 1,320,464.187 cm⁻³(km s⁻¹)² and D = 5.985098 K/(km s⁻¹)². Calibration sets the instrument-balanced normalization, magnetic-field scale and speed adjustment."
+        },
+        {
+          "label": "Photon-arrival comparison clock",
+          "latex": "t_{\\mathrm{arrival}}=t_{\\mathrm{emission}}+\\frac{|\\mathbf x_c(t_{\\mathrm{emission}})-\\mathbf x_\\oplus(t_{\\mathrm{arrival}})|}{c}",
+          "explanation": "The selected comet series evaluates wind and comet velocity at the same emission epoch, then labels it by photon arrival at a geometric Earth proxy. The median delay is about 938 s; spacecraft checks and movies retain physical geometric UTC."
+        }
+      ],
+      "numerics": {
+        "method": "Pinned Athena++ native double-precision HLLD transport, PLM reconstruction, SSP-RK2 and spherical finite volumes with staggered CT. The project adds boundary sampling/EMFs, physical ghost cells, probes and passive conservation audits. Four radial MeshBlocks and four OpenMP threads supply the final CPU parallelism.",
+        "grid": "156 × 40 × 192 = 1,198,080 cells; longitude 1.875°, latitude 1.5°. Selected directional refinements are checked individually.",
+        "domain": "Uniform radial mesh, 0.099985–2.30 AU; latitude ±30°; full longitude. The selected time interval is Nov 10–Dec 5, with earlier-start and wider-domain controls retained.",
+        "parameters": "Gamma 1.5; CFL 0.25; order 2; four CPU threads. Selected final fields are finite and positive, no floor activation is recorded, and final-volume weighted h|div B|/|B| ≈ 1.7×10⁻¹⁴. This final-volume audit is not a temperature proof at every earlier stage/time.",
+        "boundary": "WSA/GONG phase and map WCS share the inertial solar-pole basis with the probes. Instrument-balanced density/temperature normalizations and Br multiplier 2.357 set the nominal boundary; the tabulated speed includes a −50 km s⁻¹ correction. Compatible surface edge electric fields enforce the prescribed evolving Br target."
+      },
+      "calibration": {
+        "body": "STEREO-A and Solar Orbiter between Nov 10 and Nov 25 calibrate normalization. Wind/OMNI is excluded from that normalization fit. Later comparisons also influenced model-family choices, so they cannot be treated as a blind test of the eventual family.",
+        "validation": "Local tests include uniform Cartesian field, radial adiabatic/gravity outflow, manufactured time-varying magnetic targets, map-knot behavior and strict floor-abort negative controls. Selected longitude, latitude and radial pairs pass pointwise and separate PN mean/frame/integral criteria. A linked 1D Brio–Wu literature plateau check uses PPM/SSPRK3, distinct from production PLM/SSPRK2.",
+        "limitations": "Selected post-calibration STEREO-A proton-flux correlation is approximately −0.09 with median absolute fractional error 45%, and the fixed 600 km s⁻¹ crossing is 32 hours late. Passing numerical criteria cannot remove those timing/amplitude residuals or supply a calibrated comet prediction interval."
+      },
+      "findings": [
+        "The selected PN incident-flux estimate is about three times the compared CCMC ambient/CME estimate. Spacecraft timing and amplitude residuals remain large, limiting confidence in its accuracy at the comet.",
+        "The selected proton-flux evolution is much smoother than the X-ray light curve: the native eight-frame incident-flux dynamic range is 1.45 versus an observed count-rate range of 7.87; native Pearson r ≈ 0.28.",
+        "Qualified hotter, denser and faster boundary scenarios change coarse-grid PN incident-flux means by roughly +54%, +37% and +31%. This substantial closure dependence is separate from selected-grid numerical convergence."
+      ],
+      "caveats": [
+        "Earlier GLM/Janhunen curves, movies and fixed-method flags are superseded; they do not qualify the selected CT model.",
+        "Half-temperature and unretuned gamma = 5/3 attempts, including half-CFL retries, abort before the observation. No XMM flux is extrapolated from them.",
+        "Low-density and slower-boundary controls complete but fail the local boundary-energy-work criterion. Their raw curves are unqualified diagnostics.",
+        "A 2.85 AU extension passes at matched spacing; two 3.125 AU attempts fail with negative pressure. The successful moderate extension does not validate the failed larger domain.",
+        "The 32→40 latitude refinement is only a factor 1.25. Small finite differences are weaker evidence than an established asymptotic error bound; most controls are on coarser recorded meshes.",
+        "The calculation omits contemporaneous heavy-ion composition, the coma, mass loading and charge-exchange emission. The scenario range measures sensitivity to the selected inputs; it has no calibrated probability coverage."
+      ],
+      "resources": {
+        "rows": [
+          {
+            "label": "Project elapsed time",
+            "value": 7.864275811182128,
+            "unit": "h",
+            "scope": "Monitor start to last sample at 2026-10-17 06:26:06 UTC.",
+            "source": "codex/monitoring/summary.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Reference solver wall time",
+            "value": 3819.48199650296,
+            "unit": "s",
+            "scope": "Selected CT reference, four CPU threads, CPU backend; includes input handling.",
+            "source": "codex/results/ct156_w30_theta40_phi192/runner_usage.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Reference CPU core time",
+            "value": 2.7255888888888893,
+            "unit": "core h",
+            "scope": "GNU time user+system CPU for the selected native process.",
+            "source": "codex/results/ct156_w30_theta40_phi192/runner_usage.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Recorded CT campaign CPU",
+            "value": 14.151086111111113,
+            "unit": "core h",
+            "scope": "Current-case receipts including recorded failed attempts; excludes archived attempts, builds, pilots, tests, and historical GLM.",
+            "source": "codex/monitoring/summary.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Reference peak native RSS",
+            "value": 964.70703125,
+            "unit": "MiB",
+            "scope": "GNU time native-process peak RSS. Process-tree sampled peak is a separate diagnostic.",
+            "source": "codex/results/ct156_w30_theta40_phi192/runner_usage.json",
+            "status": "recorded"
+          },
+          {
+            "label": "Reference GPU time",
+            "value": 0,
+            "unit": "h",
+            "scope": "Selected native CT backend is CPU-only. Earlier GLM development used CUDA; no all-project GPU total is claimed.",
+            "source": "codex/README.txt",
+            "status": "recorded"
+          },
+          {
+            "label": "Tool-reported goal tokens",
+            "value": 10800626,
+            "unit": "tokens",
+            "scope": "Goal-counter snapshot at 2026-10-17 06:25:46 UTC; not a provider billing or fresh/cache token audit.",
+            "source": "codex/monitoring/summary.json",
+            "status": "recorded"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "label": "Final model guide",
+          "path": "codex/README.txt"
+        },
+        {
+          "label": "Final report",
+          "path": "codex/report.html"
+        },
+        {
+          "label": "Explicit final selection",
+          "path": "codex/results/reference_selection.json"
+        },
+        {
+          "label": "Selected run configuration",
+          "path": "codex/results/ct156_w30_theta40_phi192/run.cfg"
+        },
+        {
+          "label": "Reference resource receipt",
+          "path": "codex/results/ct156_w30_theta40_phi192/runner_usage.json"
+        },
+        {
+          "label": "Registered numerical comparisons",
+          "path": "codex/validation/ct_convergence_summary.json"
+        },
+        {
+          "label": "Light-curve comparison",
+          "path": "codex/validation/manuscript_benchmark.json"
+        },
+        {
+          "label": "Final accounting and limits",
+          "path": "codex/monitoring/summary.json"
+        },
+        {
+          "label": "Athena++ pinned upstream",
+          "url": "https://github.com/PrincetonUniversity/athena/tree/e47fabb7dd5efb22e1e2c7ff193148d723e3e952"
+        },
+        {
+          "label": "Stone et al. Athena++ methods",
+          "url": "https://arxiv.org/abs/2005.06651"
+        },
+        {
+          "label": "Miyoshi & Kusano HLLD method",
+          "url": "https://www.sciencedirect.com/science/article/pii/S0021999105001142"
+        },
+        {
+          "label": "Dao & Nazarov Brio–Wu plateau comparison",
+          "url": "https://arxiv.org/html/2206.09568v2#S4.T1"
+        }
+      ]
+    }
+  ],
+  "resourceComparison": {
+    "columns": [
+      {
+        "key": "metric",
+        "label": "Recorded quantity"
+      },
+      {
+        "key": "argon",
+        "label": "Argon"
+      },
+      {
+        "key": "claude",
+        "label": "Claude"
+      },
+      {
+        "key": "codex",
+        "label": "Codex"
+      },
+      {
+        "key": "unit",
+        "label": "Unit"
+      },
+      {
+        "key": "scope",
+        "label": "Scope / interpretation"
+      }
+    ],
+    "rows": [
+      {
+        "metric": "Project elapsed",
+        "unit": "h",
+        "argon": 1.345,
+        "claude": 4.704,
+        "codex": 7.864,
+        "scope": "Different project scopes; each value ends at its own final monitoring snapshot."
+      },
+      {
+        "metric": "Reference solver wall",
+        "unit": "s",
+        "argon": 164.114,
+        "claude": 3378.102,
+        "codex": 3819.482,
+        "scope": "Fine selected runs only. GPU/CPU backends, grid sizes, step counts, forcing and contention differ; these values are not a performance ranking."
+      },
+      {
+        "metric": "Reference cells",
+        "unit": "cells",
+        "argon": 2580480,
+        "claude": 22118400,
+        "codex": 1198080,
+        "scope": "Spatial cell count alone does not describe numerical work or accuracy."
+      },
+      {
+        "metric": "Reference backend",
+        "unit": "",
+        "argon": "CUDA GPU / float32",
+        "claude": "CUDA GPU / float32",
+        "codex": "4-thread CPU / float64",
+        "scope": "Shared RTX 4080 SUPER for GPU runs; Codex final CT uses the CPU."
+      },
+      {
+        "metric": "Attributed CPU",
+        "unit": "core h",
+        "argon": null,
+        "claude": 25.119,
+        "codex": 14.151,
+        "scope": "Claude monitor project estimate; Codex current CT receipt subtotal including failures, not all-project CPU. Argon unrecorded."
+      },
+      {
+        "metric": "Reference peak host RSS",
+        "unit": "MiB",
+        "argon": null,
+        "claude": null,
+        "codex": 964.71,
+        "scope": "Only Codex has a reference GNU-time peak receipt. Missing values are unknown, not zero."
+      },
+      {
+        "metric": "Reference device allocation",
+        "unit": "GB",
+        "argon": null,
+        "claude": 3.83,
+        "codex": 0,
+        "scope": "Claude startup allocation, not whole-device peak. Argon unrecorded. Zero means CPU-only for Codex final reference."
+      },
+      {
+        "metric": "Fresh / uncached+output tokens",
+        "unit": "tokens",
+        "argon": 1052029,
+        "claude": 5247690,
+        "codex": null,
+        "scope": "Argon input+output; Claude input+cache-write+output. Provider/accounting definitions differ; Codex goal counter does not separate fresh/cache."
+      },
+      {
+        "metric": "Cache-read tokens",
+        "unit": "tokens",
+        "argon": 16332077,
+        "claude": 346853073,
+        "codex": null,
+        "scope": "Repeated cached-context reads; not comparable to newly generated tokens or billable cost without provider rates."
+      },
+      {
+        "metric": "Tool-reported goal tokens",
+        "unit": "tokens",
+        "argon": null,
+        "claude": null,
+        "codex": 10800626,
+        "scope": "Codex tool snapshot only; not a provider usage invoice and not the same definition as the other agents' transcript-derived counters."
+      }
+    ],
+    "notes": [
+      "The recorded runtimes cover the original workloads, including hardware contention. A common workload was not executed for this application, so relative solver throughput cannot be inferred.",
+      "Concurrent solver wall times must not be added to infer elapsed project time or exclusive GPU-hours.",
+      "System-wide RAM, GPU utilization and VRAM samples include other concurrent work and cannot be attributed to a model.",
+      "Token counters have different definitions and coverage. Cached context, fresh tokens and tool-reported goal tokens are displayed separately; no dollar-cost comparison is inferred."
+    ]
+  },
+  "sourceDiscrepancies": [
+    {
+      "model": "argon",
+      "issue": "The report says the Wind holdout speed RMSE is 67.3 km s⁻¹ with r = 0.728; the machine-readable summary records 95.4305 km s⁻¹ with r = 0.691858. Several other native spacecraft/window numbers also differ.",
+      "evidence": [
+        "argon/REPORT.md",
+        "argon/outputs/summary_results.json"
+      ],
+      "policy": "Use source-series recomputation or labeled machine-readable metrics; do not silently repeat the prose as final numeric truth."
+    },
+    {
+      "model": "argon",
+      "issue": "The report describes dynamic WSA maps, a generalized-minmod limiter and Rusanov/HLL transport. The actual preparation code produces one time-weighted 2D rotating map, while the solver uses an MC limiter and HLL flux with a GLM sub-solve.",
+      "evidence": [
+        "argon/scripts/prepare_inputs.py",
+        "argon/src/heliomhd3d.cu",
+        "argon/REPORT.md"
+      ],
+      "policy": "Describe the actual implementation, and keep the original report accessible as a historical artifact."
+    },
+    {
+      "model": "argon",
+      "issue": "The X-ray narrative states an early 4.28 ± 0.01 count s⁻¹ point and implies a sufficient explanation of emission. The archived frame record used by Codex gives 4.28868696 ± 0.03659342 count s⁻¹; proton flux alone cannot determine X-ray brightness.",
+      "evidence": [
+        "argon/REPORT.md",
+        "codex/validation/manuscript_benchmark.json"
+      ],
+      "policy": "Render the numeric observation record with its uncertainty and present model correspondence as a diagnostic, not a unique emission explanation."
+    },
+    {
+      "model": "codex",
+      "issue": "Custom GLM/Janhunen development artifacts coexist with the final Athena++ CT model. Their convergence flags and GPU usage describe a different formulation.",
+      "evidence": [
+        "codex/README.txt",
+        "codex/results/reference_selection.json"
+      ],
+      "policy": "Use the explicit selected CT case; retain older work only in its historical context."
+    }
+  ],
+  "provenance": [
+    {
+      "path": "argon/REPORT.md",
+      "bytes": 38365,
+      "sha256": "b3d0385c161d0da9bebed56c41c8661b00ea5d60b9eed85970b506ba586b4993"
+    },
+    {
+      "path": "argon/monitor_history.jsonl",
+      "bytes": 69157,
+      "sha256": "f2c57ca2a3b58d9d5382a7250540379b69b5d3c601e9b55f62ff2e60cda72c43"
+    },
+    {
+      "path": "argon/monitor_status.json",
+      "bytes": 8244,
+      "sha256": "39e73d837f54b57b71499816a11d884cc7ae483a202849d5ca0c6a98a512ec5c"
+    },
+    {
+      "path": "argon/outputs/runs/model3_assimilated_run_meta.json",
+      "bytes": 305,
+      "sha256": "3e4ed3c30ed10068d5b3ddb475ac60a644e7ab88ea798dbc1368e4c08783fdd9"
+    },
+    {
+      "path": "argon/outputs/runs/res_fine_224x48x240_run_meta.json",
+      "bytes": 304,
+      "sha256": "91455327db53e160868bce573e475dcfc2361662a11dddec9d5270da8e707e78"
+    },
+    {
+      "path": "argon/outputs/summary_results.json",
+      "bytes": 46506,
+      "sha256": "ac0894b1d9644845cb4e13fad1dc6286c27b43cbfbc3c069461a0dd1947ddc6e"
+    },
+    {
+      "path": "argon/scripts/prepare_inputs.py",
+      "bytes": 28273,
+      "sha256": "5607cb090062a2db7f7406d167a4f58b5e6db492132ee9461f1a7cb972926f11"
+    },
+    {
+      "path": "argon/scripts/run_mhd_suite.sh",
+      "bytes": 4075,
+      "sha256": "c3f527e3e9d5d115444f13a4dd03e11f31d6b472bb87fd9e653dd76e6a585100"
+    },
+    {
+      "path": "argon/src/heliomhd3d.cu",
+      "bytes": 58449,
+      "sha256": "d8ba4b9ddfa740e3a1e726d873ae19c57247c5b3260cf21d7c2332c0f9ace34f"
+    },
+    {
+      "path": "claude/README.md",
+      "bytes": 18230,
+      "sha256": "b0743958806d494e57c14860e8761d801b97537c247fe8d2a63cfe3ad8141249"
+    },
+    {
+      "path": "claude/data/remote_sensing_memo.md",
+      "bytes": 24405,
+      "sha256": "03ea2e55b71da9654b904937b10ff72ed4c9b7ff5e90b952fa01ae3b1a09b675"
+    },
+    {
+      "path": "claude/monitor/gpu_accounting.json",
+      "bytes": 101,
+      "sha256": "488805b8f38955a131264e6064b9802791ef326282cb9045ff2f026d45275cb2"
+    },
+    {
+      "path": "claude/monitor/status.json",
+      "bytes": 863,
+      "sha256": "ba326a0b0e82e2586f1eaad7257b986088fbaa43eaa21ee5b4c21d281253678b"
+    },
+    {
+      "path": "claude/ref/literature_benchmarks.md",
+      "bytes": 46843,
+      "sha256": "afbfe65bb8958c7530f6d1fea70bc2a2439aa9e25ed2d7abacd89485f49231e3"
+    },
+    {
+      "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2.json",
+      "bytes": 2615,
+      "sha256": "93c20112a25b24743da9c9b91be41ca676dea4f824ea6264b1f4fe24ee544863"
+    },
+    {
+      "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/cfg.txt",
+      "bytes": 1086,
+      "sha256": "f1ef5bbe5f8adeb44400cc3530573d77a90797bb26fadbd81b3b195207df1615"
+    },
+    {
+      "path": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/stdout.txt",
+      "bytes": 7629,
+      "sha256": "0a4a9dacb66157ed4bd24182380d20f5fb70bfb2f9074e8449407e9961f9c280"
+    },
+    {
+      "path": "claude/src/mhd/helio.cu",
+      "bytes": 49641,
+      "sha256": "824fdb6ed9353cf03b5fbf383b4066b2cb225fe8114c9dcf4e280637639c9b71"
+    },
+    {
+      "path": "codex/README.txt",
+      "bytes": 13533,
+      "sha256": "e4ac3775af60b5fb934a971df90e9f11c49e4b00e992a0264d49672e270e1f7d"
+    },
+    {
+      "path": "codex/monitoring/summary.json",
+      "bytes": 13775,
+      "sha256": "63a6f416c226277f2c4224a4013ae5abc43b817e8b069865bc8587be19822d77"
+    },
+    {
+      "path": "codex/report.html",
+      "bytes": 287653,
+      "sha256": "0cb5f757d410293a2f9359d3c8ca78d41dd98b67db737cfd69bd94649242bd56"
+    },
+    {
+      "path": "codex/results/ct156_w30_theta40_phi192/run.cfg",
+      "bytes": 1137,
+      "sha256": "88cc0586367b9ad0046075747b5ebacc524884324867e5858b22b28f29689cf4"
+    },
+    {
+      "path": "codex/results/ct156_w30_theta40_phi192/runner_usage.json",
+      "bytes": 1442,
+      "sha256": "3b40373b9343eb04fa552a4fd9d0c456f7de9bc26426bc0dc80d8910421b3af3"
+    },
+    {
+      "path": "codex/results/reference_selection.json",
+      "bytes": 3025,
+      "sha256": "15cac3b538593085c0ed92ae83178bd585b4c123a1e96b27f6212ffed872738e"
+    },
+    {
+      "path": "codex/results/summary.json",
+      "bytes": 221045,
+      "sha256": "a93f9d4413bcd2fe2f1724785c9cfed9ba644c71c38ae9f3f99103099ce86992"
+    },
+    {
+      "path": "codex/validation/ct_convergence_summary.json",
+      "bytes": 111504,
+      "sha256": "27356eb06ca3b6d92a6be361c8adb286d10c6d09b5b2ddbcc168be782c2ebb0e"
+    },
+    {
+      "path": "codex/validation/manuscript_benchmark.json",
+      "bytes": 3729,
+      "sha256": "6fca0de4f9a7f28e3b2badfab358f47cf8010e27eb53d6f684f68e54d8a07f0b"
+    }
+  ]
+}

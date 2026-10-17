@@ -1,0 +1,28 @@
+test_actual_native_support_and_clock (test_animation.Animation.test_actual_native_support_and_clock) ... ok
+test_encoded_colour_matches_native_physical_interpolation (test_animation.Animation.test_encoded_colour_matches_native_physical_interpolation) ... ok
+test_encoded_media (test_animation.Animation.test_encoded_media) ... ok
+test_native_source_receipts (test_animation.Animation.test_native_source_receipts) ... ok
+test_portable_colours_against_native_fields (test_animation.Animation.test_portable_colours_against_native_fields) ... ok
+test_portable_frame_sequence (test_animation.Animation.test_portable_frame_sequence) ... ok
+test_animation_shared_shape_time_and_missing_mask (test_science.ScienceIntegrity.test_animation_shared_shape_time_and_missing_mask) ... ok
+test_argon_and_claude_native_means_retained_with_qualifications (test_science.ScienceIntegrity.test_argon_and_claude_native_means_retained_with_qualifications) ... ok
+test_argon_native_constant_latitude_projection (test_science.ScienceIntegrity.test_argon_native_constant_latitude_projection) ... ok
+test_codex_arrival_clock_has_positive_geometric_delay (test_science.ScienceIntegrity.test_codex_arrival_clock_has_positive_geometric_delay) ... ok
+test_comet_physical_flux_units (test_science.ScienceIntegrity.test_comet_physical_flux_units) ... ok
+test_common_gti_normalizations_and_correlations (test_science.ScienceIntegrity.test_common_gti_normalizations_and_correlations) ... ok
+test_encoded_ct_frame_matches_native_flux_and_orientation (test_science.ScienceIntegrity.test_encoded_ct_frame_matches_native_flux_and_orientation) ... ok
+test_equal_spacecraft_metric_samples_and_rmse_recomputation (test_science.ScienceIntegrity.test_equal_spacecraft_metric_samples_and_rmse_recomputation) ... ok
+test_final_ct_means_match_native_selected_report (test_science.ScienceIntegrity.test_final_ct_means_match_native_selected_report) ... ok
+test_lightcurve_has_exact_native_frames_rates_and_errors (test_science.ScienceIntegrity.test_lightcurve_has_exact_native_frames_rates_and_errors) ... ok
+test_provenance_all_generated_source_hashes_still_match (test_science.ScienceIntegrity.test_provenance_all_generated_source_hashes_still_match) ... ok
+test_gzip_and_private_paths (test_serve.MediaServing.test_gzip_and_private_paths) ... ok
+test_head_and_etag_revalidation (test_serve.MediaServing.test_head_and_etag_revalidation) ... ok
+test_invalid_ranges (test_serve.MediaServing.test_invalid_ranges) ... ok
+test_middle_and_open_ended_seek (test_serve.MediaServing.test_middle_and_open_ended_seek) ... ok
+test_safari_initial_two_byte_request (test_serve.MediaServing.test_safari_initial_two_byte_request) ... ok
+test_suffix_and_clamped_end (test_serve.MediaServing.test_suffix_and_clamped_end) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 25.645s
+
+OK

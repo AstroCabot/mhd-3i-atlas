@@ -1,0 +1,9 @@
+PASS Three panels preload and decode genuine 768px fields without native video APIs
+PASS Physical clock and crossfade advance continuously while image and SVG nodes remain persistent
+PASS Pause, synchronized scrub and decoded field swap preserve exact physical UTC
+PASS Model swap updates native support and heading while preserving the epoch
+PASS Playback speed and finite-interval restart preserve decoded display layers
+PASS Destroy releases image layers, controls, observers and animation loop
+PASS Reduced-motion preference pauses initial display
+PASS Empty routes and aborted manifest requests mount no stale field player
+PASS No browser JavaScript errors

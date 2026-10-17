@@ -1,0 +1,16 @@
+test_animation_shared_shape_time_and_missing_mask (test_science.ScienceIntegrity.test_animation_shared_shape_time_and_missing_mask) ... ok
+test_argon_and_claude_native_means_retained_with_qualifications (test_science.ScienceIntegrity.test_argon_and_claude_native_means_retained_with_qualifications) ... ok
+test_argon_native_constant_latitude_projection (test_science.ScienceIntegrity.test_argon_native_constant_latitude_projection) ... ok
+test_codex_arrival_clock_has_positive_geometric_delay (test_science.ScienceIntegrity.test_codex_arrival_clock_has_positive_geometric_delay) ... ok
+test_comet_physical_flux_units (test_science.ScienceIntegrity.test_comet_physical_flux_units) ... ok
+test_common_gti_normalizations_and_correlations (test_science.ScienceIntegrity.test_common_gti_normalizations_and_correlations) ... ok
+test_encoded_ct_frame_matches_native_flux_and_orientation (test_science.ScienceIntegrity.test_encoded_ct_frame_matches_native_flux_and_orientation) ... ok
+test_equal_spacecraft_metric_samples_and_rmse_recomputation (test_science.ScienceIntegrity.test_equal_spacecraft_metric_samples_and_rmse_recomputation) ... ok
+test_final_ct_means_match_native_selected_report (test_science.ScienceIntegrity.test_final_ct_means_match_native_selected_report) ... ok
+test_lightcurve_has_exact_native_frames_rates_and_errors (test_science.ScienceIntegrity.test_lightcurve_has_exact_native_frames_rates_and_errors) ... ok
+test_provenance_all_generated_source_hashes_still_match (test_science.ScienceIntegrity.test_provenance_all_generated_source_hashes_still_match) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 3.436s
+
+OK

@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "date": "2026-10-17T16:18:35.028Z",
+  "results": [
+    {
+      "prefix": "/",
+      "passed": true,
+      "requests": 70,
+      "checks": [
+        "eight views",
+        "768 px images and field switching",
+        "six video downloads",
+        "equations and local fonts",
+        "data and methods downloads",
+        "transcript chunks, search and notes",
+        "hash deep-link reload",
+        "no escaped-prefix requests"
+      ]
+    },
+    {
+      "prefix": "/example-repo/",
+      "passed": true,
+      "requests": 70,
+      "checks": [
+        "eight views",
+        "768 px images and field switching",
+        "six video downloads",
+        "equations and local fonts",
+        "data and methods downloads",
+        "transcript chunks, search and notes",
+        "hash deep-link reload",
+        "no escaped-prefix requests"
+      ]
+    }
+  ]
+}

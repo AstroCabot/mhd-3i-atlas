@@ -1,0 +1,127 @@
+# 3I/ATLAS — Comparative solar-wind MHD
+
+This application compares the selected Argon, Codex and Claude reconstructions of the solar wind incident on 3I/ATLAS during XMM–Newton observation 0963720201. The original `../mhd_llm` directory is read-only. Packaging and presentation changes do not run an MHD solver.
+
+## Open from a Mac
+
+The application runs in WSL on port **8080**, in tmux session `helios_dashboard`. If your SSH connection logs into **Windows**, forward to WSL’s current address:
+
+```bash
+ssh -N -T -o ExitOnForwardFailure=yes \
+  -L 127.0.0.1:8080:172.24.73.84:8080 cabot@TORCH
+```
+
+Use your actual Windows SSH username and reachable hostname/IP in place of `cabot@TORCH` where necessary. Leave that terminal open, then run on your Mac:
+
+```bash
+open http://127.0.0.1:8080
+```
+
+After a WSL restart, obtain its current address in Windows PowerShell with `wsl hostname -I` and update the forwarding target. If your usual SSH connection logs directly into **WSL**, keep that SSH destination and forward to `127.0.0.1:8080` instead. VS Code Remote users may forward port 8080 in the Ports panel.
+
+```bash
+# In WSL:
+curl http://127.0.0.1:8080/health
+tmux attach -t helios_dashboard
+# Manual start if needed:
+python scripts/serve.py --host 0.0.0.0 --port 8080
+```
+
+Python 3.10+ serves the packaged application. Fonts, equations, charts, fields and transcripts are local; the running site needs no API keys, CDN, Node server or access to the original research directory. The server supports byte ranges and HEAD requests for the downloadable MP4s.
+
+## Publish on GitHub Pages
+
+The app supports both account-root and repository-prefixed GitHub Pages URLs. The included [deployment workflow](.github/workflows/pages.yml) packages the precomputed assets with Python and publishes them on pushes to `main`. Follow the [publishing instructions](docs/github-pages.md) to connect from your Mac to WSL, authenticate your personal GitHub account, create the repository and enable **Settings → Pages → Source → GitHub Actions**. No repository has been created or published automatically.
+
+## Revision and independent audits
+
+The revised presentation follows the numbered scientific sections, TeX Gyre Schola typography, ruled figures and restrained colour use of the [Henyey source site](https://oklo.github.io/Henyey/source.html). Its prose identifies quantities, methods and limitations directly. The layout removes the large introductory banner and promotional cards and uses larger chart labels, compact tables and figure captions.
+
+Three independent reviews cover prose, layout and animation:
+
+- `docs/editorial-audit.md`: online style references, all eight views, model prose and the rendered-copy review. Original transcript and shared-note text remains verbatim.
+- `docs/layout-audit.md`: reference inspection, layout measurements, typography and viewport review.
+- `docs/animation-audit.md`: archived spatial/time support, interpolation, player behaviour and numerical checks.
+
+The original 128², six-hour, stepwise image display has been replaced with 768² fields rendered directly from the native binary/NPY slices. The portable player uses 373 native-derived display epochs per field at 30-minute spacing, persistent predecoded image layers and continuous display interpolation. It preserves the previous decoded field until the next is ready. The 2,238 WebP frames occupy 42.5 MB and are fetched as needed. It does not recreate the SVG or remove the visible image on each frame. The six 30 fps, 48-second H.264 videos remain available as standalone exports.
+
+**Physical resolution remains limited by the archive.** Argon retains 160×180 radial/longitude samples at about three-hour cadence, Claude 320×360 at three hours, and Codex a 512² interpolation of its native CT grid at about six hours. Higher display resolution and interpolation do not create new physical information. All three retain the same geometric-UTC clock, projected extent, colour scales and source-specific sampling qualifications.
+
+## Application views
+
+1. **Overview:** incident-flux curves, common exposure-weighted density/speed/flux table and selected solver configurations.
+2. **Solar wind:** synchronized field playback, continuous scrubber, field selection, full-screen view and comet time series.
+3. **Verification:** native benchmark profiles, convergence curves and registered numerical controls.
+4. **Observations:** common hourly spacecraft samples/residual masks, WSA boundary map and coronal-replication evidence.
+5. **X-ray comparison:** eight measured PN rates with uncertainties, common exposure matching, arrival-clock normalization and native/report mean reconciliation.
+6. **Research record:** 18 sessions, 16,745 paginated entries, full-session term search, 85 shared notes and recorded agent settings. Encrypted material is marked unavailable; credential patterns are redacted.
+7. **Model physics:** precompiled LaTeX/MathML equations, formulations, boundary conditions, calibration and limitations.
+8. **Resources and provenance:** scoped CPU/GPU/token accounting, source discrepancies and SHA-256 receipts.
+
+## Source organisation
+
+```text
+src/app.js                     routes, scientific tables and SVG charts
+src/solar-player.js            persistent field player and synchronized controls
+src/site-paths.js              asset URLs for root and repository-prefixed hosting
+src/styles.css                 responsive scientific typography and layout
+public/data/                   science, models, session chunks and animation manifest
+public/assets/animation-v2/     native-derived high-resolution playback products
+scripts/build_science.py        common science extraction, no solver reruns
+scripts/build_models.py         model descriptions and source receipts
+scripts/build_transcripts.py    allowlisted session and shared-note extraction
+scripts/build_animation_v2.py   direct native-slice rendering
+scripts/compile_math.mjs        build-time KaTeX compilation to HTML/MathML
+scripts/build_app.py            incremental standalone packaging and asset checks
+scripts/serve.py                static server with gzip, byte ranges and health endpoint
+tests/                         scientific, media-server and browser checks
+```
+
+For presentation-only changes:
+
+```bash
+python scripts/build_app.py
+```
+
+The existing server serves updated files; reload the browser. The index uses content-versioned script/style URLs and the server revalidates application files. Changing typography or layout does not rerun scientific analysis. A staging build can be served separately:
+
+```bash
+python scripts/build_app.py --output runtime/review
+python scripts/serve.py --directory runtime/review --port 8081
+```
+
+To regenerate source-derived products:
+
+```bash
+python -m pip install -r requirements-analysis.txt
+python scripts/build_models.py
+python scripts/build_science.py
+python scripts/apply_editorial_metadata.py --input public/data/science.json
+python scripts/build_transcripts.py
+python scripts/build_animation_v2.py
+node scripts/compile_math.mjs
+python scripts/build_app.py
+```
+
+Animation rendering also needs ffmpeg. Transcript extraction needs the identified local session logs under `~/.codex`, `~/.claude` and `~/.gemini/antigravity-cli`. The packaged site works without those originals. The extraction allowlist excludes the application-building conversation and unrelated sessions.
+
+## Verification
+
+```bash
+python -m unittest discover -s tests -p 'test_*.py' -v
+# Browser tests require Node 22.12+ and the browser matching this Playwright version:
+npm ci
+PLAYWRIGHT_SKIP_BROWSER_GC=1 npx playwright install chromium
+npm test
+node tests/solar-player.mjs
+```
+
+`TEST_URL` selects a different serving address. `CHROMIUM_PATH` is an optional browser executable override; use the installed matching browser unless diagnosing the host. Browser checks cover navigation, model/spacecraft selection, math, source archives, exports and mobile layout. Playback checks additionally examine decoded fields, clock advancement, seeking, synchronization and persistence of the image/SVG elements. Scientific checks compare native outputs, flux units, PN exposures, light-time conversion, resampling and source hashes.
+
+## Scientific conventions
+
+Comet plots use photon-arrival UTC at the geometric Earth proxy. Spatial playback and spacecraft data use geometric UTC. Exact native piecewise-linear samples and accepted GTI endpoints determine tabulated means; display resampling does not determine metrics. Missing values remain masked.
+
+Argon’s retained movie samples a constant solar-latitude −6.455° cone. Claude/Codex sample the ecliptic. Each available surface is projected into J2000 ecliptic x/y; a scalar slice cannot supply the missing three-dimensional field. Claude supplies the radial proxy nₚvᵣ, while Argon/Codex supply nₚ|v|. Argon’s fine run supplies the quantitative comet comparison and its baseline supplies the retained movie.
+
+Resource counters keep their recorded scopes. Cached API traffic, fresh tokens and tool-reported goal tokens have different meanings. Missing counters are unknown. The comparisons do not determine absolute X-ray brightness, monetary cost or solver performance on a common workload.

@@ -1,0 +1,11 @@
+test_actual_native_support_and_clock (__main__.Animation.test_actual_native_support_and_clock) ... ok
+test_encoded_colour_matches_native_physical_interpolation (__main__.Animation.test_encoded_colour_matches_native_physical_interpolation) ... ok
+test_encoded_media (__main__.Animation.test_encoded_media) ... ok
+test_native_source_receipts (__main__.Animation.test_native_source_receipts) ... ok
+test_portable_colours_against_native_fields (__main__.Animation.test_portable_colours_against_native_fields) ... ok
+test_portable_frame_sequence (__main__.Animation.test_portable_frame_sequence) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 22.615s
+
+OK

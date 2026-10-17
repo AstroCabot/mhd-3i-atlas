@@ -1,0 +1,1669 @@
+{
+  "schemaVersion": 1,
+  "renderer": "scripts/render_frames.py",
+  "rendererSha256": "9f501304a2ec6d92757c65b1899d70b225000b48f1e842cee13e3c49002416da",
+  "width": 128,
+  "height": 128,
+  "palette": [
+    [
+      21,
+      40,
+      73
+    ],
+    [
+      58,
+      54,
+      116
+    ],
+    [
+      158,
+      71,
+      118
+    ],
+    [
+      224,
+      132,
+      89
+    ],
+    [
+      245,
+      221,
+      143
+    ]
+  ],
+  "paletteInterpolation": "linear RGB between uniformly spaced logarithmic color stops",
+  "alpha": 205,
+  "transparentCode": 0,
+  "rowOrder": "North at top; encoded science rows reversed",
+  "timeMjd": [
+    61006.25,
+    61006.5,
+    61006.75,
+    61007.0,
+    61007.25,
+    61007.5,
+    61007.75,
+    61008.0,
+    61008.25,
+    61008.5,
+    61008.75,
+    61009.0,
+    61009.25,
+    61009.5,
+    61009.75,
+    61010.0,
+    61010.25,
+    61010.5,
+    61010.75,
+    61011.0,
+    61011.25,
+    61011.5,
+    61011.75,
+    61012.0,
+    61012.25,
+    61012.5,
+    61012.75,
+    61013.0,
+    61013.25,
+    61013.5,
+    61013.75,
+    61014.0
+  ],
+  "extentAu": [
+    -2.4,
+    2.4,
+    -2.4,
+    2.4
+  ],
+  "limits": {
+    "flux": [
+      10000000.0,
+      30000000000.0
+    ],
+    "contrast": [
+      10000000.0,
+      2000000000.0
+    ]
+  },
+  "sourceHashes": {
+    "data/science.json": "10c30887435beaf784bcf16b2fa4793e2bcec0b9e88e8e9ad1a81d478d12e1fc",
+    "data/solarwind-argon.json": "6563af7a1209a7921bdea79ce783713edbd21722530f9ce655b686b30d22eb73",
+    "data/solarwind-codex.json": "3fdf0335479ceed84b00c4e84cc7c59ef916a94ac2f66f83843815527bde29d2",
+    "data/solarwind-claude.json": "e6f800d5622a305e953a52d93b21422939051d8df55900761727ca2e4966ba17"
+  },
+  "models": {
+    "argon": {
+      "nativePlane": "Constant solar latitude −6.455° (conical shell), projected to J2000 ecliptic x/y",
+      "definition": "n_p |v|, heliocentric bulk proton flux",
+      "fields": {
+        "flux": [
+          {
+            "url": "/assets/frames/argon/flux-00.png",
+            "frame": 0,
+            "timeMjd": 61006.25,
+            "bytes": 10685,
+            "sha256": "c855a24854f31c317f016b6781f119d0362c5549c34cf8c2d0d29f929213606e",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-01.png",
+            "frame": 1,
+            "timeMjd": 61006.5,
+            "bytes": 10698,
+            "sha256": "171c3dfc3cf3e106c4f22b732e45e401c9f70474d821808b406c85e1a71d924f",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-02.png",
+            "frame": 2,
+            "timeMjd": 61006.75,
+            "bytes": 10751,
+            "sha256": "bb8783cfac4faad285e605a0cd5fa137553973ed09287f21947f623761d29c34",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-03.png",
+            "frame": 3,
+            "timeMjd": 61007.0,
+            "bytes": 10747,
+            "sha256": "4e80dfcc2e0ee3fe2be47d7387485cb669730569bad75d0ff52d0f0649418e21",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-04.png",
+            "frame": 4,
+            "timeMjd": 61007.25,
+            "bytes": 10885,
+            "sha256": "b2e672074e72f7529b9a013b5a9089df37e97433cf754106a590a577632d50ff",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-05.png",
+            "frame": 5,
+            "timeMjd": 61007.5,
+            "bytes": 10916,
+            "sha256": "20cf3035ea3b610c8ee69a2dbe7d84e1d3740d1a62f912bd3e34f2e0a1d1eaad",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-06.png",
+            "frame": 6,
+            "timeMjd": 61007.75,
+            "bytes": 10885,
+            "sha256": "d4e6e463783a50b2f2cdc4ff5b1240319c1cbefa080ed36982a0b8c400155917",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-07.png",
+            "frame": 7,
+            "timeMjd": 61008.0,
+            "bytes": 10842,
+            "sha256": "5540690e31183e7f88beb3ad9ee6d281c77aacfdfa42be60079040e12714c8a9",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-08.png",
+            "frame": 8,
+            "timeMjd": 61008.25,
+            "bytes": 10864,
+            "sha256": "8aa9461a1ab191ee8f3c728e05c0d9fc2d93d38dac4b94b7a706dbe3ef1c4a10",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-09.png",
+            "frame": 9,
+            "timeMjd": 61008.5,
+            "bytes": 10933,
+            "sha256": "98c4a26583aa9a7bc28ba0b28ab6d619346af78bd79c7ecaba8d7da891abf410",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-10.png",
+            "frame": 10,
+            "timeMjd": 61008.75,
+            "bytes": 11067,
+            "sha256": "ddaf5ea7c154b4321a3ccddafb4f58cb16d1f4030035415f58909bebfaa7e2e4",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-11.png",
+            "frame": 11,
+            "timeMjd": 61009.0,
+            "bytes": 10934,
+            "sha256": "f162a494663c2c84a3886ebdbbde0640f640434ab45b4c42f3e11e463bc132e2",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-12.png",
+            "frame": 12,
+            "timeMjd": 61009.25,
+            "bytes": 10906,
+            "sha256": "dac2c81a0252ff19c7ee89512d407a7534ef17e105c4e62e44c32a57e423ecb1",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-13.png",
+            "frame": 13,
+            "timeMjd": 61009.5,
+            "bytes": 10982,
+            "sha256": "dda0af3de48b2009665b3409dc850946699c39a4acc537a5210301bfa024c78f",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-14.png",
+            "frame": 14,
+            "timeMjd": 61009.75,
+            "bytes": 10942,
+            "sha256": "f13fc215c434c4edb98cd2efab19da9d9a8cd321fb3dfb894a773b32239b7b06",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-15.png",
+            "frame": 15,
+            "timeMjd": 61010.0,
+            "bytes": 11016,
+            "sha256": "17cda982463353df57231e1a6566fcfdeb7e01091267fc322ff14b34e71fe4df",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-16.png",
+            "frame": 16,
+            "timeMjd": 61010.25,
+            "bytes": 11008,
+            "sha256": "a08cdb9dea284b4b6f011151d5e199048f48752947c5a987a1753ea882c07f7b",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-17.png",
+            "frame": 17,
+            "timeMjd": 61010.5,
+            "bytes": 11055,
+            "sha256": "cb6f5db2efa4fee75742f25e62fe8e94d63e69980957f2e270d495bae45fe89c",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-18.png",
+            "frame": 18,
+            "timeMjd": 61010.75,
+            "bytes": 11068,
+            "sha256": "1fb3cb7af3e05a826058470bce0f8d53fbbf6f5632ab844e2d33ead9c349b9b1",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-19.png",
+            "frame": 19,
+            "timeMjd": 61011.0,
+            "bytes": 11061,
+            "sha256": "b8a2cf2c6d4a46906ec2ef592a5308dd9434ec0ef3729ad16781f162620f53d7",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-20.png",
+            "frame": 20,
+            "timeMjd": 61011.25,
+            "bytes": 11041,
+            "sha256": "793c86224589909ddd41e4a7e135721c07dc723fa81f35ad589e2b4acf6a6734",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-21.png",
+            "frame": 21,
+            "timeMjd": 61011.5,
+            "bytes": 10966,
+            "sha256": "1140f5c98e6501eb58e682009eb5eb8d351da337edf85db0d97dbf262a4d97aa",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-22.png",
+            "frame": 22,
+            "timeMjd": 61011.75,
+            "bytes": 10897,
+            "sha256": "2dd45aa01505a645aaa505af595287b1c8430d6b6a6497942ad87963b5f95e8b",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-23.png",
+            "frame": 23,
+            "timeMjd": 61012.0,
+            "bytes": 10917,
+            "sha256": "0e7bdd196604cc135c2e8ada7e569920fde971d095594d51028267ec12c4bf94",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-24.png",
+            "frame": 24,
+            "timeMjd": 61012.25,
+            "bytes": 10908,
+            "sha256": "efbc7d16aec57e31b22634d037f50b076edaff35525a80ef0a8f551a90db4697",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-25.png",
+            "frame": 25,
+            "timeMjd": 61012.5,
+            "bytes": 10818,
+            "sha256": "3d87bbb3d9204287fb9d65d820137dbc85be10361d7f76290a0040935c2a2c8c",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-26.png",
+            "frame": 26,
+            "timeMjd": 61012.75,
+            "bytes": 10812,
+            "sha256": "1396ead387b2a3f054d8af6afd288a3a6d8685ccc6adc85a092c79d0d64b50d5",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-27.png",
+            "frame": 27,
+            "timeMjd": 61013.0,
+            "bytes": 10679,
+            "sha256": "8cf446be23e1783639ebd390e6f7f42437cb0dca050e5b4af8c76409a717b1c0",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-28.png",
+            "frame": 28,
+            "timeMjd": 61013.25,
+            "bytes": 10665,
+            "sha256": "5283c2af9d3f5caf4ae21ba47c5fe354e953e70986c802380bf7ce043c6295e5",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-29.png",
+            "frame": 29,
+            "timeMjd": 61013.5,
+            "bytes": 10640,
+            "sha256": "3078bf6142550fb3cf29ccce6ce10e69490b1642abe891e6a8a7ed3ac64ea049",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-30.png",
+            "frame": 30,
+            "timeMjd": 61013.75,
+            "bytes": 10539,
+            "sha256": "37838910ff4e3dc20bc08b530bf5f4d29b9b695fc1f24fa8189e4fc29d5acacb",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/flux-31.png",
+            "frame": 31,
+            "timeMjd": 61014.0,
+            "bytes": 10518,
+            "sha256": "1aafec729cb583ed35c6d6270537e1ef04937e122c33982159825606526b2609",
+            "validPixels": 12308
+          }
+        ],
+        "contrast": [
+          {
+            "url": "/assets/frames/argon/contrast-00.png",
+            "frame": 0,
+            "timeMjd": 61006.25,
+            "bytes": 11460,
+            "sha256": "d1151fbac9daa36f9096ff5fab286ada330a68f158f818094f438e154f132f38",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-01.png",
+            "frame": 1,
+            "timeMjd": 61006.5,
+            "bytes": 11424,
+            "sha256": "04f4e7f7ca10e60a7525d408225f53c56f5769ff9124a8289622161d8f23fa5c",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-02.png",
+            "frame": 2,
+            "timeMjd": 61006.75,
+            "bytes": 11344,
+            "sha256": "5058215d8b2e68c579f08a0131a6785b111a31961b3ae60b11ad63dce9e16a18",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-03.png",
+            "frame": 3,
+            "timeMjd": 61007.0,
+            "bytes": 11333,
+            "sha256": "3b11782436ed4c264a4f5a2bf2d171456b735af9f46619b8a3a00524e4aecaf2",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-04.png",
+            "frame": 4,
+            "timeMjd": 61007.25,
+            "bytes": 11307,
+            "sha256": "e4e06d46bb785ab6700daec50994a254d61c4749a7b5d4ea0353b588aa05d716",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-05.png",
+            "frame": 5,
+            "timeMjd": 61007.5,
+            "bytes": 11175,
+            "sha256": "bd5e9acfc4a1be30e6d35a496e7851c8e7bf87f3561664517d4998ed2d240991",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-06.png",
+            "frame": 6,
+            "timeMjd": 61007.75,
+            "bytes": 11373,
+            "sha256": "d7e54fd4c20bc6a1fe205601a10f885dd079eb58c5fe39f772d6497c0afc1ccd",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-07.png",
+            "frame": 7,
+            "timeMjd": 61008.0,
+            "bytes": 11231,
+            "sha256": "e489b6b443bb23dcb2f466450a0a356c0b9506af08bea259cc609131f67e3639",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-08.png",
+            "frame": 8,
+            "timeMjd": 61008.25,
+            "bytes": 11334,
+            "sha256": "4fa782431ffc1fc85d2427bc44693350399f0b884a56f49b80d995420e578510",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-09.png",
+            "frame": 9,
+            "timeMjd": 61008.5,
+            "bytes": 11345,
+            "sha256": "c56de08c9a1dce48280a37a8d5ce34c40621388fc61c8e57b3b6e83e18fa4d3d",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-10.png",
+            "frame": 10,
+            "timeMjd": 61008.75,
+            "bytes": 11460,
+            "sha256": "0b49352b5d478d2b3b2ffd5c679c830809a799bb11606aee80a48238dafb26cf",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-11.png",
+            "frame": 11,
+            "timeMjd": 61009.0,
+            "bytes": 11418,
+            "sha256": "ac10184c00d29c85bfb05d15a1499d1f98d117b5fd343c202379e490e740b6b6",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-12.png",
+            "frame": 12,
+            "timeMjd": 61009.25,
+            "bytes": 11407,
+            "sha256": "846a4b895f90e73dae5d0bab55f6d8a30a7aa182aa6c22b0b6fa8293c0a12191",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-13.png",
+            "frame": 13,
+            "timeMjd": 61009.5,
+            "bytes": 11565,
+            "sha256": "43d24b8c170ea48ddb8221ce8ce9dc2c9b14e7845c15fd878a97d52eb2b6381f",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-14.png",
+            "frame": 14,
+            "timeMjd": 61009.75,
+            "bytes": 11493,
+            "sha256": "6ee726ee73c2e9bb93fd12411068dae10b683064a680716c0c6814ed851ed6c4",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-15.png",
+            "frame": 15,
+            "timeMjd": 61010.0,
+            "bytes": 11592,
+            "sha256": "f677840f64b06247ce04c78239683d30d4dea8d91d566ac4228c50b1290198a4",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-16.png",
+            "frame": 16,
+            "timeMjd": 61010.25,
+            "bytes": 11560,
+            "sha256": "22ff7ed7716974f99ebcae4b66cd508063ce959a73d470d8168330ff71829e7d",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-17.png",
+            "frame": 17,
+            "timeMjd": 61010.5,
+            "bytes": 11784,
+            "sha256": "ea9fd245bfe5518ff9a522fc1484fb722870b08297d41716529cc124ad8c7510",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-18.png",
+            "frame": 18,
+            "timeMjd": 61010.75,
+            "bytes": 11717,
+            "sha256": "49fe8c6f42f3fb11c690e8d5fc4ba485bbeb72366f48acc0299b77c84f14fecc",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-19.png",
+            "frame": 19,
+            "timeMjd": 61011.0,
+            "bytes": 11838,
+            "sha256": "07e7e31b9a4d136fa8dd84d79c03c4dbd1509260521816332340882458406dfc",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-20.png",
+            "frame": 20,
+            "timeMjd": 61011.25,
+            "bytes": 11772,
+            "sha256": "f91ea0390625d9cddca8fab9a0fca6aa087de3930a292a4a96b351a6538f0903",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-21.png",
+            "frame": 21,
+            "timeMjd": 61011.5,
+            "bytes": 11742,
+            "sha256": "4abfe0bcbaffd2c13df1e455134669a7de6a3ab9d3cb0edbffae8781ca93e59d",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-22.png",
+            "frame": 22,
+            "timeMjd": 61011.75,
+            "bytes": 11776,
+            "sha256": "9cc2b668709e270799754951aa298952d379e392864d2fd8c076079c283bc0cd",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-23.png",
+            "frame": 23,
+            "timeMjd": 61012.0,
+            "bytes": 11702,
+            "sha256": "303b1e4816ea6518bc6ea0ff9dd4c044e7b182952e3b64cd783c0b8b635cc206",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-24.png",
+            "frame": 24,
+            "timeMjd": 61012.25,
+            "bytes": 11714,
+            "sha256": "11a1d71b196c238c0387e0202ecfd77f1a368803097d3f6fbc78c8301a426585",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-25.png",
+            "frame": 25,
+            "timeMjd": 61012.5,
+            "bytes": 11715,
+            "sha256": "187222ccecdb14b228336b8a7ed05077afddd9760b9816d88dfc82ff40b03e93",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-26.png",
+            "frame": 26,
+            "timeMjd": 61012.75,
+            "bytes": 11692,
+            "sha256": "f6d1bc11adad49de493491fbc4843026d67e42f92817d00cba9bbee7b4e8ea54",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-27.png",
+            "frame": 27,
+            "timeMjd": 61013.0,
+            "bytes": 11628,
+            "sha256": "dfd047e1a7f8d0a03531914191abc371ec811434a6e082d55841c0b9233ef3bd",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-28.png",
+            "frame": 28,
+            "timeMjd": 61013.25,
+            "bytes": 11555,
+            "sha256": "d2323ce1d3982b239034fe34b2185f367923805c48bc7f31ab737d8ea7f0b06e",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-29.png",
+            "frame": 29,
+            "timeMjd": 61013.5,
+            "bytes": 11520,
+            "sha256": "f1b51d27997118e9bf0ee27ee8767823ee5e7827279938b023daca08ec0a7cfa",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-30.png",
+            "frame": 30,
+            "timeMjd": 61013.75,
+            "bytes": 11454,
+            "sha256": "0a1372c6443dda77377a19bdf41d5db933f79d8e96539e16799aa87dedb2be57",
+            "validPixels": 12308
+          },
+          {
+            "url": "/assets/frames/argon/contrast-31.png",
+            "frame": 31,
+            "timeMjd": 61014.0,
+            "bytes": 11370,
+            "sha256": "9c026099d8d4986df3915e78afc9d41f9caa8f3a510f1d8f917192d0d31f1f14",
+            "validPixels": 12308
+          }
+        ]
+      }
+    },
+    "codex": {
+      "nativePlane": "True J2000 ecliptic z=0",
+      "definition": "n_p |v|, heliocentric bulk proton flux",
+      "fields": {
+        "flux": [
+          {
+            "url": "/assets/frames/codex/flux-00.png",
+            "frame": 0,
+            "timeMjd": 61006.25,
+            "bytes": 13738,
+            "sha256": "09d2f50af9456d837fd1138b2762670bb3cfed030ea1ba145f18db27223e7d7c",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-01.png",
+            "frame": 1,
+            "timeMjd": 61006.5,
+            "bytes": 13795,
+            "sha256": "dd073db6713803368f99a7effe53947fe9dfbae1a9ab3aef921213b5d32fb664",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-02.png",
+            "frame": 2,
+            "timeMjd": 61006.75,
+            "bytes": 13870,
+            "sha256": "50af944288037ab80f93909232ce5f2cc084bf7c8449201c3ca56ada8991acb4",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-03.png",
+            "frame": 3,
+            "timeMjd": 61007.0,
+            "bytes": 13900,
+            "sha256": "6e7ebcda5a71a575c2b44a805776e6ebd8d4661afa435cf120bfe0fe22054ad1",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-04.png",
+            "frame": 4,
+            "timeMjd": 61007.25,
+            "bytes": 13995,
+            "sha256": "c01455306e46227d743721cf10f66fd3e438cf019ee81afe845d66de1fedc8bb",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-05.png",
+            "frame": 5,
+            "timeMjd": 61007.5,
+            "bytes": 14094,
+            "sha256": "42a5b49970c6c98aca80f3922f8e5acfe63f8b69545ff7c9238e38605dd13050",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-06.png",
+            "frame": 6,
+            "timeMjd": 61007.75,
+            "bytes": 14032,
+            "sha256": "40c2257c3b323e579a3a2c502f4672efa8966fd34d423ac0dae5a67f474226af",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-07.png",
+            "frame": 7,
+            "timeMjd": 61008.0,
+            "bytes": 13978,
+            "sha256": "3c3418d9d730fab0769c8ebf8cf2414360471d7aeb3eefba68c771eb08631085",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-08.png",
+            "frame": 8,
+            "timeMjd": 61008.25,
+            "bytes": 13924,
+            "sha256": "acba0ea75c914f2620c8ced26cb27314b10b49b5bb07e6b6553693bc8dfe39bf",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-09.png",
+            "frame": 9,
+            "timeMjd": 61008.5,
+            "bytes": 13874,
+            "sha256": "02e5b50dfd26cf4b502be04b3c3f1386657d52aa1c9142de8ec6b106d79bea34",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-10.png",
+            "frame": 10,
+            "timeMjd": 61008.75,
+            "bytes": 13810,
+            "sha256": "ce060f0ffd355818b5e3242ffec90e565d22ce58e2cab0f67bce283d858f74c5",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-11.png",
+            "frame": 11,
+            "timeMjd": 61009.0,
+            "bytes": 13776,
+            "sha256": "053f4e17bc2e755ee5acd6b85ae9505c8f7ca9577e2166d3804e99d56bb4ca3b",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-12.png",
+            "frame": 12,
+            "timeMjd": 61009.25,
+            "bytes": 13681,
+            "sha256": "eea6aeed9f35bd0834af13d70cae9db3b4e44c783e3cc46b745b5171557f2674",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-13.png",
+            "frame": 13,
+            "timeMjd": 61009.5,
+            "bytes": 13580,
+            "sha256": "ccc4214f7d735fddd044ae71de1d8f2f2b97c30ee69ee25806ec20f3c5418e77",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-14.png",
+            "frame": 14,
+            "timeMjd": 61009.75,
+            "bytes": 13593,
+            "sha256": "cf29d416d65e89a777eeaa8de87e42a009c891c6b25057ee4d6f7b548424cf71",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-15.png",
+            "frame": 15,
+            "timeMjd": 61010.0,
+            "bytes": 13753,
+            "sha256": "bff8caee41d9d2e7e21de9298d7a71c71fba75a1157ad1cc9c489822e0b27a8a",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-16.png",
+            "frame": 16,
+            "timeMjd": 61010.25,
+            "bytes": 13767,
+            "sha256": "b6bc411ea1fd3a6607b4ddcab4c4a9931cd3ca1dc35ef99361b4746887db746b",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-17.png",
+            "frame": 17,
+            "timeMjd": 61010.5,
+            "bytes": 13762,
+            "sha256": "2f93d6ede666d8341694caa9742ca1607993ed6bed0770def36bb3ce3ce15ca9",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-18.png",
+            "frame": 18,
+            "timeMjd": 61010.75,
+            "bytes": 13846,
+            "sha256": "bbe0e8709e1e5058e628fd730b1d224adc38b3f814c663e8031a5cfdd91d840c",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-19.png",
+            "frame": 19,
+            "timeMjd": 61011.0,
+            "bytes": 13858,
+            "sha256": "6e74589f1d94082a159a7e8f59ac8d65a5c3c8a045c0a27c440d27164ee0df01",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-20.png",
+            "frame": 20,
+            "timeMjd": 61011.25,
+            "bytes": 13903,
+            "sha256": "f5f73b9103aa4e5979364c90c530cbaae287765ba4475a17b51431d036b7f6a8",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-21.png",
+            "frame": 21,
+            "timeMjd": 61011.5,
+            "bytes": 13936,
+            "sha256": "90a545ea6cb69d3786d996d83ca81bc4f57ff1693614c26cbce044a527e73b53",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-22.png",
+            "frame": 22,
+            "timeMjd": 61011.75,
+            "bytes": 14096,
+            "sha256": "408514f754dea4d5b9bc150a0f034e9029fd00fb4e7d8e0949f340013df9e7cd",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-23.png",
+            "frame": 23,
+            "timeMjd": 61012.0,
+            "bytes": 14027,
+            "sha256": "750c58c36f8f765d3cbc6dbfceb4da952b62aceed1a33cb8833a7c3500c059bb",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-24.png",
+            "frame": 24,
+            "timeMjd": 61012.25,
+            "bytes": 14117,
+            "sha256": "85c8d474ff8cd72e24b13859c0eadd661b226cdef5f045ad5a4e2af04be62c40",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-25.png",
+            "frame": 25,
+            "timeMjd": 61012.5,
+            "bytes": 14063,
+            "sha256": "ad4c257e5ff945379c65df069b703da5d60857b525da264a8709a1b68e76355d",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-26.png",
+            "frame": 26,
+            "timeMjd": 61012.75,
+            "bytes": 13943,
+            "sha256": "439f4e2fa0bf70908ed9f2594014bbbbec722142a3bff66ff23aeda80b75c227",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-27.png",
+            "frame": 27,
+            "timeMjd": 61013.0,
+            "bytes": 13872,
+            "sha256": "4fcde128d954c55b4dc1c825f4c853cd613f331b8592792e3ee72c9cbd234d98",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-28.png",
+            "frame": 28,
+            "timeMjd": 61013.25,
+            "bytes": 13740,
+            "sha256": "37e7a9e9eddf72fce0db7a2b75548294161f8dd49551b9d179ec417a1b806585",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-29.png",
+            "frame": 29,
+            "timeMjd": 61013.5,
+            "bytes": 13741,
+            "sha256": "38fcf8e4d50f2e85e3b68a3a6d2dab99dc14aa355dabb9c0f65b72e72a2c0a5f",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-30.png",
+            "frame": 30,
+            "timeMjd": 61013.75,
+            "bytes": 13741,
+            "sha256": "c4902263b5c0fcc46743cc4ce76051c7a0b961761d14ae57af56217bd37b92e7",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/flux-31.png",
+            "frame": 31,
+            "timeMjd": 61014.0,
+            "bytes": 13673,
+            "sha256": "d98ea21975a1db2be6a0c10404a0e025229334df0c68be26a9face24073f7a96",
+            "validPixels": 11476
+          }
+        ],
+        "contrast": [
+          {
+            "url": "/assets/frames/codex/contrast-00.png",
+            "frame": 0,
+            "timeMjd": 61006.25,
+            "bytes": 16253,
+            "sha256": "5cd917ce1b054361901a1dc8a81eadf94f09c97768edd4475b987f2bf95fc872",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-01.png",
+            "frame": 1,
+            "timeMjd": 61006.5,
+            "bytes": 16280,
+            "sha256": "4a2119f99b18a075cdf603e971b7f3b2134f09edce60ef8cb9e1aeef3fa495a1",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-02.png",
+            "frame": 2,
+            "timeMjd": 61006.75,
+            "bytes": 16510,
+            "sha256": "99aa009f74dd5299160ed58e61fa9fdff8d8c02af5cb7b1a28c9550f2e6fc5a3",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-03.png",
+            "frame": 3,
+            "timeMjd": 61007.0,
+            "bytes": 16492,
+            "sha256": "1d8d696468030dafa2fc10aacf623b45d66ae21d8b28feeaab5be5b9b0488015",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-04.png",
+            "frame": 4,
+            "timeMjd": 61007.25,
+            "bytes": 16430,
+            "sha256": "d777fe75a9ca7f26c525289cd563d39dc38f8a782fcbdf07d90128b0ef20ef30",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-05.png",
+            "frame": 5,
+            "timeMjd": 61007.5,
+            "bytes": 16326,
+            "sha256": "9d536cf5b61c69fec27e9cc9a3effd2dc3d4ac3315512e32464d0e609a1406c1",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-06.png",
+            "frame": 6,
+            "timeMjd": 61007.75,
+            "bytes": 16567,
+            "sha256": "5500e4880c9cc71510efc7dab6ee6fd587525cfe3219c71237f40332c8c56279",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-07.png",
+            "frame": 7,
+            "timeMjd": 61008.0,
+            "bytes": 16424,
+            "sha256": "59a79452131214df99b56eb7ffd0354cdb8c6ebf2fef67ce0fbe27e79401bb70",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-08.png",
+            "frame": 8,
+            "timeMjd": 61008.25,
+            "bytes": 16226,
+            "sha256": "06e8c37befd58c83f12f9070f86c653d37bbfc2a8fdabd07cd8d8eb180ffdc4f",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-09.png",
+            "frame": 9,
+            "timeMjd": 61008.5,
+            "bytes": 16306,
+            "sha256": "d7e557c91a89be7063815b40aaa51fd1c177a56588f9d7ce8f3c3150c07db8b6",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-10.png",
+            "frame": 10,
+            "timeMjd": 61008.75,
+            "bytes": 16233,
+            "sha256": "0dd170dff4d6a0adf115fb3dd99d4cb68491ae6af2a0bda4f67d3b535058e52c",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-11.png",
+            "frame": 11,
+            "timeMjd": 61009.0,
+            "bytes": 16282,
+            "sha256": "a981425cd1105d12a258a5d84b407ec80a6ae8fe3a30b47a256922c469732a19",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-12.png",
+            "frame": 12,
+            "timeMjd": 61009.25,
+            "bytes": 16121,
+            "sha256": "3f6298b85cf6ccdb922932ef767ae5f51d18433b23a7f5d7cdf0a00ff8765e71",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-13.png",
+            "frame": 13,
+            "timeMjd": 61009.5,
+            "bytes": 16178,
+            "sha256": "2edae481d6031d28f04294ba6ab01763fdf3211d783ea26bb519fdde9ad16526",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-14.png",
+            "frame": 14,
+            "timeMjd": 61009.75,
+            "bytes": 15971,
+            "sha256": "0f40c7faff4775892dfd682a91b31aaffce8885d8f817d3da6a479dacb04eab0",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-15.png",
+            "frame": 15,
+            "timeMjd": 61010.0,
+            "bytes": 16078,
+            "sha256": "449ac64cfaa1ba313f67ba2fb7126ce08b5685f596e6090b4b7ce46bb0605c96",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-16.png",
+            "frame": 16,
+            "timeMjd": 61010.25,
+            "bytes": 16206,
+            "sha256": "2ffd58f4dca76fe58ee3f08f67c5ecc861ff925b665b84a825c22a0b14e3784e",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-17.png",
+            "frame": 17,
+            "timeMjd": 61010.5,
+            "bytes": 16220,
+            "sha256": "5396245d527fb94073d7106527cc4133750d52e962db804beedb97a686d53023",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-18.png",
+            "frame": 18,
+            "timeMjd": 61010.75,
+            "bytes": 16210,
+            "sha256": "7efc5773898f55500a07a7e2b148642dc976df45d01a0f72fd1a298a3c87a64a",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-19.png",
+            "frame": 19,
+            "timeMjd": 61011.0,
+            "bytes": 16278,
+            "sha256": "1bfdfe4d4677b6697591283fb2f20de0398967fd6defea9a5428c49941e99b2c",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-20.png",
+            "frame": 20,
+            "timeMjd": 61011.25,
+            "bytes": 16293,
+            "sha256": "e7d7d23d59517edf97a41c05f408e748eeb87fa546dd245b08874f27c415b162",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-21.png",
+            "frame": 21,
+            "timeMjd": 61011.5,
+            "bytes": 16386,
+            "sha256": "fbfe2386255c6f0facb92531252e1f90299d242d7b5fd271ebef1f5dc74e9914",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-22.png",
+            "frame": 22,
+            "timeMjd": 61011.75,
+            "bytes": 16471,
+            "sha256": "4e6eded752ac207f9e8e39a42122fa9f66d1df40954b88eda74cd700a0d810a4",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-23.png",
+            "frame": 23,
+            "timeMjd": 61012.0,
+            "bytes": 16596,
+            "sha256": "c99a16311d40722052dc8401253287f7c4ccd23a712ad364745f600dd8445c78",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-24.png",
+            "frame": 24,
+            "timeMjd": 61012.25,
+            "bytes": 16658,
+            "sha256": "72e0b030429e161be80d2b570ff027026ee5ea79ffb58458611876b388e16429",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-25.png",
+            "frame": 25,
+            "timeMjd": 61012.5,
+            "bytes": 16584,
+            "sha256": "1b80c8d79873a6f2e1fc69ecef141194ecd76a7c60c8eb02e96a6618ba662119",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-26.png",
+            "frame": 26,
+            "timeMjd": 61012.75,
+            "bytes": 16535,
+            "sha256": "f9edb719df8d4de89bdd49c812598186a57020e6d5095c13fa17a8d558afed50",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-27.png",
+            "frame": 27,
+            "timeMjd": 61013.0,
+            "bytes": 16419,
+            "sha256": "c2fed46e02f905a7be4841e3782ceee6e9d14c86d90cf6e2076af877ce78faa4",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-28.png",
+            "frame": 28,
+            "timeMjd": 61013.25,
+            "bytes": 16390,
+            "sha256": "7f442f8e0a5d6b4b65de6acc211e01f6309d89e4547d1af28835b9cccad2d5dd",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-29.png",
+            "frame": 29,
+            "timeMjd": 61013.5,
+            "bytes": 16375,
+            "sha256": "103f123967d539ecbcb62f8863339f62462b5d06c5747336e7cc668629d36142",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-30.png",
+            "frame": 30,
+            "timeMjd": 61013.75,
+            "bytes": 16252,
+            "sha256": "8a5f91891db80250a110e288d7e5608cf395d870dbc1b71c3c9b300c02ef908f",
+            "validPixels": 11476
+          },
+          {
+            "url": "/assets/frames/codex/contrast-31.png",
+            "frame": 31,
+            "timeMjd": 61014.0,
+            "bytes": 16344,
+            "sha256": "c463406279209f5616c28d92c8684b36a967c7e9588cf6dfd1e4532b7d6ecd13",
+            "validPixels": 11476
+          }
+        ]
+      }
+    },
+    "claude": {
+      "nativePlane": "True J2000 ecliptic z=0",
+      "definition": "n_p v_r, radial proton-flux proxy",
+      "fields": {
+        "flux": [
+          {
+            "url": "/assets/frames/claude/flux-00.png",
+            "frame": 0,
+            "timeMjd": 61006.25,
+            "bytes": 20030,
+            "sha256": "2754994143bdbee33bf9e2899220effe9a2c024ded886b4a347442683a03ea90",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-01.png",
+            "frame": 1,
+            "timeMjd": 61006.5,
+            "bytes": 20063,
+            "sha256": "95ce599234ca9e23fd8ce37ec249b7aca0c186d8cb9760d0168252bc2903f978",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-02.png",
+            "frame": 2,
+            "timeMjd": 61006.75,
+            "bytes": 20037,
+            "sha256": "d87b63d69396f1dde20226a456a9e3c10113b3224f7969caac7926cded76132c",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-03.png",
+            "frame": 3,
+            "timeMjd": 61007.0,
+            "bytes": 19959,
+            "sha256": "b54228f81fcfad6b0ecd5491255f9a4094bf22c3dfb1626944f31fab8abd1285",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-04.png",
+            "frame": 4,
+            "timeMjd": 61007.25,
+            "bytes": 19884,
+            "sha256": "b111c77314ef6072df032e2622a89f37b86b02ef49c73cce13836ac9b2c2b040",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-05.png",
+            "frame": 5,
+            "timeMjd": 61007.5,
+            "bytes": 19689,
+            "sha256": "391ef69ffa4fa73b75e6f71e904a75ff65f45e640cece3dab41e6cfb95b9cef1",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-06.png",
+            "frame": 6,
+            "timeMjd": 61007.75,
+            "bytes": 19659,
+            "sha256": "9ba740745b905776d99cf69e17364b4826c047b8a54967e4767f95a638d6cbe0",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-07.png",
+            "frame": 7,
+            "timeMjd": 61008.0,
+            "bytes": 19531,
+            "sha256": "c95b98d5314da1cab93ed30ca49915168fe12a69172d6f41694fb849602f5a43",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-08.png",
+            "frame": 8,
+            "timeMjd": 61008.25,
+            "bytes": 19454,
+            "sha256": "2f067efdee0b2893cfddbddf6bf05c60822ec2b3530c5d69ac04ef572fc56f4c",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-09.png",
+            "frame": 9,
+            "timeMjd": 61008.5,
+            "bytes": 19398,
+            "sha256": "09396a4c0a6a53ecacc070481c5c8cf2c0856dff141896a9ffa4c59307f59530",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-10.png",
+            "frame": 10,
+            "timeMjd": 61008.75,
+            "bytes": 19373,
+            "sha256": "5048cd17d842493b3c247131efce593aba74d841a3ce4b1a360120e6be39ee02",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-11.png",
+            "frame": 11,
+            "timeMjd": 61009.0,
+            "bytes": 19348,
+            "sha256": "0e369e0a9cbbbbaf2061d4e59e9f9fc41dcd95c630c1ac6c1ef0bd3e2d647cfc",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-12.png",
+            "frame": 12,
+            "timeMjd": 61009.25,
+            "bytes": 19348,
+            "sha256": "b45a7475c5b3c2918df116d4190d923a0e0643fade7830534995f813415532b8",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-13.png",
+            "frame": 13,
+            "timeMjd": 61009.5,
+            "bytes": 19354,
+            "sha256": "a012ed09353532bc9c2c70820b35cd80c1fd7f2008a16ca9d2afd935093bedf7",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-14.png",
+            "frame": 14,
+            "timeMjd": 61009.75,
+            "bytes": 19285,
+            "sha256": "2d8a28c0c02753d98f13f6c31aa08e92fb0279a27b3abe9504b06f8828de9b6a",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-15.png",
+            "frame": 15,
+            "timeMjd": 61010.0,
+            "bytes": 19386,
+            "sha256": "d5d1a4c7f5bd5da9c0714a38bceded09065122011f0753b24a6154857d454137",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-16.png",
+            "frame": 16,
+            "timeMjd": 61010.25,
+            "bytes": 19388,
+            "sha256": "69c628781c0db6f5dc740a710d22cb4e6251d4d6e10476c52cee08af603dcfb3",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-17.png",
+            "frame": 17,
+            "timeMjd": 61010.5,
+            "bytes": 19517,
+            "sha256": "80dc6726739da2513b7444adafe76915d8e1c5dca4d9f8806464492b2d6c6437",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-18.png",
+            "frame": 18,
+            "timeMjd": 61010.75,
+            "bytes": 19891,
+            "sha256": "29eb542d3241b9a7a3f80c5f7101a47cbc77b3f68076af5d287715b10a743293",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-19.png",
+            "frame": 19,
+            "timeMjd": 61011.0,
+            "bytes": 19978,
+            "sha256": "8e88b282a360b599ad7bb262243e4a33777ee093c31473bb66b6a690e23de3ec",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-20.png",
+            "frame": 20,
+            "timeMjd": 61011.25,
+            "bytes": 20333,
+            "sha256": "4d0ecf867f54f85133169f03880334de7063b877ec181868519054fafb8d0e43",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-21.png",
+            "frame": 21,
+            "timeMjd": 61011.5,
+            "bytes": 20255,
+            "sha256": "df18c7d7c1fa8d639d95acb36f262add11ff27bcd40507d8a6e64a07d7d34771",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-22.png",
+            "frame": 22,
+            "timeMjd": 61011.75,
+            "bytes": 20328,
+            "sha256": "a61d27e5c87d8d529acb6d59b13eb47527273e06cbd2a8d0ffd58285f2e6d86e",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-23.png",
+            "frame": 23,
+            "timeMjd": 61012.0,
+            "bytes": 20304,
+            "sha256": "0cc8547a57c82155af0a9c1a540f3451ba1d32dea4999dece1c429c276313cb5",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-24.png",
+            "frame": 24,
+            "timeMjd": 61012.25,
+            "bytes": 20040,
+            "sha256": "e6c9bb408618a8f5ec54bc49d923b2fc13fdf8d6691742b6e7aa0296fdf1e41b",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-25.png",
+            "frame": 25,
+            "timeMjd": 61012.5,
+            "bytes": 19735,
+            "sha256": "778c24e5ec29955138f1c6cd79c2496fdd6d6657fbe8375c3520758ade75614e",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-26.png",
+            "frame": 26,
+            "timeMjd": 61012.75,
+            "bytes": 19474,
+            "sha256": "42b117c062464273abc1e69c8ad02b8775a3ccb6770dffd1259b671e4f40265b",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-27.png",
+            "frame": 27,
+            "timeMjd": 61013.0,
+            "bytes": 19258,
+            "sha256": "27cde9ae5026a289fa2cfb57213dce28998286059378baf9ba755f1923d3b112",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-28.png",
+            "frame": 28,
+            "timeMjd": 61013.25,
+            "bytes": 19014,
+            "sha256": "413517f1f59ac27864b894886a2610590955768cc6865e1adf697cf221592fa0",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-29.png",
+            "frame": 29,
+            "timeMjd": 61013.5,
+            "bytes": 18708,
+            "sha256": "739e18c9cedaab22ff7bc0e64e1013e4a9df36e971d440af267351f31f61ff86",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-30.png",
+            "frame": 30,
+            "timeMjd": 61013.75,
+            "bytes": 18353,
+            "sha256": "5ea0d47bee446b3bc5ff79db0124b1af916e10ea22dd571055d2d8d49a1bdb1f",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/flux-31.png",
+            "frame": 31,
+            "timeMjd": 61014.0,
+            "bytes": 17984,
+            "sha256": "042abb30884e6f9bc533b64eb2c6f897b24ec2f60b49cde906768fd9bdd71c4f",
+            "validPixels": 13428
+          }
+        ],
+        "contrast": [
+          {
+            "url": "/assets/frames/claude/contrast-00.png",
+            "frame": 0,
+            "timeMjd": 61006.25,
+            "bytes": 24331,
+            "sha256": "9e0fa033d2cc9b3b73b5f347a77c2dc600c02491ef08f68ab31d8708ae655e72",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-01.png",
+            "frame": 1,
+            "timeMjd": 61006.5,
+            "bytes": 24195,
+            "sha256": "217fb4650c2fa1bd53c736523ac036c514b6b2b277122bcfcd516eb5b0132389",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-02.png",
+            "frame": 2,
+            "timeMjd": 61006.75,
+            "bytes": 24198,
+            "sha256": "1c31dc1730269d73eca6dab6110900e045ec8cb8c497fa0f14d5beb7aa492a51",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-03.png",
+            "frame": 3,
+            "timeMjd": 61007.0,
+            "bytes": 24048,
+            "sha256": "2ad3ce8270e3f21e5b3b293659738aeda7a4e5f53e0f520f7881b41928002b8b",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-04.png",
+            "frame": 4,
+            "timeMjd": 61007.25,
+            "bytes": 23983,
+            "sha256": "7e28e2ac6cc1aba2d1774ba9c8b46d8195e644402d0f40e9b3b1ce0770037875",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-05.png",
+            "frame": 5,
+            "timeMjd": 61007.5,
+            "bytes": 23903,
+            "sha256": "00ed6b81a8c21ca82662ff8e84c2f13d49628b345d8ee8a627301e471837dbdf",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-06.png",
+            "frame": 6,
+            "timeMjd": 61007.75,
+            "bytes": 23716,
+            "sha256": "01cd19c4cf815ac04fcd50c48e91895cfba08dbdf4c61635bf5e6e4310eeef23",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-07.png",
+            "frame": 7,
+            "timeMjd": 61008.0,
+            "bytes": 23621,
+            "sha256": "639def9c7bbcb0d416841afd8d1163c694318bbb08fbea8135c1f4820b0811c8",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-08.png",
+            "frame": 8,
+            "timeMjd": 61008.25,
+            "bytes": 23501,
+            "sha256": "7ded0203e67b0ab39af8b20a1bcd4d997d0b5602326878995a1d73eb7a265574",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-09.png",
+            "frame": 9,
+            "timeMjd": 61008.5,
+            "bytes": 23542,
+            "sha256": "140ca99f67c03182f55b60a90b3fe4baf0030c770add90728da6a31145ed3345",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-10.png",
+            "frame": 10,
+            "timeMjd": 61008.75,
+            "bytes": 23394,
+            "sha256": "e85fb9b7b983f3c26669b69ba3a158a1d1078e54ac007ea9b263f7cc011c9c41",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-11.png",
+            "frame": 11,
+            "timeMjd": 61009.0,
+            "bytes": 23372,
+            "sha256": "27ed838b3d445829b8e649df27132634e6771fc61d2b18beeb7e6aca36a97ee2",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-12.png",
+            "frame": 12,
+            "timeMjd": 61009.25,
+            "bytes": 23353,
+            "sha256": "ef1230d25a8e852f6c2c0783940b53f31d9b8896ebb0d7bc71b9844fc2855aa2",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-13.png",
+            "frame": 13,
+            "timeMjd": 61009.5,
+            "bytes": 23461,
+            "sha256": "ee311c15921152fb773b6f5ddb8f199d684a83c58af2e4e55078dcc1fc3a63ef",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-14.png",
+            "frame": 14,
+            "timeMjd": 61009.75,
+            "bytes": 23516,
+            "sha256": "5772bed0c64b1aa6aba94dabbb8b496aa98d172296bed94799f792f42413ab10",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-15.png",
+            "frame": 15,
+            "timeMjd": 61010.0,
+            "bytes": 23673,
+            "sha256": "b292a0c9a9244af45d683781fd22b1a874a557f84149305716d207cc7aca8251",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-16.png",
+            "frame": 16,
+            "timeMjd": 61010.25,
+            "bytes": 23826,
+            "sha256": "3e71a3b144ed8eec3bdba5d92144afa8f4e9d77347c1ea83037615dc81dba309",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-17.png",
+            "frame": 17,
+            "timeMjd": 61010.5,
+            "bytes": 24008,
+            "sha256": "fd7ec3680baa0e752222b1494cac5a0faee7bf4df40197dc9df118cc1525bbb9",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-18.png",
+            "frame": 18,
+            "timeMjd": 61010.75,
+            "bytes": 24337,
+            "sha256": "3640834fa5fe95f50cbf66e674180a43934cff2de9d4082cd6604749e4cc770d",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-19.png",
+            "frame": 19,
+            "timeMjd": 61011.0,
+            "bytes": 24490,
+            "sha256": "498b5ad2c9a22253d1b3b615b6261ef3ed7a2ae7c2eac97e01d3df4f2f1b5fb6",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-20.png",
+            "frame": 20,
+            "timeMjd": 61011.25,
+            "bytes": 24747,
+            "sha256": "aee87e9a3dec3b54156bcdadf4d8dedf972e7503b717ac4bd7e6460650c651b5",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-21.png",
+            "frame": 21,
+            "timeMjd": 61011.5,
+            "bytes": 24794,
+            "sha256": "b6a143e6b3288dc3a130899966f59c671b40c95104d4ca02bfd048108634899d",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-22.png",
+            "frame": 22,
+            "timeMjd": 61011.75,
+            "bytes": 24641,
+            "sha256": "d56f26c9b590b9c343b1e88e1824dab2f82a4bc810a8df7e6f12823583f99c47",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-23.png",
+            "frame": 23,
+            "timeMjd": 61012.0,
+            "bytes": 24611,
+            "sha256": "9ad4844f50c48a65eafec01ab7ee154d1e3e066cfc7ae4073645f0abd7cd7e4d",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-24.png",
+            "frame": 24,
+            "timeMjd": 61012.25,
+            "bytes": 24199,
+            "sha256": "d686863a320bb9a7d6c35ab303584ae9768fd901fef70ccdb531f2c1ef8eb94e",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-25.png",
+            "frame": 25,
+            "timeMjd": 61012.5,
+            "bytes": 24078,
+            "sha256": "74ad74e1374472e6b9593a3434fea579db35e6b9efb2c892742d9ad87cd1f101",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-26.png",
+            "frame": 26,
+            "timeMjd": 61012.75,
+            "bytes": 23775,
+            "sha256": "21b2e0681680307a8ba6850821f9d7ff62217b6c03f7de2f5b95662a0e521d9a",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-27.png",
+            "frame": 27,
+            "timeMjd": 61013.0,
+            "bytes": 23605,
+            "sha256": "057e476c2fa305893687bd46ef45263356b1858a271fc68a5dd04e533ff41a21",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-28.png",
+            "frame": 28,
+            "timeMjd": 61013.25,
+            "bytes": 23342,
+            "sha256": "77049b2ec7e8e749dcc967d9a11c3352a448973fd93e1a9adb2e635622c3c551",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-29.png",
+            "frame": 29,
+            "timeMjd": 61013.5,
+            "bytes": 23011,
+            "sha256": "86850f543c5ab4fe405569f27a0b49d686c73602722b713ea6947bd059d9cc49",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-30.png",
+            "frame": 30,
+            "timeMjd": 61013.75,
+            "bytes": 22670,
+            "sha256": "304354edb2ed8158fbc5166c030be24dbb20278b139ab73319393dfe6835de97",
+            "validPixels": 13428
+          },
+          {
+            "url": "/assets/frames/claude/contrast-31.png",
+            "frame": 31,
+            "timeMjd": 61014.0,
+            "bytes": 22435,
+            "sha256": "6c2fa9d875d9bfb7c4b69b1f007f7934949894eae5a8636b8e2748f454d28baa",
+            "validPixels": 13428
+          }
+        ]
+      }
+    }
+  },
+  "verification": {
+    "paletteEndpoints": true,
+    "allMissingMasks": true,
+    "allImagePixels": true,
+    "sourceHashesUnchanged": true
+  },
+  "rebuild": "python scripts/render_frames.py"
+}

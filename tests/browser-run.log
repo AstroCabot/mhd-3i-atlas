@@ -1,0 +1,16 @@
+App ready
+Checked overview
+Checked solar-wind
+Checked verification
+Checked observations
+Checked xray
+Checked methods
+Checked resources
+Checked transcripts
+PASS: 10 browser checks; no JavaScript or HTTP failures.
+/Cambridge/X3I/mhd_llm_app/tests/browser.mjs:7:456)
+    at async file:///mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm_app/tests/browser.mjs:20:2 {
+  log: []
+}
+
+Node.js v24.22.0

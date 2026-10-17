@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "checks": [
+    "overview and model visibility",
+    "solar-wind",
+    "verification",
+    "observations",
+    "xray",
+    "methods",
+    "resources",
+    "transcripts",
+    "dataset export",
+    "mobile navigation, layout and equations"
+  ],
+  "errors": [],
+  "date": "2026-10-17T16:19:43.886Z"
+}

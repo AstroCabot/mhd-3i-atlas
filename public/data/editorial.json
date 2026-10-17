@@ -1,0 +1,640 @@
+{
+  "schemaVersion": 1,
+  "target": "src/app.js",
+  "application": "Apply old/new replacements to curated interface copy only; preserve original transcript and shared-note text. Animation-engine edits may supersede individual source substrings.",
+  "replacements": [
+    {
+      "scope": "shell",
+      "old": "MODEL OBSERVATORY",
+      "new": "HELIOSPHERIC RECONSTRUCTION",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "shell",
+      "old": "THE RECONSTRUCTION",
+      "new": "COMPARISONS",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "shell",
+      "old": "BEHIND THE SCIENCE",
+      "new": "MODEL DOCUMENTATION",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "shell",
+      "old": "INTERSTELLAR OBJECT 003",
+      "new": "TARGET / OBSERVATION",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "shell",
+      "old": "REPRODUCIBLE SNAPSHOT",
+      "new": "ARCHIVED RESULTS",
+      "reason": "Avoid claiming a complete reproducibility audit from a displayed archive."
+    },
+    {
+      "scope": "shell",
+      "old": "Explore the models",
+      "new": "Model physics",
+      "reason": "Use the destination as the link label."
+    },
+    {
+      "scope": "shell",
+      "old": "HELIOS / THREE INDEPENDENT RECONSTRUCTIONS · ONE SHARED EVIDENCE BASE",
+      "new": "HELIOS / 3I/ATLAS HELIOSPHERIC RECONSTRUCTION",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "Three models.<br><em>One interstellar visitor.</em>",
+      "new": "Solar wind at 3I/ATLAS",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "Follow the solar wind from the inner heliosphere to 3I/ATLAS. Compare three independent MHD reconstructions against the equations, the observations, and each other.",
+      "new": "Compare three magnetohydrodynamic reconstructions of the solar wind during the 3–4 December 2025 XMM-Newton observation. The panels show upstream conditions, numerical verification, spacecraft residuals and the X-ray light curve.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "INDEPENDENT MODELS",
+      "new": "MHD IMPLEMENTATIONS",
+      "reason": "The implementations share inputs and are not statistically independent estimates."
+    },
+    {
+      "scope": "overview",
+      "old": "The wind, reconstructed",
+      "new": "Reconstructed solar wind",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "Open simulation",
+      "new": "Solar-wind fields",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "Compare to X-rays",
+      "new": "X-ray comparison",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "A common target. Different implementations.",
+      "new": "Implementation comparison",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "Inspect the physics",
+      "new": "Model physics",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "What the comparison tells us",
+      "new": "Physical interpretation",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "READ THE EVIDENCE",
+      "new": "MODEL ASSUMPTIONS",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "01 / THE PHYSICS",
+      "new": "STREAM INTERACTION",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "Fast wind catches slow wind.",
+      "new": "Stream compression",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "Stream interactions compress the plasma before it reaches the comet. Timing and boundary assumptions set the size of the predicted enhancement.",
+      "new": "Fast wind overtakes slower plasma and produces a compressed interaction region. Its arrival time and density depend on the coronal boundary and transport model.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "02 / THE VALIDATION",
+      "new": "SPACECRAFT CONSTRAINTS",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "A fitted boundary needs a holdout.",
+      "new": "Calibration and validation",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "Spacecraft used for calibration do not provide independent validation. Explore the recorded residuals and leave-one-out tests separately.",
+      "new": "The spacecraft residuals include measurements used in calibration. The recorded holdout tests assess transfer to measurements excluded from the fit.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "03 / THE OPEN QUESTION",
+      "new": "CHARGE-EXCHANGE EMISSION",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "Protons do not tell the whole story.",
+      "new": "X-ray emission requires ion composition",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "overview",
+      "old": "None of these runs predicts an absolute X-ray count rate. Charge states, heavy-ion abundance, and the neutral coma remain additional unknowns.",
+      "new": "The runs predict the upstream proton flux. Calculating an X-ray count rate also requires heavy-ion abundances and charge states, the neutral coma and the detector response.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "solar-wind",
+      "old": "A moving heliosphere.",
+      "new": "Solar-wind evolution",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "solar-wind",
+      "old": "Watch the archived solar-wind structures evolve on a shared UTC timeline. Every panel uses the same projection, spatial limits, frame spacing, and colour scale.",
+      "new": "Compare the archived solar-wind slices on a common UTC timeline, projection and colour scale. The source sampling surfaces and flux definitions are listed below each panel.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "solar-wind",
+      "old": "<strong>Match the display; retain the physics.</strong> Argon archives a constant-latitude conical slice at −6.455° projected into this view. Claude and Codex archive ecliptic slices. Claude’s saved fields provide nₚvᵣ, a radial-flux proxy; the other two provide nₚ|v|. These are spatial context comparisons, with different native sampling surfaces and definitions. Empty pixels indicate no source coverage.",
+      "new": "<strong>Slice definitions.</strong> Argon samples a solar-latitude cone at −6.455°; Claude and Codex sample the ecliptic plane. Claude’s retained fields give radial proton flux nₚvᵣ, while the other two give nₚ|v|. The shared projection preserves these differences. Empty pixels mark missing source coverage.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "solar-wind",
+      "old": "The wind encountered by 3I/ATLAS",
+      "new": "Solar wind at the comet",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "solar-wind",
+      "old": "Interpretation & native products",
+      "new": "Stream structure and source products",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "solar-wind",
+      "old": "READING THE MAP",
+      "new": "STREAM INTERACTION",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "solar-wind",
+      "old": "Compression travels outward.",
+      "new": "Formation of a compression region",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "solar-wind",
+      "old": "The rotating boundary launches streams at different speeds. Fast material catches slower plasma, forming a stream interaction region. The evolving bright ridges show enhanced proton flux, while the outer flow preserves the imprint of the earlier solar boundary.",
+      "new": "The rotating boundary launches streams at different speeds. Faster plasma overtakes slower plasma and forms a compressed interaction region. Bright ridges mark enhanced proton flux; structures farther from the Sun reflect earlier boundary conditions.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "solar-wind",
+      "old": "<strong>Flux × r²</strong> removes the leading geometric dilution and reveals stream structure. It is a display transform of the saved data.",
+      "new": "<strong>Flux × r²</strong> compensates for the r⁻² dilution of a steady radial flow. This display transform makes departures from radial expansion easier to compare.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "solar-wind",
+      "old": "WHAT IS ACTUALLY SHOWN",
+      "new": "ARCHIVED SIMULATION SLICES",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "xray",
+      "old": "The X-rays ask a harder question.",
+      "new": "X-ray light-curve comparison",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "xray",
+      "old": "Compare the measured light curve with exposure-matched proton-flux shapes. These reconstructions constrain the wind; they do not calculate an absolute X-ray count rate.",
+      "new": "Compare the measured EPIC-pn light curve with the comet-incident proton flux integrated over the same exposures. Each curve is normalized by its exposure-weighted mean; the models calculate upstream wind conditions rather than X-ray emission.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "xray",
+      "old": "The measured light curve",
+      "new": "Measured EPIC-pn light curve",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "xray",
+      "old": "Shape agreement on a common exposure",
+      "new": "Exposure-matched variability statistics",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "xray",
+      "old": "DESCRIPTIVE CORRELATION · NOT A FIT",
+      "new": "PEARSON CORRELATION / EIGHT FRAMES",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "xray",
+      "old": "The modeled proton enhancement opposes the observed count-rate pattern.",
+      "new": "Higher modeled proton flux coincides with lower observed count rate.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "xray",
+      "old": "Descriptive shape comparison; composition and neutral emission are unmodeled.",
+      "new": "Positive correlation; heavy-ion composition and neutral-coma emission remain unmodeled.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "xray",
+      "old": "Why these means differ from the original reports",
+      "new": "Native and common exposure-weighted means",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "xray",
+      "old": "<strong>Shape normalization is not a physical emission model.</strong> An X-ray prediction also requires the heavy-ion charge-state distribution, charge-exchange cross sections, neutral coma, and instrument response. The light curve was not used to calibrate the reconstructed wind. Correlation across a small number of frames does not establish predictive accuracy.",
+      "new": "<strong>Emission-model limits.</strong> Converting proton flux to an X-ray count rate requires heavy-ion abundances and charge states, charge-exchange cross sections, the neutral coma and the detector response. The wind was reconstructed without fitting the eight X-ray rates. Their correlation with proton flux is a variability diagnostic with limited statistical power.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "xray",
+      "old": "FROM WIND TO PHOTONS",
+      "new": "CHARGE-EXCHANGE EMISSION",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "verification",
+      "old": "Trust begins with the equations.",
+      "new": "Numerical verification",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "verification",
+      "old": "Inspect retained benchmark profiles and refinement studies before interpreting the comet reconstruction. Verification tests the numerical implementation; it does not measure accuracy at the comet.",
+      "new": "Benchmark profiles test the equations and numerical implementation. Refinement studies measure sensitivity to the recorded grid and timestep changes. Neither test directly measures the wind at the comet.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "verification",
+      "old": "Recorded verification evidence",
+      "new": "Benchmark results",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "verification",
+      "old": "Codex selected numerical controls",
+      "new": "Codex numerical controls",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "verification",
+      "old": "<strong>Passing a pair qualifies the tested configurations.</strong> Different resolutions, precisions, closures, error references, and reconstruction orders prevent a universal benchmark ranking. Claude has retained error tables but no numerical Brio–Wu profile, so a profile is not invented. Failed and qualified Codex controls remain visible.",
+      "new": "<strong>Benchmark scope.</strong> Each pass applies to the specified pair of configurations. The models use different resolutions, precisions, closures and reference solutions, so their errors require separate interpretation. Claude’s retained Brio–Wu data contain an error table but no numerical profile. The Codex table includes failed controls.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "verification",
+      "old": "How much does the incident flux move?",
+      "new": "Incident-flux sensitivity",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "verification",
+      "old": "UNDERSTANDING CONVERGENCE",
+      "new": "REFINEMENT AND MODEL ERROR",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "verification",
+      "old": "Small changes are evidence, not an error bar.",
+      "new": "Scope of a refinement test",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "verification",
+      "old": "Refinement can show that an observable stabilizes for a chosen input and solver. It cannot resolve errors in the coronal boundary, an uncertain stream arrival, or missing charge states.",
+      "new": "Refinement measures how an observable changes with numerical resolution for a fixed model and input. Coronal-boundary errors, stream-arrival uncertainty and missing ion composition require separate tests.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "observations",
+      "old": "Anchor the model to the sky.",
+      "new": "Spacecraft and coronal constraints",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "observations",
+      "old": "Magnetograms constrain the coronal boundary. Spacecraft sample the evolving plasma. Keep those two sources of evidence distinct when judging the reconstruction.",
+      "new": "Magnetograms constrain the coronal boundary; spacecraft measure the propagating plasma. The plots compare reconstructed speed, density and proton flux with spacecraft measurements over a common interval.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "observations",
+      "old": "The remote-sensing boundary",
+      "new": "Coronal boundary from remote sensing",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "observations",
+      "old": "INPUT EVIDENCE ≠ COMET-SITE VALIDATION",
+      "new": "GONG / WSA BOUNDARY INPUTS",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "observations",
+      "old": "Independent coronal replication",
+      "new": "Coronal-model comparison",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "observations",
+      "old": "What each input can constrain",
+      "new": "Input roles and limitations",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "observations",
+      "old": "INDEPENDENT CHECKS / RECORDED IN THE REPORTS",
+      "new": "SPACECRAFT HOLDOUT TESTS",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "observations",
+      "old": "The held-out observer is the stronger test.",
+      "new": "Results from withheld spacecraft",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "observations",
+      "old": "Argon’s separate Wind/ACE holdout predicts Wind speed with reported RMSE 67.3 km s⁻¹. Claude reports leave-one-out speed-RMSE reductions of about 15%, 24%, and 15% for STEREO-A, L1, and Solar Orbiter, while its unassimilated MAVEN check does not improve. Codex retains native spacecraft residuals and explicitly qualifies the weak STEREO-A timing agreement.",
+      "new": "Argon’s machine-readable Wind/ACE holdout summary gives a Wind speed RMSE of 95.4 km s⁻¹; its report gives 67.3 km s⁻¹. This discrepancy is recorded under resources and provenance. Claude reports leave-one-out speed-RMSE reductions of about 15%, 24% and 15% for STEREO-A, L1 and Solar Orbiter; its unassimilated MAVEN check does not improve. Codex reports weak STEREO-A timing agreement.",
+      "reason": "Avoid endorsing a prose value contradicted by the machine-readable evidence already documented in the app."
+    },
+    {
+      "scope": "observations",
+      "old": "These native holdouts use different configurations and intervals. Their outcomes are described separately from the recomputed common-window calibration table above.",
+      "new": "The holdouts use different configurations and intervals from one another and from the common-window calibration table above.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "observations",
+      "old": "Read the model-specific evidence →",
+      "new": "Model-specific validation →",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "methods",
+      "old": "Shared equations. Distinct choices.",
+      "new": "Model equations and implementation",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "methods",
+      "old": "Read the physical assumptions, numerical techniques, final run selections, and limitations behind each reconstruction.",
+      "new": "The three implementations solve ideal magnetohydrodynamics with different coronal boundaries, assimilation methods, thermodynamic closures and magnetic-divergence treatments.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "methods",
+      "old": "THE SHARED PHYSICAL CORE",
+      "new": "COMMON PHYSICAL MODEL",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "methods",
+      "old": "Ideal MHD transports a magnetized, compressible fluid.",
+      "new": "Ideal magnetohydrodynamics",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "methods",
+      "old": " / the final implementation",
+      "new": " / selected implementation",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "methods",
+      "old": "SCIENTIFIC IMPLICATIONS",
+      "new": "RESULTS AND INTERPRETATION",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "methods",
+      "old": "From plasma to the incident flux",
+      "new": "Incident flux and exposure integration",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "methods",
+      "old": "Source trail",
+      "new": "Source files and methods",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "resources",
+      "old": "Account for the work.",
+      "new": "Resources and provenance",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "resources",
+      "old": "Recorded compute, model settings, source receipts, and the limits of the comparison. Historical costs reflect different workloads and do not form a performance ranking.",
+      "new": "Recorded compute use, session settings and source-file checksums. Workloads, hardware and accounting coverage differ between projects; the table documents those differences for each quantity.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "resources",
+      "old": "<strong>Resource accounting has different scopes.</strong>",
+      "new": "<strong>Accounting scope.</strong>",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "resources",
+      "old": "How the evidence was homogenized",
+      "new": "Comparison conventions",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "resources",
+      "old": "Conflicts in the native source material",
+      "new": "Source discrepancies",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "resources",
+      "old": "PROSE AND CODE CAN DISAGREE",
+      "new": "REPORT / DATA / IMPLEMENTATION",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "resources",
+      "old": "Immutable source receipts",
+      "new": "Source-file checksums",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "transcripts",
+      "old": "Read the record behind the result.",
+      "new": "Research session archive",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "transcripts",
+      "old": "Explore the identified research sessions, recorded dialogue and tool activity, and the notes exchanged between researchers. Original roles, timestamps, and session relationships remain visible.",
+      "new": "Search the recorded sessions, tool activity and shared research notes. Entries retain their original text, roles and timestamps; the session list shows recorded parent and descendant relationships.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "transcripts",
+      "old": "Readability follows the original record.",
+      "new": "Text is reproduced as recorded.",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    },
+    {
+      "scope": "error",
+      "old": "Reload observatory",
+      "new": "Reload application",
+      "reason": "Replace rhetorical phrasing with a descriptive label or explicit scientific statement."
+    }
+  ],
+  "sources": [
+    {
+      "title": "Wikipedia: Signs of AI writing",
+      "url": "https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing",
+      "use": "Editorial heuristics concerning slogans, promotional tone, generic analysis, negative parallelism and formulaic disclaimers; not a test of authorship."
+    },
+    {
+      "title": "Australian Government Style Manual: Plain language and word choice",
+      "url": "https://www.stylemanual.gov.au/writing-and-designing-content/clear-language-and-writing-style/plain-language-and-word-choice",
+      "use": "Direct active prose, familiar words and audience-appropriate technical terms."
+    }
+  ],
+  "scienceReplacements": {
+    "targets": [
+      "scripts/build_science.py",
+      "public/data/science.json"
+    ],
+    "application": "Apply exact string substitutions after any science/animation rebuild and before packaging or document hashing. scripts/apply_editorial_metadata.py applies them recursively without analysis reruns. The spacecraft replacement includes model / observation ratios, so remove the duplicate app callout sentence.",
+    "replacements": [
+      {
+        "path": "comet.bandQualification",
+        "old": "Claude only: transferred 12-member DA-design 16th–84th percentiles, not a calibrated confidence interval.",
+        "new": "Claude: transferred 12-member assimilation-design 16th–84th percentiles. Probability coverage has not been calibrated."
+      },
+      {
+        "path": "validation.spacecraft[*].qualification",
+        "old": "Common copied preprint spacecraft data and common finite-hour masks, 19 Nov–5 Dec 2025. Argon and Claude assimilated these spacecraft; this is an in-sample calibration assessment. Codex calibration also used spacecraft information. These residuals do not establish independent forecast skill.",
+        "new": "The models are compared with spacecraft measurements on the same finite hourly samples, 19 Nov–5 Dec 2025. Argon and Claude assimilated these spacecraft; Codex also used spacecraft data in calibration. These residuals therefore include calibration performance. Ratios give model / observation."
+      },
+      {
+        "path": "validation.remote.coronalReplication.qualification",
+        "old": "Claude’s independently computed coronal boundary compared pixelwise with remote-sensing-derived WSA maps. A model–model replication, not direct solar-wind observation. Argon and Codex adopt archived WSA maps, so no independent coronal-replication score is invented for them.",
+        "new": "Claude’s independently computed PFSS/SCS/WSA boundary is compared pixel by pixel with archived WSA maps derived from remote sensing. This tests coronal-model agreement. Argon and Codex use the archived maps as input and have no separate coronal replication."
+      },
+      {
+        "path": "validation.remote.boundaryMap.qualification",
+        "old": "GONG photospheric magnetograms constrain PFSS/SCS topology; WSA converts open-field expansion and coronal-hole distance to an empirical speed map near 0.1 AU. This is a model input shared by the reconstruction families, not an in-situ measurement.",
+        "new": "GONG photospheric magnetograms constrain PFSS/SCS topology. WSA converts open-field expansion and coronal-hole distance into an empirical speed map near 0.1 AU. All three reconstruction families use this modeled boundary input."
+      },
+      {
+        "path": "benchmarks.charts[0].notes",
+        "old": "Standard gamma=2, t=0.1 setup. Claude retained a plot and error table, but no numeric 1D profile in its final workspace; its convergence is shown separately. Codex native CT kernel matches production, but this benchmark uses higher-order PPM/RK3 rather than production PLM/RK2. Brio–Wu admits nonunique compound-wave branches; no curve is called a unique exact solution.",
+        "new": "Standard gamma=2, t=0.1 setup. Claude retained a plot and error table but no numerical 1D profile; its refinement errors are shown separately. Codex uses the production CT kernel with higher-order PPM/RK3 reconstruction and time integration; production uses PLM/RK2. Brio–Wu admits multiple compound-wave branches, so the plotted references are identified by method and resolution."
+      },
+      {
+        "path": "benchmarks.charts[1].notes",
+        "old": "Self-reference resolutions and tests differ, so the error amplitudes are not a common leaderboard. Shocks reduce global order toward one. Codex historical GLM Brio–Wu errors are deliberately excluded from the final CT comparison.",
+        "new": "The test definitions and self-reference resolutions differ between models. Compare refinement trends within each series. Shock discontinuities reduce global convergence order toward one. The Codex series includes only the selected CT formulation."
+      },
+      {
+        "path": "benchmarks.charts[2].notes",
+        "old": "Analytic references use each benchmark’s archived boundary and pressure convention. The two benchmark setups differ. Codex’s final CT verification is its native flux/geometry audits plus selected numerical controls, not the superseded GLM Parker tests.",
+        "new": "Each analytic reference uses its benchmark’s archived boundary and pressure convention. The two setups differ. Codex verifies its final CT implementation through separate flux/geometry audits and the recorded numerical controls below."
+      },
+      {
+        "path": "benchmarks.notes",
+        "old": "Different benchmarks, references, precisions, pressure conventions and aggregation rules are identified per panel. There is no defensible single numerical-quality rank.",
+        "new": "Each panel identifies its benchmark, reference solution, precision, pressure convention and aggregation rule. These differences limit comparisons of error magnitude across models."
+      },
+      {
+        "path": "animation.contrastDefinition",
+        "old": "Native flux × true native-plane heliocentric radius² in AU²; a structure-contrast view, not an alternate absolute flux.",
+        "new": "Native proton flux multiplied by the squared heliocentric radius in its source sampling surface, in AU². This compensates for radial geometric dilution to show stream structure."
+      },
+      {
+        "path": "animation.models.argon.qualification",
+        "old": "Only the base 160-cell run has retained movie slices. The displayed comet comparison uses the fine 224-cell run. The CUDA producer samples a conical shell at the comet latitude −6.455°, not an equatorial plane; it cannot supply a true ecliptic-plane sample.",
+        "new": "Retained movie slices are available for the 160-cell baseline run. The quantitative comet comparison uses the 224-cell fine run. The animation samples the solar-latitude cone at −6.455° and projects it onto the display axes; an ecliptic slice would require additional output."
+      },
+      {
+        "path": "animation.models.claude.qualification",
+        "old": "The retained slices contain density and radial speed, not the full velocity vector. The native animation uses n_p v_r; it is an approximation to n_p |v| and remains labeled as such.",
+        "new": "The retained density and radial-speed slices give radial proton flux n_p v_r. The full velocity vector required for n_p |v| was not retained."
+      }
+    ]
+  },
+  "finalReviewReplacements": {
+    "target": "src/app.js",
+    "replacements": [
+      {
+        "scope": "overview",
+        "old": "All three reconstructions predict enhanced proton flux during at least part of the XMM visit, but they place the stream compression at different times.",
+        "new": "The reconstructions differ in the timing and duration of the stream compression during the XMM observation.",
+        "reason": "Remove an enhancement claim with no stated reference level."
+      },
+      {
+        "scope": "overview",
+        "old": "J2000 ecliptic projection · physical UTC",
+        "new": "J2000 ecliptic projection · geometric UTC",
+        "reason": "Use the established distinction between geometric and photon-arrival epochs."
+      },
+      {
+        "scope": "overview",
+        "old": "Source receipts and data definitions →",
+        "new": "Source files and comparison definitions →",
+        "reason": "Use the same concrete terms as the provenance page."
+      },
+      {
+        "scope": "overview",
+        "old": "<th>|v| / km s⁻¹</th>",
+        "new": "<th>|vSW| / km s⁻¹</th>",
+        "reason": "Identify the tabulated bulk speed as heliocentric solar-wind speed, distinct from comet-relative incident speed."
+      },
+      {
+        "scope": "xray",
+        "old": "Solar-wind charge exchange couples the neutral density nₙ to the ion density, relative speed, charge-state fraction f_q, cross section σ_CX, and photon yield Y_X. A proton-flux curve constrains one part of this expression.",
+        "new": "Here nₙ is the neutral density, nₚ is the proton density, and f_q = n_q/nₚ is the emitting-ion abundance relative to protons, including elemental abundance and charge-state fraction. The emission also depends on relative speed, charge-exchange cross section σ_CX and photon yield Y_X.",
+        "reason": "The displayed n_p f_q equation requires f_q to include emitting-element abundance, not only the fraction in a charge state."
+      },
+      {
+        "scope": "verification",
+        "old": "<strong>Benchmark scope.</strong> Each pass applies to the specified pair of configurations. The models use different resolutions, precisions, closures and reference solutions, so their errors require separate interpretation. Claude’s retained Brio–Wu data contain an error table but no numerical profile. The Codex table includes failed controls.",
+        "new": "<strong>Control criteria.</strong> PASS/FAIL flags apply to the listed configuration pairs and their recorded criteria. Failed Codex controls remain in the table. Each benchmark chart identifies its numerical method and reference solution.",
+        "reason": "Shorten caveat duplicated in benchmark chart notes; retain the scope of pass/fail criteria."
+      },
+      {
+        "scope": "transcripts",
+        "old": "matching entries · full-entry term index · excerpts below",
+        "new": "matching entries · excerpts shown",
+        "reason": "Avoid exposing a search implementation detail in a results count."
+      }
+    ]
+  }
+}
