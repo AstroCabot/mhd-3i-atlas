@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "python scripts/build_writeups.py && python scripts/build_app.py",
-    "data": "python scripts/build_models.py && python scripts/build_physics_comparison.py && python scripts/build_science.py && python scripts/apply_editorial_metadata.py --input public/data/science.json && python scripts/build_reference_comparison.py && python scripts/build_solver_catalogue.py && python scripts/build_writeups.py && python scripts/build_transcripts.py && python scripts/build_animation_v2.py --with-images && node scripts/compile_math.mjs",
+    "data": "python scripts/build_models.py && python scripts/build_physics_comparison.py && python scripts/build_science.py && python scripts/apply_editorial_metadata.py --input public/data/science.json && python scripts/build_reference_comparison.py && python scripts/build_solver_catalogue.py && python scripts/build_writeups.py && python scripts/build_transcripts.py && python scripts/prepare_ccmc_movie.py && python scripts/build_animation_v2.py --with-images && node scripts/compile_math.mjs",
     "start": "python scripts/serve.py --host 0.0.0.0 --port 8080",
     "test": "node tests/browser.mjs",
     "math": "node scripts/compile_math.mjs",

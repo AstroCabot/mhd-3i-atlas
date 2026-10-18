@@ -128,6 +128,7 @@ python scripts/build_reference_comparison.py
 python scripts/build_solver_catalogue.py
 python scripts/build_writeups.py
 python scripts/build_transcripts.py
+python scripts/prepare_ccmc_movie.py --cache /tmp/mhd-ccmc-native
 python scripts/build_animation_v2.py --with-images
 node scripts/compile_math.mjs
 python scripts/build_app.py
