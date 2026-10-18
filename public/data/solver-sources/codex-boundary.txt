@@ -1,0 +1,77 @@
+#pragma once
+#include <complex>
+#include <functional>
+#include "boundary_parser.hpp"
+namespace x3ict {
+using C=std::complex<double>;
+// Mixed-radix Cooley-Tukey; prime factors use a direct base transform.
+inline std::vector<C> fft(const std::vector<C>&a,int sign){
+ int n=a.size(),p=2;while(p<n&&n%p)++p;int q=n/p;std::vector<C>out(n);
+ if(p==n){for(int k=0;k<n;++k)for(int j=0;j<n;++j)out[k]+=a[j]*std::polar(1.,sign*2*XPI*j*k/n);return out;}
+ std::vector<std::vector<C>> sub(p);for(int j=0;j<p;++j){std::vector<C>z(q);for(int l=0;l<q;++l)z[l]=a[j+p*l];sub[j]=fft(z,sign);}
+ for(int k=0;k<n;++k)for(int j=0;j<p;++j)out[k]+=sub[j][k%q]*std::polar(1.,sign*2*XPI*j*k/n);return out;
+}
+struct Surface {
+ int n,m;double r,dt,dp;std::vector<double>w,st;
+ std::vector<double> et,ep,br0,br1;double removed_mean=0,maximum_residual=0,maximum_relative_residual=0;
+ Surface(int n_,int m_,double r_):n(n_),m(m_),r(r_),dt(XPI/n),dp(2*XPI/m),w(n),st(n),et(n*m),ep((n+1)*m){for(int j=0;j<n;++j){w[j]=std::cos(j*dt)-std::cos((j+1)*dt);st[j]=std::sin((j+.5)*dt);}}
+ int ix(int j,int k)const{return j*m+(k%m+m)%m;}
+ double curl(const std::vector<double>&a,const std::vector<double>&b,int j,int k)const{
+  return (std::sin((j+1)*dt)*b[ix(j+1,k)]-std::sin(j*dt)*b[ix(j,k)])/(r*w[j])-dt*(a[ix(j,k+1)]-a[ix(j,k)])/(r*w[j]*dp);
+ }
+ void fit(const std::vector<double>&b0,const std::vector<double>&b1,double h,double omega){
+  if(!(h>0))throw std::runtime_error("surface interval must be positive");br0=b0;br1=b1;std::vector<double>rhs(n*m);std::fill(ep.begin(),ep.end(),0.);
+  for(int j=0;j<n;++j)for(int k=0;k<m;++k)et[ix(j,k)]=-omega*r*st[j]*.25*(b0[ix(j,k-1)]+b0[ix(j,k)]+b1[ix(j,k-1)]+b1[ix(j,k)]);
+  double mean=0;for(int j=0;j<n;++j)for(int k=0;k<m;++k){rhs[ix(j,k)]=(b1[ix(j,k)]-b0[ix(j,k)])/h+curl(et,ep,j,k);mean+=rhs[ix(j,k)]*w[j]/(2*m);}removed_mean=mean;
+  std::vector<std::vector<C>> f(n,std::vector<C>(m));for(int j=0;j<n;++j){for(int k=0;k<m;++k)f[j][k]=(rhs[ix(j,k)]-mean)*r*r;f[j]=fft(f[j],-1);}
+  for(int mode=0;mode<m;++mode){std::vector<double>a(n),d(n),c(n);std::vector<C>z(n);double lam=4*std::pow(std::sin(XPI*mode/m),2)/(dp*dp);
+   for(int j=0;j<n;++j){a[j]=std::sin(j*dt)/(w[j]*dt);c[j]=std::sin((j+1)*dt)/(w[j]*dt);d[j]=-a[j]-c[j]-dt*lam/(w[j]*st[j]);z[j]=f[j][mode];}
+   if(mode==0){d[0]=1;c[0]=0;z[0]=0;}
+   for(int j=1;j<n;++j){double t=a[j]/d[j-1];d[j]-=t*c[j-1];z[j]-=t*z[j-1];}
+   z[n-1]/=d[n-1];for(int j=n-2;j>=0;--j)z[j]=(z[j]-c[j]*z[j+1])/d[j];for(int j=0;j<n;++j)f[j][mode]=z[j];
+  }
+  std::vector<double>u(n*m);for(int j=0;j<n;++j){auto z=fft(f[j],1);for(int k=0;k<m;++k)u[ix(j,k)]=z[k].real()/m;}
+  for(int j=0;j<n;++j)for(int k=0;k<m;++k)et[ix(j,k)]+=(u[ix(j,k)]-u[ix(j,k-1)])/(r*st[j]*dp);
+  for(int j=1;j<n;++j)for(int k=0;k<m;++k)ep[ix(j,k)]=-(u[ix(j,k)]-u[ix(j-1,k)])/(r*dt);
+  double mx=0,scale=0;for(int j=0;j<n;++j)for(int k=0;k<m;++k){double q=(b1[ix(j,k)]-b0[ix(j,k)])/h;mx=std::max(mx,std::abs(q+curl(et,ep,j,k)));scale=std::max(scale,std::abs(q));}maximum_residual=std::max(maximum_residual,mx);maximum_relative_residual=std::max(maximum_relative_residual,mx/(scale+1e-99));
+ }
+};
+// Exact angular area average of the parser's clamped-latitude, periodic-longitude
+// piecewise-bilinear Br. Scalar velocity/thermodynamics retain parser semantics.
+struct Target {
+ const Boundary&b;Surface&s;std::string mode;double amplitude,frequency;std::vector<double>latmean;double last_removed_mean=0;
+ Target(const Boundary&b_,Surface&s_,std::string mode_,double amp=3.,double freq=2*XPI):b(b_),s(s_),mode(mode_),amplitude(amp),frequency(freq){
+  if(mode!="real"||!b.angular)return;latmean.assign((size_t)b.nt*s.n*b.nl,0.);
+  for(int j=0;j<s.n;++j){double lo=XPI/2-(j+1)*s.dt,hi=XPI/2-j*s.dt;std::vector<double>weights(b.na,0.);double x=lo;
+   while(x<hi-1e-14){int a;double y;bool clamp=false;
+    if(x<b.lats.front()-1e-14){a=0;y=std::min(hi,b.lats.front());clamp=true;}
+    else if(x>=b.lats.back()-1e-14){a=b.na-1;y=hi;clamp=true;}
+    else{a=std::upper_bound(b.lats.begin(),b.lats.end(),x+1e-14)-b.lats.begin()-1;y=std::min(hi,b.lats[a+1]);}
+    double integral=std::sin(y)-std::sin(x);if(clamp)weights[a]+=integral;else{double z=(y*std::sin(y)+std::cos(y)-x*std::sin(x)-std::cos(x)-b.lats[a]*integral)/(b.lats[a+1]-b.lats[a]);weights[a]+=integral-z;weights[a+1]+=z;}x=y;
+   }
+   for(int t=0;t<b.nt;++t)for(int l=0;l<b.nl;++l)for(int a=0;a<b.na;++a)latmean[((size_t)t*s.n+j)*b.nl+l]+=weights[a]*b.values[((size_t)t*b.na+a)*b.nl+l][2]/s.w[j];
+  }
+ }
+ std::vector<double> at(double time){
+  std::vector<double>out(s.n*s.m);double unit=1e-9/BUNIT/(s.r*s.r);
+  if(mode!="real"){
+   for(int j=0;j<s.n;++j)for(int k=0;k<s.m;++k){double avgcos=.5*(std::pow(std::sin((j+1)*s.dt),2)-std::pow(std::sin(j*s.dt),2))/s.w[j];double avgsin=(.5*s.dt-.25*(std::sin(2*(j+1)*s.dt)-std::sin(2*j*s.dt)))/s.w[j];
+    if(mode=="uniform")out[s.ix(j,k)]=amplitude*1e-9/BUNIT*avgcos;
+    else if(mode=="radial")out[s.ix(j,k)]=amplitude*unit;
+    else out[s.ix(j,k)]=amplitude*unit*(1+.2*std::sin(frequency*time))*(avgcos+.3*avgsin*2*std::sin(s.dp/2)/s.dp*std::cos((k+.5)*s.dp-b.rotation*time));
+   }return out;
+  }
+  if(!b.angular){std::fill(out.begin(),out.end(),b.sample(time,0,0)[2]*unit);return out;}
+  int t=0;double ft=0;if(time>=b.times.back()){t=b.nt-2;ft=1;}else if(time>b.times.front()){t=std::upper_bound(b.times.begin(),b.times.end(),time)-b.times.begin()-1;ft=(time-b.times[t])/(b.times[t+1]-b.times[t]);}
+  if(b.nt==1){t=0;ft=0;}int t1=std::min(t+1,b.nt-1);
+  auto value=[&](int j,int l){return (1-ft)*latmean[((size_t)t*s.n+j)*b.nl+l]+ft*latmean[((size_t)t1*s.n+j)*b.nl+l];};
+  for(int k=0;k<s.m;++k){double lo=wrap(k*s.dp-b.rotation*(time-b.epoch)-b.offset),hi=lo+s.dp,x=lo;
+   while(x<hi-1e-14){double xx=wrap(x+1e-14);auto q=std::upper_bound(b.lons.begin(),b.lons.end(),xx);int l=q==b.lons.begin()?b.nl-1:int(q-b.lons.begin()-1),l1=(l+1)%b.nl;double left=b.lons[l],right=b.lons[l1];if(l1==0)right+=2*XPI;if(xx<left)xx+=2*XPI;double dx=std::min(hi-x,right-xx);if(dx<1e-13){x+=1e-13;continue;}double f0=(xx-left)/(right-left),f1=(xx+dx-left)/(right-left),f=.5*(f0+f1);
+    for(int j=0;j<s.n;++j)out[s.ix(j,k)]+=dx*((1-f)*value(j,l)+f*value(j,l1))/s.dp;x+=dx;
+   }
+  }
+  double mean=0;for(int j=0;j<s.n;++j)for(int k=0;k<s.m;++k)mean+=out[s.ix(j,k)]*s.w[j]/(2*s.m);last_removed_mean=mean*b.magnetic_scale;
+  for(auto&z:out)z=(z-mean)*b.magnetic_scale*unit;return out;
+ }
+};
+}

@@ -1,0 +1,93 @@
+{
+  "author": "Codex",
+  "created_utc": "2026-10-18T01:29:08.930521+00:00",
+  "purpose": "Archived source evidence and a derived figure accompanying Codex_report.md; the original scientific workspace is read-only.",
+  "reference_case": "ct156_w30_theta40_phi192",
+  "files": [
+    {
+      "asset": "lightcurve_comparison.png",
+      "kind": "derived_plot",
+      "derived_from": "manuscript_benchmark.json",
+      "script": "plot_lightcurve.py",
+      "reproduce": "python plot_lightcurve.py",
+      "sha256": "3cab20413b1b14d579d532f8c675b334a22a1f3a459c87b2232ef4efecfd8866",
+      "bytes": 65729
+    },
+    {
+      "asset": "summary.json",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/results/summary.json",
+      "sha256": "a93f9d4413bcd2fe2f1724785c9cfed9ba644c71c38ae9f3f99103099ce86992",
+      "bytes": 221045
+    },
+    {
+      "asset": "manuscript_benchmark.json",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/validation/manuscript_benchmark.json",
+      "sha256": "6fca0de4f9a7f28e3b2badfab358f47cf8010e27eb53d6f684f68e54d8a07f0b",
+      "bytes": 3729
+    },
+    {
+      "asset": "ct_convergence_summary.json",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/validation/ct_convergence_summary.json",
+      "sha256": "27356eb06ca3b6d92a6be361c8adb286d10c6d09b5b2ddbcc168be782c2ebb0e",
+      "bytes": 111504
+    },
+    {
+      "asset": "ct_campaign_summary.json",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/validation/ct_campaign_summary.json",
+      "sha256": "0c12635987d9533936f304cb0069d4af6e497e48708b43716317451a9afca4a7",
+      "bytes": 746734
+    },
+    {
+      "asset": "inhouse_native.json",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/validation/inhouse_native.json",
+      "sha256": "112bb5d7ee466f5dd7fa4135d33ef79f500c89f751535ec33bfacb0278237d73",
+      "bytes": 176399
+    },
+    {
+      "asset": "ct_literature_benchmark.json",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/validation/ct_literature_benchmark.json",
+      "sha256": "29f3654c9ddf8cd18f67f2ddd4a522632bd7afd9a5332a888cdd13e4b5780ce1",
+      "bytes": 21873
+    },
+    {
+      "asset": "input_metadata.json",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/metadata.json",
+      "sha256": "54ebd0db108ae1ab7bdb15dcf456ab186965395ccac4cb578b260a0dc441c754",
+      "bytes": 7373
+    },
+    {
+      "asset": "selected_run_resources.json",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/results/ct156_w30_theta40_phi192/runner_usage.json",
+      "sha256": "3b40373b9343eb04fa552a4fd9d0c456f7de9bc26426bc0dc80d8910421b3af3",
+      "bytes": 1442
+    },
+    {
+      "asset": "20261016T224345Z_Argon_002.md",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/shared_notes/20261016T224345Z_Argon_002.md",
+      "sha256": "91048b8649e4d9e570baeacf88e2e9a4430f47211a7ca36a6a4001dba6d2fc93",
+      "bytes": 5681
+    },
+    {
+      "asset": "claude_20261017T0049Z_reply_codex012_pressure.md",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/shared_notes/claude_20261017T0049Z_reply_codex012_pressure.md",
+      "sha256": "b3b815d04e10579b1900c962ea1115cb2e28d2822ddd2ae9f408dfb48d267a67",
+      "bytes": 1885
+    },
+    {
+      "asset": "claude_20261017T0003Z_boundary_mach.md",
+      "original_source": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/shared_notes/claude_20261017T0003Z_boundary_mach.md",
+      "sha256": "c3342e479af303febe25564ede4800651645613499a02fa18c9dcb0d5ae12ade",
+      "bytes": 2483
+    },
+    {
+      "asset": "plot_lightcurve.py",
+      "kind": "figure_generation_source",
+      "sha256": "cca0a855c0710f16f9a20914e88400f0f6174ceabc841cb471edb1a535997927",
+      "bytes": 1805
+    }
+  ],
+  "report": "Codex_report.md",
+  "report_sha256": "512a4aaadf904554d696048137a69b3a0e28db3b5a730d168e6271f616914a97",
+  "editorial_review": "review_summary.json",
+  "editorial_review_sha256": "823bdb6155013c9d06cdc059f60fd5eefbd5b36e48ae74feb4182ff3d0c81f7b"
+}

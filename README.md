@@ -60,27 +60,36 @@ The original 128², six-hour, stepwise image display has been replaced with 768�
 
 The header’s theme switch selects the existing dark palette or a manila-paper light palette. The choice is saved in the browser and applied before the page is drawn. Charts, tables, equations and exports follow the selected palette; switching themes preserves field playback and chart zoom.
 
+Headings now default to sans serif. The header's **Aa** switch restores the serif headings for comparison; this preference is also saved. Body text retains the notebook's serif face, and tables and code use monospace. Solar-wind fields mark Mercury, Venus, Earth and Mars with circular mean-distance guides; moving markers still follow their ephemerides.
+
 ## Application views
 
 1. **Overview:** incident-flux curves, common exposure-weighted density/speed/flux table and selected solver configurations.
 2. **Solar wind:** synchronized field playback, continuous scrubber, field selection, full-screen view and comet time series.
 3. **Verification:** native benchmark profiles, convergence curves and registered numerical controls.
 4. **Observations:** common hourly spacecraft samples/residual masks, WSA boundary map and coronal-replication evidence.
-5. **X-ray comparison:** eight measured PN rates with uncertainties, common exposure matching, arrival-clock normalization and native/report mean reconciliation.
-6. **Agent conversations:** 18 sessions, 16,745 paginated entries, full-session term search, 85 shared notes and recorded agent settings. Direct links open main conversations, explicitly addressed exchanges and a four-note CME input-audit case study. Encrypted material is marked unavailable; credential patterns are redacted.
-7. **Model physics:** precompiled LaTeX/MathML equations, formulations, boundary conditions, calibration and limitations.
-8. **Resources and provenance:** scoped CPU/GPU/token accounting, source discrepancies and SHA-256 receipts.
+5. **NASA comparison:** the archived WSA 5.4 / ENLIL 2.8f run, four-model spacecraft residuals on shared masks, common PN-exposure comet means, CME/ambient control and qualified limitations. The [density audit](docs/nasa-comparison-audit.md) documents the corrected NASA overlay; selected agent results are unchanged.
+6. **X-ray comparison:** eight measured PN rates with uncertainties, common exposure matching, arrival-clock normalization and native/report mean reconciliation.
+7. **Agent conversations:** 18 sessions, 16,745 paginated entries, full-session term search, 85 shared notes and recorded agent settings. Direct links open main conversations, explicitly addressed exchanges and a four-note CME input-audit case study. Encrypted material is marked unavailable; credential patterns are redacted.
+8. **Model physics:** precompiled LaTeX/MathML equations, formulations, boundary conditions, calibration and limitations.
+9. **Solver code:** thirteen verbatim CUDA, C++ and Python source files with method jumps, search, line permalinks, raw downloads and checksums. Codex files match the selected production run's frozen receipts; Athena++ attribution and BSD license accompany its numerical core.
+10. **Model writeups:** each agent's supplied Markdown account with equations, tables, figures, evidence links and original downloads. Further submissions follow the [writeup guide](docs/model-writeups.md); the Pages workflow packages them automatically.
+11. **Resources and provenance:** scoped CPU/GPU/token accounting, source discrepancies and SHA-256 receipts.
 
 ## Source organisation
 
 ```text
 src/app.js                     routes, scientific tables and SVG charts
+src/research-pages.js          NASA comparison, source viewer and agent writeups
 src/solar-player.js            persistent field player and synchronized controls
 src/site-paths.js              asset URLs for root and repository-prefixed hosting
 src/styles.css                 responsive scientific typography and layout
 public/data/                   science, models, session chunks and animation manifest
 public/assets/animation-v2/     native-derived high-resolution playback products
 scripts/build_science.py        common science extraction, no solver reruns
+scripts/build_reference_comparison.py  matched NASA/agent comparison and density audit
+scripts/build_solver_catalogue.py      selected-run source extraction and receipts
+scripts/build_writeups.py       package submitted Markdown without editing it
 scripts/build_models.py         model descriptions and source receipts
 scripts/build_transcripts.py    allowlisted session and shared-note extraction
 scripts/build_animation_v2.py   direct native-slice rendering
@@ -112,6 +121,9 @@ python scripts/build_models.py
 python scripts/build_physics_comparison.py
 python scripts/build_science.py
 python scripts/apply_editorial_metadata.py --input public/data/science.json
+python scripts/build_reference_comparison.py
+python scripts/build_solver_catalogue.py
+python scripts/build_writeups.py
 python scripts/build_transcripts.py
 python scripts/build_animation_v2.py --with-images
 node scripts/compile_math.mjs
@@ -140,6 +152,7 @@ PLAYWRIGHT_SKIP_BROWSER_GC=1 npx playwright install chromium
 npm test
 node tests/solar-player.mjs
 node tests/solar-interactions.mjs
+node tests/research.mjs
 ```
 
 `TEST_URL` selects a different serving address. `CHROMIUM_PATH` is an optional browser executable override; use the installed matching browser unless diagnosing the host. Browser checks cover navigation, model/spacecraft selection, math, source archives, exports and mobile layout. Playback checks additionally examine decoded fields, clock advancement, seeking, synchronization and persistence of the image/SVG elements. Scientific checks compare native outputs, flux units, PN exposures, light-time conversion, resampling and source hashes.

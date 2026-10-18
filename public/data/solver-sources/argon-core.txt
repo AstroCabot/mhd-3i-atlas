@@ -1,0 +1,1352 @@
+// ============================================================================
+// heliomhd3d.cu
+// Hyper-Optimized 3D Spherical Ideal-MHD + Passive Heavy-Ion Scalar Solver
+// for the Inner Heliosphere (0.1 AU to 2.4 AU) & Comet 3I/ATLAS SWCX Modeling
+//
+// Author: Argon (Gemini 4 Argon High)
+// Architecture: CUDA (Compute Capability 8.9, RTX 4080 SUPER) + C++17
+// ============================================================================
+
+#include <cuda_runtime.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <algorithm>
+#include <chrono>
+
+#define CUDA_CHECK(call)                                                       \
+    do {                                                                       \
+        cudaError_t err = (call);                                              \
+        if (err != cudaSuccess) {                                              \
+            fprintf(stderr, "CUDA Error at %s:%d: %s\n", __FILE__, __LINE__,   \
+                    cudaGetErrorString(err));                                  \
+            exit(EXIT_FAILURE);                                                \
+        }                                                                      \
+    } while (0)
+
+using Real = float;
+
+constexpr double PI = 3.14159265358979323846;
+constexpr double DEG2RAD = PI / 180.0;
+constexpr double RAD2DEG = 180.0 / PI;
+constexpr double CODE_V0_KMS = 100.0;
+constexpr double CODE_T0_DAYS = 17.314568368055556;
+constexpr double CODE_B0_NT = 4.584671825;
+constexpr double CODE_T_SCALE_K = 605336.0;
+constexpr double OMEGA_SUN_CODE = (14.1844 * DEG2RAD) * CODE_T0_DAYS; // 4.286472 rad/T0
+constexpr double GM_SUN_CODE = 0.08871279;                            // GM_sun / (L0 * V0^2)
+
+// 10 State Variables per Cell:
+// 0:rho, 1:mom_r, 2:mom_th, 3:mom_ph, 4:Br, 5:Bth, 6:Bph, 7:E, 8:psi, 9:rho_fhi
+constexpr int NVAR = 10;
+constexpr int NGHOST = 2;
+
+struct SimConfig {
+    std::string mode = "solar_wind";
+    std::string bc_file = "data/processed/bc_mode3_assimilated.bin";
+    std::string traj_file = "data/processed/trajectories.bin";
+    std::string cme_file = "data/processed/cmes_hci.txt";
+    std::string out_prefix = "outputs/run";
+    int nr = 160;
+    int nth = 32;
+    int nph = 180;
+    double r_in = 0.10;
+    double r_out = 2.40;
+    double lat_max_deg = 60.0;
+    double gamma = 1.50;
+    double cfl = 0.35;
+    int enable_grav = 1;
+    int enable_mag = 1;
+    int enable_cmes = 0;
+    int save_slices = 0;
+    double relax_days = 12.0;
+    double mjd_start = 60998.0; // 2025-11-19
+    double mjd_end = 61015.0;   // 2025-12-06
+    double mjd_ref = 61012.0;
+    double phase_ref_deg = 326.27515176;
+};
+
+struct CMEEvent {
+    double mjd_launch;
+    double lat_deg;
+    double lon_hci_deg;
+    double half_width_deg;
+    double v_kms;
+};
+
+// ----------------------------------------------------------------------------
+// Device & Host Helper Functions: Primitive <-> Conservative & Limiter
+// ----------------------------------------------------------------------------
+__host__ __device__ inline Real mc_limiter(Real a, Real b) {
+    if (a * b <= (Real)0.0) return (Real)0.0;
+    Real c = (Real)0.5 * (a + b);
+    Real m = (fabsf((Real)2.0 * a) < fabsf((Real)2.0 * b)) ? (Real)2.0 * a : (Real)2.0 * b;
+    return (fabsf(m) < fabsf(c)) ? ((c > (Real)0.0) ? fabsf(m) : -fabsf(m)) : c;
+}
+
+__host__ __device__ inline void cons_to_prim(const Real U[NVAR], Real W[NVAR], Real gamma) {
+    Real rho = fmaxf(U[0], (Real)1e-5f);
+    Real inv_rho = (Real)1.0 / rho;
+    Real vr = U[1] * inv_rho;
+    Real vth = U[2] * inv_rho;
+    Real vph = U[3] * inv_rho;
+    Real br = U[4];
+    Real bth = U[5];
+    Real bph = U[6];
+    Real v2 = vr * vr + vth * vth + vph * vph;
+    Real b2 = br * br + bth * bth + bph * bph;
+    Real p = (gamma - (Real)1.0) * (U[7] - (Real)0.5 * rho * v2 - (Real)0.5 * b2);
+    Real p_min = (Real)1e-5f * rho;
+    if (p < p_min) p = p_min;
+
+    W[0] = rho;
+    W[1] = vr;
+    W[2] = vth;
+    W[3] = vph;
+    W[4] = br;
+    W[5] = bth;
+    W[6] = bph;
+    W[7] = p;
+    W[8] = U[8];
+    W[9] = fminf(fmaxf(U[9] * inv_rho, (Real)1e-5f), (Real)5e-3f);
+}
+
+__host__ __device__ inline void prim_to_cons(const Real W[NVAR], Real U[NVAR], Real gamma) {
+    Real rho = fmaxf(W[0], (Real)1e-5f);
+    Real vr = W[1];
+    Real vth = W[2];
+    Real vph = W[3];
+    Real br = W[4];
+    Real bth = W[5];
+    Real bph = W[6];
+    Real p = fmaxf(W[7], (Real)1e-5f * rho);
+    Real v2 = vr * vr + vth * vth + vph * vph;
+    Real b2 = br * br + bth * bth + bph * bph;
+
+    U[0] = rho;
+    U[1] = rho * vr;
+    U[2] = rho * vth;
+    U[3] = rho * vph;
+    U[4] = br;
+    U[5] = bth;
+    U[6] = bph;
+    U[7] = p / (gamma - (Real)1.0) + (Real)0.5 * rho * v2 + (Real)0.5 * b2;
+    U[8] = W[8];
+    U[9] = rho * W[9];
+}
+
+__host__ __device__ inline Real fast_magnetosonic_speed(
+    Real rho, Real p, Real bn, Real bt1, Real bt2, Real gamma
+) {
+    Real inv_rho = (Real)1.0 / fmaxf(rho, (Real)1e-5f);
+    Real cs2 = gamma * fmaxf(p, (Real)1e-7f) * inv_rho;
+    Real b2 = bn * bn + bt1 * bt1 + bt2 * bt2;
+    Real va2 = b2 * inv_rho;
+    Real van2 = (bn * bn) * inv_rho;
+    Real sum = cs2 + va2;
+    Real disc = fmaxf(sum * sum - (Real)4.0 * cs2 * van2, (Real)0.0);
+    return sqrtf((Real)0.5 * (sum + sqrtf(disc)));
+}
+
+// ----------------------------------------------------------------------------
+// 1D HLL + Exact Decoupled GLM Riemann Solver along normal direction `dir`:
+//   dir = 0: radial (n=r, t1=th, t2=ph)
+//   dir = 1: colatitude (n=th, t1=ph, t2=r)
+//   dir = 2: azimuth (n=ph, t1=r, t2=th)
+// ----------------------------------------------------------------------------
+__host__ __device__ inline void hll_glm_flux(
+    const Real WL_in[NVAR], const Real WR_in[NVAR],
+    Real Flux[NVAR], int dir, Real gamma, Real ch
+) {
+    int in_v = 1 + dir;
+    int it1_v = 1 + ((dir + 1) % 3);
+    int it2_v = 1 + ((dir + 2) % 3);
+    int in_b = 4 + dir;
+    int it1_b = 4 + ((dir + 1) % 3);
+    int it2_b = 4 + ((dir + 2) % 3);
+
+    Real WL[NVAR], WR[NVAR];
+    #pragma unroll
+    for (int m = 0; m < NVAR; ++m) {
+        WL[m] = WL_in[m];
+        WR[m] = WR_in[m];
+    }
+
+    // Exact 2x2 Riemann solution for (B_n, psi) subsystem (Dedner et al. 2002)
+    Real bn_star = (Real)0.5 * (WL[in_b] + WR[in_b]) - (Real)0.5 * (WR[8] - WL[8]) / fmaxf(ch, (Real)1e-4f);
+    Real psi_star = (Real)0.5 * (WL[8] + WR[8]) - (Real)0.5 * ch * (WR[in_b] - WL[in_b]);
+    WL[in_b] = bn_star;
+    WR[in_b] = bn_star;
+    WL[8] = psi_star;
+    WR[8] = psi_star;
+
+    Real UL[NVAR], UR[NVAR];
+    prim_to_cons(WL, UL, gamma);
+    prim_to_cons(WR, UR, gamma);
+
+    Real cfL = fast_magnetosonic_speed(WL[0], WL[7], WL[in_b], WL[it1_b], WL[it2_b], gamma);
+    Real cfR = fast_magnetosonic_speed(WR[0], WR[7], WR[in_b], WR[it1_b], WR[it2_b], gamma);
+
+    Real vnL = WL[in_v];
+    Real vnR = WR[in_v];
+    Real sL = fminf(vnL - cfL, vnR - cfR);
+    Real sR = fmaxf(vnL + cfL, vnR + cfR);
+
+    auto physical_flux = [&](const Real W[NVAR], const Real U[NVAR], Real F[NVAR]) {
+        Real rho = W[0];
+        Real vn = W[in_v], vt1 = W[it1_v], vt2 = W[it2_v];
+        Real bn = W[in_b], bt1 = W[it1_b], bt2 = W[it2_b];
+        Real b2 = bn * bn + bt1 * bt1 + bt2 * bt2;
+        Real ptot = W[7] + (Real)0.5 * b2;
+        Real vdotb = vn * bn + vt1 * bt1 + vt2 * bt2;
+
+        F[0] = rho * vn;
+        F[in_v] = rho * vn * vn + ptot - bn * bn;
+        F[it1_v] = rho * vn * vt1 - bn * bt1;
+        F[it2_v] = rho * vn * vt2 - bn * bt2;
+        F[in_b] = psi_star;
+        F[it1_b] = vn * bt1 - vt1 * bn;
+        F[it2_b] = vn * bt2 - vt2 * bn;
+        F[7] = (U[7] + ptot) * vn - bn * vdotb;
+        F[8] = ch * ch * bn_star;
+        F[9] = F[0] * W[9];
+    };
+
+    Real FL[NVAR], FR[NVAR];
+    physical_flux(WL, UL, FL);
+    physical_flux(WR, UR, FR);
+
+    if (sL >= (Real)0.0) {
+        #pragma unroll
+        for (int m = 0; m < NVAR; ++m) Flux[m] = FL[m];
+    } else if (sR <= (Real)0.0) {
+        #pragma unroll
+        for (int m = 0; m < NVAR; ++m) Flux[m] = FR[m];
+    } else {
+        Real inv_ds = (Real)1.0 / (sR - sL);
+        #pragma unroll
+        for (int m = 0; m < 8; ++m) {
+            Flux[m] = (sR * FL[m] - sL * FR[m] + sL * sR * (UR[m] - UL[m])) * inv_ds;
+        }
+        Flux[in_b] = psi_star;
+        Flux[8] = ch * ch * bn_star;
+        Flux[9] = (Flux[0] >= (Real)0.0) ? (Flux[0] * WL[9]) : (Flux[0] * WR[9]);
+    }
+}
+
+__host__ __device__ inline int idx3d(int ir, int ith, int iph, int nr_tot, int nth_tot, int nph) {
+    int ip = (iph % nph + nph) % nph;
+    return ((ir * nth_tot + ith) * nph + ip);
+}
+
+// ----------------------------------------------------------------------------
+// Inner & Outer Radial Boundary Condition Kernel
+//   At r = r_in (supersonic Dirichlet inflow face between ir=NGHOST-1 and ir=NGHOST),
+//   both ghost cells ir=0 and ir=1 are set to the exact inner-boundary state at r=r_in
+//   so PLM slope in ghost cells is zero and WL at face r=r_in is exact!
+// ----------------------------------------------------------------------------
+__global__ void apply_boundary_conditions_kernel(
+    Real* __restrict__ d_U,
+    const float* __restrict__ d_bc_map, // (4, 90, 180)
+    const CMEEvent* __restrict__ d_cmes,
+    int n_cmes,
+    int nr, int nth, int nph,
+    Real r_in, Real dr,
+    Real th_min, Real dth,
+    Real dph,
+    Real gamma,
+    Real t_code,
+    double mjd_current,
+    double mjd_ref,
+    double phase_ref_deg,
+    int bc_type,
+    int enable_mag,
+    int enable_cmes
+) {
+    int ith = blockIdx.x * blockDim.x + threadIdx.x;
+    int iph = blockIdx.y * blockDim.y + threadIdx.y;
+    int nr_tot = nr + 2 * NGHOST;
+    int nth_tot = nth + 2 * NGHOST;
+    if (ith >= nth_tot || iph >= nph) return;
+
+    int ith_clamped = min(max(ith, NGHOST), nth + NGHOST - 1);
+    Real th = th_min + (ith_clamped - NGHOST + (Real)0.5) * dth;
+    Real sin_th = sinf(th);
+    Real lat_deg = (Real)90.0 - th * (Real)RAD2DEG;
+    Real phi = (iph + (Real)0.5) * dph;
+    Real phi_deg = phi * (Real)RAD2DEG;
+
+    Real vr_kms = 400.0f;
+    Real np_cm3 = 700.0f;
+    Real br_nT = 300.0f;
+    Real temp_K = 5.0e5f;
+    Real f_hi = 7.646e-4f;
+
+    if (bc_type == 0) {
+        vr_kms = 400.0f;
+        np_cm3 = 700.0f;
+        br_nT = enable_mag ? 300.0f : 0.0f;
+        temp_K = 5.0e5f;
+        f_hi = 7.646e-4f;
+    } else if (bc_type == 1) {
+        Real alpha_tilt = 30.0f * (Real)DEG2RAD;
+        Real phi_rot = phi - (Real)OMEGA_SUN_CODE * t_code;
+        Real th_cs = (Real)(0.5 * PI) - asinf(sinf(alpha_tilt) * sinf(phi_rot));
+        Real dth_sb_deg = fabsf(th - th_cs) * cosf(alpha_tilt) * (Real)RAD2DEG;
+        Real s_fast = 0.5f * (1.0f + tanhf((dth_sb_deg - 12.0f) / 4.0f));
+        Real v_slow = 325.0f, v_fast = 675.0f;
+        vr_kms = v_slow + (v_fast - v_slow) * s_fast;
+        np_cm3 = 300.0f * (v_fast / vr_kms) * (v_fast / vr_kms);
+        Real hcs_smooth = tanhf((th_cs - th) / (3.0f * (Real)DEG2RAD));
+        br_nT = enable_mag ? (300.0f * hcs_smooth) : 0.0f;
+        temp_K = 8.0e5f * (vr_kms / v_fast) * (vr_kms / v_fast);
+        f_hi = 7.646e-4f + (6.329e-4f - 7.646e-4f) * s_fast;
+    } else {
+        double clon_deg = fmod((double)phi_deg - 14.1844 * (mjd_current - mjd_ref) + phase_ref_deg, 360.0);
+        if (clon_deg < 0.0) clon_deg += 360.0;
+
+        Real fj = fminf(fmaxf((lat_deg - (-89.0f)) * 0.5f, 0.0f), 89.0f);
+        int j0 = (int)floorf(fj);
+        int j1 = min(j0 + 1, 89);
+        Real wj = fj - j0;
+
+        Real fi = ((Real)clon_deg - 1.0f) * 0.5f;
+        int i0 = ((int)floorf(fi) % 180 + 180) % 180;
+        int i1 = (i0 + 1) % 180;
+        Real wi = fi - floorf(fi);
+
+        auto interp_plane = [&](int plane) {
+            const float* P = d_bc_map + plane * (90 * 180);
+            Real v00 = P[j0 * 180 + i0];
+            Real v01 = P[j0 * 180 + i1];
+            Real v10 = P[j1 * 180 + i0];
+            Real v11 = P[j1 * 180 + i1];
+            return (1.0f - wj) * ((1.0f - wi) * v00 + wi * v01) +
+                   wj * ((1.0f - wi) * v10 + wi * v11);
+        };
+
+        vr_kms = interp_plane(0);
+        np_cm3 = interp_plane(1);
+        br_nT = enable_mag ? interp_plane(2) : 0.0f;
+        temp_K = interp_plane(3);
+
+        Real s_slow = 0.5f * (1.0f - tanhf((vr_kms - 430.0f) / 70.0f));
+        f_hi = 6.329e-4f + (7.646e-4f - 6.329e-4f) * s_slow;
+
+        if (enable_cmes && n_cmes > 0) {
+            for (int ic = 0; ic < n_cmes; ++ic) {
+                double dt_days = mjd_current - d_cmes[ic].mjd_launch;
+                if (dt_days >= -0.05 && dt_days <= 0.35) {
+                    Real dlon = (phi_deg - (Real)d_cmes[ic].lon_hci_deg) * (Real)DEG2RAD;
+                    Real cos_ang = sinf(lat_deg * (Real)DEG2RAD) * sinf((Real)d_cmes[ic].lat_deg * (Real)DEG2RAD) +
+                                   cosf(lat_deg * (Real)DEG2RAD) * cosf((Real)d_cmes[ic].lat_deg * (Real)DEG2RAD) * cosf(dlon);
+                    Real ang_deg = acosf(fminf(fmaxf(cos_ang, -1.0f), 1.0f)) * (Real)RAD2DEG;
+                    if (ang_deg < (Real)d_cmes[ic].half_width_deg) {
+                        Real prof_ang = cosf(0.5f * (Real)PI * ang_deg / (Real)d_cmes[ic].half_width_deg);
+                        Real prof_t = sinf((Real)PI * fminf(fmaxf((Real)((dt_days + 0.05) / 0.40), 0.0f), 1.0f));
+                        Real shape = prof_ang * prof_ang * prof_t;
+                        vr_kms = fmaxf(vr_kms, vr_kms + ((Real)d_cmes[ic].v_kms - vr_kms) * shape);
+                        np_cm3 += 500.0f * shape;
+                        f_hi = fmaxf(f_hi, f_hi + (1.25e-3f - f_hi) * shape);
+                    }
+                }
+            }
+        }
+    }
+
+    Real W_in[NVAR];
+    W_in[0] = np_cm3;
+    W_in[1] = vr_kms / (Real)CODE_V0_KMS;
+    W_in[2] = 0.0f;
+    W_in[3] = 0.0f;
+    W_in[4] = br_nT / (Real)CODE_B0_NT;
+    W_in[5] = 0.0f;
+    W_in[6] = -W_in[4] * ((Real)OMEGA_SUN_CODE * r_in * sin_th / fmaxf(W_in[1], 0.5f));
+    W_in[7] = W_in[0] * (temp_K / (Real)CODE_T_SCALE_K);
+    W_in[8] = 0.0f;
+    W_in[9] = f_hi;
+
+    int ncells = nr_tot * nth_tot * nph;
+
+    for (int ir = 0; ir < NGHOST; ++ir) {
+        Real r_g = fmaxf(r_in + (ir - NGHOST + 0.5f) * dr, 0.5f * r_in);
+        Real ratio = r_in / r_g;
+        Real ratio2 = ratio * ratio;
+
+        Real W_g[NVAR];
+        W_g[0] = np_cm3 * ratio2;
+        W_g[1] = vr_kms / (Real)CODE_V0_KMS;
+        W_g[2] = 0.0f;
+        W_g[3] = 0.0f;
+        W_g[4] = (br_nT / (Real)CODE_B0_NT) * ratio2;
+        W_g[5] = 0.0f;
+        W_g[6] = -(br_nT / (Real)CODE_B0_NT) * ((Real)OMEGA_SUN_CODE * r_in * sin_th / fmaxf(W_g[1], 0.5f)) * ratio;
+        W_g[7] = np_cm3 * (temp_K / (Real)CODE_T_SCALE_K) * powf(ratio2, gamma);
+        W_g[8] = 0.0f;
+        W_g[9] = f_hi;
+
+        Real U_g[NVAR];
+        prim_to_cons(W_g, U_g, gamma);
+        int cell = idx3d(ir, ith, iph, nr_tot, nth_tot, nph);
+        #pragma unroll
+        for (int m = 0; m < NVAR; ++m) {
+            d_U[m * ncells + cell] = U_g[m];
+        }
+    }
+
+    // 2. Outer radial ghost cells (ir = nr + NGHOST .. nr + 2*NGHOST - 1)
+    for (int ir = nr + NGHOST; ir < nr_tot; ++ir) {
+        int ir_src = nr + NGHOST - 1;
+        Real r_src = r_in + (ir_src - NGHOST + 0.5f) * dr;
+        Real r_dst = r_in + (ir - NGHOST + 0.5f) * dr;
+        Real ratio = r_src / r_dst;
+        Real ratio2 = ratio * ratio;
+
+        int cell_src = idx3d(ir_src, ith, iph, nr_tot, nth_tot, nph);
+        int cell_dst = idx3d(ir, ith, iph, nr_tot, nth_tot, nph);
+
+        Real U_src[NVAR], W[NVAR];
+        #pragma unroll
+        for (int m = 0; m < NVAR; ++m) U_src[m] = d_U[m * ncells + cell_src];
+        cons_to_prim(U_src, W, gamma);
+
+        W[0] *= ratio2;
+        W[4] *= ratio2;
+        W[5] *= ratio;
+        W[6] *= ratio;
+        W[7] *= powf(ratio2, gamma);
+        W[8] = 0.0f;
+
+        Real U_dst[NVAR];
+        prim_to_cons(W, U_dst, gamma);
+        #pragma unroll
+        for (int m = 0; m < NVAR; ++m) {
+            d_U[m * ncells + cell_dst] = U_dst[m];
+        }
+    }
+}
+
+__global__ void apply_lat_boundary_kernel(
+    Real* __restrict__ d_U, int nr, int nth, int nph, Real gamma
+) {
+    int ir = blockIdx.x * blockDim.x + threadIdx.x;
+    int iph = blockIdx.y * blockDim.y + threadIdx.y;
+    int nr_tot = nr + 2 * NGHOST;
+    int nth_tot = nth + 2 * NGHOST;
+    if (ir >= nr_tot || iph >= nph) return;
+    int ncells = nr_tot * nth_tot * nph;
+
+    for (int g = 0; g < NGHOST; ++g) {
+        int ith_dst_n = g;
+        int ith_src_n = NGHOST;
+        int c_src_n = idx3d(ir, ith_src_n, iph, nr_tot, nth_tot, nph);
+        int c_dst_n = idx3d(ir, ith_dst_n, iph, nr_tot, nth_tot, nph);
+        Real U_s[NVAR], W[NVAR], U_d[NVAR];
+        #pragma unroll
+        for (int m = 0; m < NVAR; ++m) U_s[m] = d_U[m * ncells + c_src_n];
+        cons_to_prim(U_s, W, gamma);
+        W[2] = 0.0f;
+        W[5] = 0.0f;
+        W[8] = 0.0f;
+        prim_to_cons(W, U_d, gamma);
+        #pragma unroll
+        for (int m = 0; m < NVAR; ++m) d_U[m * ncells + c_dst_n] = U_d[m];
+
+        int ith_dst_s = nth + NGHOST + g;
+        int ith_src_s = nth + NGHOST - 1;
+        int c_src_s = idx3d(ir, ith_src_s, iph, nr_tot, nth_tot, nph);
+        int c_dst_s = idx3d(ir, ith_dst_s, iph, nr_tot, nth_tot, nph);
+        #pragma unroll
+        for (int m = 0; m < NVAR; ++m) U_s[m] = d_U[m * ncells + c_src_s];
+        cons_to_prim(U_s, W, gamma);
+        W[2] = 0.0f;
+        W[5] = 0.0f;
+        W[8] = 0.0f;
+        prim_to_cons(W, U_d, gamma);
+        #pragma unroll
+        for (int m = 0; m < NVAR; ++m) d_U[m * ncells + c_dst_s] = U_d[m];
+    }
+}
+
+// ----------------------------------------------------------------------------
+// 3D Spherical Finite-Volume RHS + RK Stage Update Kernel
+// ----------------------------------------------------------------------------
+__global__ void mhd_rk_stage_kernel(
+    const Real* __restrict__ d_U0,
+    const Real* __restrict__ d_U,
+    Real* __restrict__ d_Uout,
+    int nr, int nth, int nph,
+    Real r_in, Real dr,
+    Real th_min, Real dth,
+    Real dph,
+    Real gamma,
+    Real dt,
+    Real ch,
+    int enable_grav,
+    int stage
+) {
+    int iph = blockIdx.x * blockDim.x + threadIdx.x;
+    int ith = blockIdx.y * blockDim.y + threadIdx.y + NGHOST;
+    int ir  = blockIdx.z * blockDim.z + threadIdx.z + NGHOST;
+
+    int nr_tot = nr + 2 * NGHOST;
+    int nth_tot = nth + 2 * NGHOST;
+    if (ir >= nr + NGHOST || ith >= nth + NGHOST || iph >= nph) return;
+
+    int ncells = nr_tot * nth_tot * nph;
+    int c_ijk = idx3d(ir, ith, iph, nr_tot, nth_tot, nph);
+
+    auto get_W = [&](int r_i, int th_i, int ph_i, Real W_out[NVAR]) {
+        int c = idx3d(r_i, th_i, ph_i, nr_tot, nth_tot, nph);
+        Real U_loc[NVAR];
+        #pragma unroll
+        for (int m = 0; m < NVAR; ++m) U_loc[m] = d_U[m * ncells + c];
+        cons_to_prim(U_loc, W_out, gamma);
+    };
+
+    Real W_c[NVAR];
+    get_W(ir, ith, iph, W_c);
+
+    // 1. Radial Fluxes at i-1/2 and i+1/2 using Spherical Power-Law Scaled Primitives
+    Real r_c = r_in + (ir - NGHOST + 0.5f) * dr;
+    Real r_m = r_c - 0.5f * dr;
+    Real r_p = r_c + 0.5f * dr;
+
+    auto get_W_rad_scaled = [&](int r_i, Real Ws[NVAR]) {
+        get_W(r_i, ith, iph, Ws);
+        Real r_q = fmaxf(r_in + (r_i - NGHOST + 0.5f) * dr, 0.5f * r_in);
+        Real s = r_q / r_c;
+        Real s2 = s * s;
+        Ws[0] *= s2;
+        Ws[4] *= s2;
+        Ws[5] *= s;
+        Ws[6] *= s;
+        Ws[7] *= powf(s2, gamma);
+    };
+
+    Real W_im2[NVAR], W_im1[NVAR], W_c_s[NVAR], W_ip1[NVAR], W_ip2[NVAR];
+    get_W_rad_scaled(ir - 2, W_im2);
+    get_W_rad_scaled(ir - 1, W_im1);
+    #pragma unroll
+    for (int m = 0; m < NVAR; ++m) W_c_s[m] = W_c[m];
+    get_W_rad_scaled(ir + 1, W_ip1);
+    get_W_rad_scaled(ir + 2, W_ip2);
+
+    Real WL_rm[NVAR], WR_rm[NVAR], WL_rp[NVAR], WR_rp[NVAR];
+    #pragma unroll
+    for (int m = 0; m < NVAR; ++m) {
+        Real s_im1 = mc_limiter(W_im1[m] - W_im2[m], W_c_s[m] - W_im1[m]);
+        Real s_i   = mc_limiter(W_c_s[m] - W_im1[m], W_ip1[m] - W_c_s[m]);
+        Real s_ip1 = mc_limiter(W_ip1[m] - W_c_s[m], W_ip2[m] - W_ip1[m]);
+        WL_rm[m] = W_im1[m] + 0.5f * s_im1;
+        WR_rm[m] = W_c_s[m] - 0.5f * s_i;
+        WL_rp[m] = W_c_s[m] + 0.5f * s_i;
+        WR_rp[m] = W_ip1[m] - 0.5f * s_ip1;
+    }
+
+    // Unscale back to physical primitives at exact face radii r_m and r_p
+    Real sm = r_c / r_m, sm2 = sm * sm, sm2g = powf(sm2, gamma);
+    Real sp = r_c / r_p, sp2 = sp * sp, sp2g = powf(sp2, gamma);
+    WL_rm[0] *= sm2; WR_rm[0] *= sm2; WL_rp[0] *= sp2; WR_rp[0] *= sp2;
+    WL_rm[4] *= sm2; WR_rm[4] *= sm2; WL_rp[4] *= sp2; WR_rp[4] *= sp2;
+    WL_rm[5] *= sm;  WR_rm[5] *= sm;  WL_rp[5] *= sp;  WR_rp[5] *= sp;
+    WL_rm[6] *= sm;  WR_rm[6] *= sm;  WL_rp[6] *= sp;  WR_rp[6] *= sp;
+    WL_rm[7] *= sm2g; WR_rm[7] *= sm2g; WL_rp[7] *= sp2g; WR_rp[7] *= sp2g;
+
+    Real Fr_m[NVAR], Fr_p[NVAR];
+    hll_glm_flux(WL_rm, WR_rm, Fr_m, 0, gamma, ch);
+    hll_glm_flux(WL_rp, WR_rp, Fr_p, 0, gamma, ch);
+
+    // 2. Colatitude (theta) Fluxes at j-1/2 and j+1/2
+    Real W_jm2[NVAR], W_jm1[NVAR], W_jp1[NVAR], W_jp2[NVAR];
+    get_W(ir, ith - 2, iph, W_jm2);
+    get_W(ir, ith - 1, iph, W_jm1);
+    get_W(ir, ith + 1, iph, W_jp1);
+    get_W(ir, ith + 2, iph, W_jp2);
+
+    Real WL_tm[NVAR], WR_tm[NVAR], WL_tp[NVAR], WR_tp[NVAR];
+    #pragma unroll
+    for (int m = 0; m < NVAR; ++m) {
+        Real s_jm1 = mc_limiter(W_jm1[m] - W_jm2[m], W_c[m] - W_jm1[m]);
+        Real s_j   = mc_limiter(W_c[m] - W_jm1[m], W_jp1[m] - W_c[m]);
+        Real s_jp1 = mc_limiter(W_jp1[m] - W_c[m], W_jp2[m] - W_jp1[m]);
+        WL_tm[m] = W_jm1[m] + 0.5f * s_jm1;
+        WR_tm[m] = W_c[m]   - 0.5f * s_j;
+        WL_tp[m] = W_c[m]   + 0.5f * s_j;
+        WR_tp[m] = W_jp1[m] - 0.5f * s_jp1;
+    }
+    Real Fth_m[NVAR], Fth_p[NVAR];
+    hll_glm_flux(WL_tm, WR_tm, Fth_m, 1, gamma, ch);
+    hll_glm_flux(WL_tp, WR_tp, Fth_p, 1, gamma, ch);
+
+    // 3. Azimuthal (phi) Fluxes at k-1/2 and k+1/2
+    Real W_km2[NVAR], W_km1[NVAR], W_kp1[NVAR], W_kp2[NVAR];
+    get_W(ir, ith, iph - 2, W_km2);
+    get_W(ir, ith, iph - 1, W_km1);
+    get_W(ir, ith, iph + 1, W_kp1);
+    get_W(ir, ith, iph + 2, W_kp2);
+
+    Real WL_pm[NVAR], WR_pm[NVAR], WL_pp[NVAR], WR_pp[NVAR];
+    #pragma unroll
+    for (int m = 0; m < NVAR; ++m) {
+        Real s_km1 = mc_limiter(W_km1[m] - W_km2[m], W_c[m] - W_km1[m]);
+        Real s_k   = mc_limiter(W_c[m] - W_km1[m], W_kp1[m] - W_c[m]);
+        Real s_kp1 = mc_limiter(W_kp1[m] - W_c[m], W_kp2[m] - W_kp1[m]);
+        WL_pm[m] = W_km1[m] + 0.5f * s_km1;
+        WR_pm[m] = W_c[m]   - 0.5f * s_k;
+        WL_pp[m] = W_c[m]   + 0.5f * s_k;
+        WR_pp[m] = W_kp1[m] - 0.5f * s_kp1;
+    }
+    Real Fph_m[NVAR], Fph_p[NVAR];
+    hll_glm_flux(WL_pm, WR_pm, Fph_m, 2, gamma, ch);
+    hll_glm_flux(WL_pp, WR_pp, Fph_p, 2, gamma, ch);
+
+    // 4. Exact Spherical Geometry & Well-Balanced Source Terms
+    Real r_m2 = r_m * r_m;
+    Real r_p2 = r_p * r_p;
+    Real dV_r = dr * (r_c * r_c + dr * dr / 12.0f); // Exact (r_p^3 - r_m^3)/3 without cancellation!
+
+    Real th_c = th_min + (ith - NGHOST + 0.5f) * dth;
+    Real th_m = th_c - 0.5f * dth;
+    Real th_p = th_c + 0.5f * dth;
+    Real sin_m = sinf(th_m);
+    Real sin_p = sinf(th_p);
+    Real sin_c = sinf(th_c);
+    Real cot_c = cosf(th_c) / sin_c;
+    Real d_mu = 2.0f * sin_c * sinf(0.5f * dth); // Exact cos(th_m) - cos(th_p) without cancellation!
+
+    Real geom_2_over_r = (2.0f * r_c * dr) / dV_r;
+    Real geom_cot_over_r = ((sin_p - sin_m) / d_mu) / r_c;
+
+    Real rho = W_c[0];
+    Real vr  = W_c[1], vth = W_c[2], vph = W_c[3];
+    Real br  = W_c[4], bth = W_c[5], bph = W_c[6];
+    Real p   = W_c[7];
+    Real b2  = br * br + bth * bth + bph * bph;
+    Real ptot = p + 0.5f * b2;
+
+    Real divF[NVAR];
+    #pragma unroll
+    for (int m = 0; m < NVAR; ++m) {
+        if (m == 5 || m == 6) {
+            Real r_avg = r_c * dr; // Exact 0.5 * (r_p^2 - r_m^2)
+            divF[m] = (r_p * Fr_p[m] - r_m * Fr_m[m]) / r_avg
+                    + ((m == 5) ? ((sin_p * Fth_p[m] - sin_m * Fth_m[m]) / (r_c * d_mu))
+                                : ((Fth_p[m] - Fth_m[m]) / (r_c * dth)))
+                    + (Fph_p[m] - Fph_m[m]) / (r_c * sin_c * dph);
+        } else {
+            divF[m] = (r_p2 * Fr_p[m] - r_m2 * Fr_m[m]) / dV_r
+                    + (sin_p * Fth_p[m] - sin_m * Fth_m[m]) / (r_c * d_mu)
+                    + (Fph_p[m] - Fph_m[m]) / (r_c * sin_c * dph);
+        }
+    }
+
+    Real br_face_p = 0.5f * (WL_rp[4] + WR_rp[4]);
+    Real br_face_m = 0.5f * (WL_rm[4] + WR_rm[4]);
+    Real bth_face_p = 0.5f * (WL_tp[5] + WR_tp[5]);
+    Real bth_face_m = 0.5f * (WL_tm[5] + WR_tm[5]);
+    Real bph_face_p = 0.5f * (WL_pp[6] + WR_pp[6]);
+    Real bph_face_m = 0.5f * (WL_pm[6] + WR_pm[6]);
+    Real divB = (r_p2 * br_face_p - r_m2 * br_face_m) / dV_r
+              + (sin_p * bth_face_p - sin_m * bth_face_m) / (r_c * d_mu)
+              + (bph_face_p - bph_face_m) / (r_c * sin_c * dph);
+
+    Real S[NVAR] = {0.0f};
+    S[1] = geom_2_over_r * ptot + (rho * (vth * vth + vph * vph) - (bth * bth + bph * bph)) / r_c;
+    S[2] = geom_cot_over_r * ptot + (rho * (vph * vph * cot_c - vr * vth) - (bph * bph * cot_c - br * bth)) / r_c;
+    S[3] = -(rho * vph * (vr + vth * cot_c) - bph * (br + bth * cot_c)) / r_c;
+
+    if (enable_grav) {
+        Real g_r = -(Real)GM_SUN_CODE / (r_c * r_c);
+        S[1] += rho * g_r;
+        S[7] += rho * vr * g_r;
+    }
+
+    Real vdotb = vr * br + vth * bth + vph * bph;
+    S[1] -= divB * br;
+    S[2] -= divB * bth;
+    S[3] -= divB * bph;
+    S[4] -= divB * vr;
+    S[5] -= divB * vth;
+    S[6] -= divB * vph;
+    S[7] -= divB * vdotb;
+
+    Real U_new[NVAR];
+    #pragma unroll
+    for (int m = 0; m < NVAR; ++m) {
+        Real u_curr = d_U[m * ncells + c_ijk];
+        Real rhs = -divF[m] + S[m];
+        if (stage == 1) {
+            U_new[m] = u_curr + dt * rhs;
+        } else {
+            Real u_0 = d_U0[m * ncells + c_ijk];
+            U_new[m] = 0.5f * u_0 + 0.5f * (u_curr + dt * rhs);
+        }
+    }
+
+    U_new[8] *= 0.77880078f; // exp(-0.25)
+
+    Real W_check[NVAR];
+    cons_to_prim(U_new, W_check, gamma);
+    prim_to_cons(W_check, U_new, gamma);
+
+    #pragma unroll
+    for (int m = 0; m < NVAR; ++m) {
+        d_Uout[m * ncells + c_ijk] = U_new[m];
+    }
+}
+
+__global__ void init_domain_from_inner_kernel(
+    Real* __restrict__ d_U, int nr, int nth, int nph, Real r_in, Real dr, Real gamma
+) {
+    int iph = blockIdx.x * blockDim.x + threadIdx.x;
+    int ith = blockIdx.y * blockDim.y + threadIdx.y;
+    int ir  = blockIdx.z * blockDim.z + threadIdx.z + NGHOST;
+
+    int nr_tot = nr + 2 * NGHOST;
+    int nth_tot = nth + 2 * NGHOST;
+    if (ir >= nr_tot || ith >= nth_tot || iph >= nph) return;
+
+    int ncells = nr_tot * nth_tot * nph;
+    int c_in = idx3d(NGHOST - 1, ith, iph, nr_tot, nth_tot, nph);
+    Real r_dst = r_in + (ir - NGHOST + 0.5f) * dr;
+    Real ratio = r_in / r_dst;
+    Real ratio2 = ratio * ratio;
+
+    Real U_in[NVAR], W[NVAR];
+    #pragma unroll
+    for (int m = 0; m < NVAR; ++m) U_in[m] = d_U[m * ncells + c_in];
+    cons_to_prim(U_in, W, gamma);
+
+    W[0] *= ratio2;
+    W[4] *= ratio2;
+    W[6] *= ratio;
+    W[7] *= powf(ratio2, gamma);
+    W[8] = 0.0f;
+
+    Real U_out[NVAR];
+    prim_to_cons(W, U_out, gamma);
+    int c_dst = idx3d(ir, ith, iph, nr_tot, nth_tot, nph);
+    #pragma unroll
+    for (int m = 0; m < NVAR; ++m) d_U[m * ncells + c_dst] = U_out[m];
+}
+
+// ----------------------------------------------------------------------------
+// Host Trilinear Interpolation for Spacecraft & Comet Probes
+// ----------------------------------------------------------------------------
+void sample_probe_trilinear(
+    const std::vector<Real>& h_U,
+    int nr, int nth, int nph,
+    double r_in, double dr,
+    double th_min, double dth,
+    double dph,
+    double gamma,
+    double r_p, double th_p, double ph_p,
+    double W_out[NVAR]
+) {
+    int nr_tot = nr + 2 * NGHOST;
+    int nth_tot = nth + 2 * NGHOST;
+    int ncells = nr_tot * nth_tot * nph;
+
+    double fr = (r_p - (r_in + 0.5 * dr)) / dr + NGHOST;
+    int ir0 = std::max(NGHOST, std::min((int)std::floor(fr), nr + NGHOST - 2));
+    int ir1 = ir0 + 1;
+    double wr = std::max(0.0, std::min(fr - ir0, 1.0));
+
+    double fth = (th_p - (th_min + 0.5 * dth)) / dth + NGHOST;
+    int ith0 = std::max(NGHOST, std::min((int)std::floor(fth), nth + NGHOST - 2));
+    int ith1 = ith0 + 1;
+    double wth = std::max(0.0, std::min(fth - ith0, 1.0));
+
+    double fph = (ph_p - 0.5 * dph) / dph;
+    int iph0 = ((int)std::floor(fph) % nph + nph) % nph;
+    int iph1 = (iph0 + 1) % nph;
+    double wph = fph - std::floor(fph);
+
+    for (int m = 0; m < NVAR; ++m) W_out[m] = 0.0;
+
+    for (int dr_i = 0; dr_i <= 1; ++dr_i) {
+        double wt_r = (dr_i == 0) ? (1.0 - wr) : wr;
+        int ir = (dr_i == 0) ? ir0 : ir1;
+        for (int dth_i = 0; dth_i <= 1; ++dth_i) {
+            double wt_th = (dth_i == 0) ? (1.0 - wth) : wth;
+            int ith = (dth_i == 0) ? ith0 : ith1;
+            for (int dph_i = 0; dph_i <= 1; ++dph_i) {
+                double wt_ph = (dph_i == 0) ? (1.0 - wph) : wph;
+                int iph = (dph_i == 0) ? iph0 : iph1;
+                double weight = wt_r * wt_th * wt_ph;
+                int cell = idx3d(ir, ith, iph, nr_tot, nth_tot, nph);
+                Real U_loc[NVAR], W_loc[NVAR];
+                for (int m = 0; m < NVAR; ++m) U_loc[m] = h_U[m * ncells + cell];
+                cons_to_prim(U_loc, W_loc, (Real)gamma);
+                for (int m = 0; m < NVAR; ++m) W_out[m] += weight * (double)W_loc[m];
+            }
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// Mode 1: 1D Brio & Wu (1988) MHD Shock Tube Benchmark
+// ----------------------------------------------------------------------------
+void run_brio_wu_benchmark(const SimConfig& cfg) {
+    printf("Running 1D Brio & Wu (1988) MHD Shock Tube Benchmark...\n");
+    int resolutions[3] = {400, 800, 1600};
+    std::vector<std::vector<double>> rho_results(3);
+
+    for (int r_idx = 0; r_idx < 3; ++r_idx) {
+        int nx = resolutions[r_idx];
+        int nx_tot = nx + 2 * NGHOST;
+        Real dx = (Real)(1.0 / nx);
+        Real gamma_bw = 2.0f;
+        double t_end = 0.1;
+        double t = 0.0;
+
+        std::vector<Real> U(nx_tot * NVAR, 0.0f);
+        std::vector<Real> U1(nx_tot * NVAR, 0.0f);
+
+        for (int i = 0; i < nx_tot; ++i) {
+            double x = (i - NGHOST + 0.5) * dx;
+            Real W[NVAR] = {0.0f};
+            if (x < 0.5) {
+                W[0] = 1.0f;   W[4] = 0.75f; W[5] = 1.0f;  W[7] = 1.0f;   W[9] = 1.0e-3f;
+            } else {
+                W[0] = 0.125f; W[4] = 0.75f; W[5] = -1.0f; W[7] = 0.1f;   W[9] = 5.0e-4f;
+            }
+            prim_to_cons(W, &U[i * NVAR], gamma_bw);
+        }
+
+        auto apply_bw_bc = [&](std::vector<Real>& arr) {
+            for (int g = 0; g < NGHOST; ++g) {
+                for (int m = 0; m < NVAR; ++m) {
+                    arr[g * NVAR + m] = arr[NGHOST * NVAR + m];
+                    arr[(nx + NGHOST + g) * NVAR + m] = arr[(nx + NGHOST - 1) * NVAR + m];
+                }
+            }
+        };
+
+        auto step_1d = [&](const std::vector<Real>& Uin, std::vector<Real>& Uout, Real dt, Real ch, int stage) {
+            std::vector<Real> W(nx_tot * NVAR);
+            for (int i = 0; i < nx_tot; ++i) cons_to_prim(&Uin[i * NVAR], &W[i * NVAR], gamma_bw);
+
+            std::vector<Real> F((nx + 1) * NVAR, 0.0f);
+            for (int f = 0; f <= nx; ++f) {
+                int iL = f + NGHOST - 1;
+                int iR = f + NGHOST;
+                Real WL[NVAR], WR[NVAR];
+                for (int m = 0; m < NVAR; ++m) {
+                    Real sL = mc_limiter(W[iL * NVAR + m] - W[(iL - 1) * NVAR + m], W[iR * NVAR + m] - W[iL * NVAR + m]);
+                    Real sR = mc_limiter(W[iR * NVAR + m] - W[iL * NVAR + m], W[(iR + 1) * NVAR + m] - W[iR * NVAR + m]);
+                    WL[m] = W[iL * NVAR + m] + 0.5f * sL;
+                    WR[m] = W[iR * NVAR + m] - 0.5f * sR;
+                }
+                hll_glm_flux(WL, WR, &F[f * NVAR], 0, gamma_bw, ch);
+            }
+
+            for (int i = NGHOST; i < nx + NGHOST; ++i) {
+                int f_m = i - NGHOST;
+                int f_p = f_m + 1;
+                for (int m = 0; m < NVAR; ++m) {
+                    Real rhs = -(F[f_p * NVAR + m] - F[f_m * NVAR + m]) / dx;
+                    if (stage == 1) {
+                        Uout[i * NVAR + m] = Uin[i * NVAR + m] + dt * rhs;
+                    } else {
+                        Uout[i * NVAR + m] = 0.5f * U[i * NVAR + m] + 0.5f * (Uin[i * NVAR + m] + dt * rhs);
+                    }
+                }
+            }
+        };
+
+        while (t < t_end) {
+            Real max_speed = 3.5f;
+            Real dt = 0.4f * dx / max_speed;
+            if (t + dt > t_end) dt = (Real)(t_end - t);
+            apply_bw_bc(U);
+            step_1d(U, U1, dt, max_speed, 1);
+            apply_bw_bc(U1);
+            step_1d(U1, U, dt, max_speed, 2);
+            t += dt;
+        }
+
+        rho_results[r_idx].resize(nx);
+        for (int i = 0; i < nx; ++i) {
+            rho_results[r_idx][i] = U[(i + NGHOST) * NVAR + 0];
+        }
+
+        if (nx == 800 || nx == 1600) {
+            std::ofstream fout(cfg.out_prefix + "_brio_wu_" + std::to_string(nx) + ".tsv");
+            fout << "x\trho\tvx\tvy\tBx\tBy\tp\tf_hi\n";
+            for (int i = 0; i < nx; ++i) {
+                Real W[NVAR];
+                cons_to_prim(&U[(i + NGHOST) * NVAR], W, gamma_bw);
+                fout << std::fixed << std::setprecision(6)
+                     << (i + 0.5) * dx << "\t" << W[0] << "\t" << W[1] << "\t" << W[2] << "\t"
+                     << W[4] << "\t" << W[5] << "\t" << W[7] << "\t" << W[9] << "\n";
+            }
+        }
+    }
+
+    double l1_400 = 0.0, l1_800 = 0.0;
+    for (int i = 0; i < 400; ++i) {
+        double ref = 0.25 * (rho_results[2][4*i] + rho_results[2][4*i+1] + rho_results[2][4*i+2] + rho_results[2][4*i+3]);
+        l1_400 += std::fabs(rho_results[0][i] - ref) / 400.0;
+    }
+    for (int i = 0; i < 800; ++i) {
+        double ref = 0.5 * (rho_results[2][2*i] + rho_results[2][2*i+1]);
+        l1_800 += std::fabs(rho_results[1][i] - ref) / 800.0;
+    }
+    printf("Brio-Wu L1(400 vs 1600) = %.6f, L1(800 vs 1600) = %.6f, Ratio = %.3f\n",
+           l1_400, l1_800, l1_400 / l1_800);
+
+    std::ofstream fjson(cfg.out_prefix + "_brio_wu_metrics.json");
+    fjson << "{\n"
+          << "  \"l1_rho_400_vs_1600\": " << l1_400 << ",\n"
+          << "  \"l1_rho_800_vs_1600\": " << l1_800 << ",\n"
+          << "  \"convergence_ratio\": " << (l1_400 / l1_800) << "\n"
+          << "}\n";
+}
+
+// ----------------------------------------------------------------------------
+// Main 3D Spherical Simulation Driver (Parker Steady, Tilted CIR, Solar Wind)
+// ----------------------------------------------------------------------------
+void run_3d_spherical_simulation(const SimConfig& cfg) {
+    int nr = cfg.nr, nth = cfg.nth, nph = cfg.nph;
+    int nr_tot = nr + 2 * NGHOST;
+    int nth_tot = nth + 2 * NGHOST;
+    int ncells = nr_tot * nth_tot * nph;
+
+    double dr = (cfg.r_out - cfg.r_in) / nr;
+    double th_min = (90.0 - cfg.lat_max_deg) * DEG2RAD;
+    double th_max = (90.0 + cfg.lat_max_deg) * DEG2RAD;
+    double dth = (th_max - th_min) / nth;
+    double dph = (2.0 * PI) / nph;
+
+    size_t state_bytes = (size_t)NVAR * ncells * sizeof(Real);
+    printf("Initializing 3D Spherical MHD Solver [%s]: Grid (%d x %d x %d), Memory = %.2f MB per state buffer\n",
+           cfg.mode.c_str(), nr, nth, nph, state_bytes / (1024.0 * 1024.0));
+
+    Real *d_U = nullptr, *d_U1 = nullptr;
+    CUDA_CHECK(cudaMalloc(&d_U, state_bytes));
+    CUDA_CHECK(cudaMalloc(&d_U1, state_bytes));
+
+    float* d_bc_map = nullptr;
+    int bc_type = 0;
+    if (cfg.mode == "parker_steady") bc_type = 0;
+    else if (cfg.mode == "tilted_cir") bc_type = 1;
+    else bc_type = 2;
+
+    if (bc_type == 2) {
+        std::vector<float> h_bc(4 * 90 * 180, 0.0f);
+        std::ifstream fin(cfg.bc_file, std::ios::binary);
+        if (!fin) {
+            fprintf(stderr, "Failed to open boundary file: %s\n", cfg.bc_file.c_str());
+            exit(EXIT_FAILURE);
+        }
+        fin.read(reinterpret_cast<char*>(h_bc.data()), h_bc.size() * sizeof(float));
+        CUDA_CHECK(cudaMalloc(&d_bc_map, h_bc.size() * sizeof(float)));
+        CUDA_CHECK(cudaMemcpy(d_bc_map, h_bc.data(), h_bc.size() * sizeof(float), cudaMemcpyHostToDevice));
+    }
+
+    CMEEvent* d_cmes = nullptr;
+    int n_cmes = 0;
+    if (cfg.enable_cmes && bc_type == 2) {
+        std::ifstream fcme(cfg.cme_file);
+        if (fcme) {
+            fcme >> n_cmes;
+            std::vector<CMEEvent> h_cmes(n_cmes);
+            for (int i = 0; i < n_cmes; ++i) {
+                fcme >> h_cmes[i].mjd_launch >> h_cmes[i].lat_deg >> h_cmes[i].lon_hci_deg
+                     >> h_cmes[i].half_width_deg >> h_cmes[i].v_kms;
+            }
+            CUDA_CHECK(cudaMalloc(&d_cmes, n_cmes * sizeof(CMEEvent)));
+            CUDA_CHECK(cudaMemcpy(d_cmes, h_cmes.data(), n_cmes * sizeof(CMEEvent), cudaMemcpyHostToDevice));
+        }
+    }
+
+    constexpr int NT_TRAJ = 2449;
+    constexpr int NPROBES = 5;
+    std::vector<double> h_traj;
+    if (bc_type == 2) {
+        h_traj.resize(NT_TRAJ * NPROBES * 7);
+        std::ifstream ftr(cfg.traj_file, std::ios::binary);
+        if (!ftr) {
+            fprintf(stderr, "Failed to open trajectory file: %s\n", cfg.traj_file.c_str());
+            exit(EXIT_FAILURE);
+        }
+        ftr.read(reinterpret_cast<char*>(h_traj.data()), h_traj.size() * sizeof(double));
+    }
+
+    dim3 block_bc(16, 16);
+    dim3 grid_bc((nth_tot + 15) / 16, (nph + 15) / 16);
+    dim3 grid_lat((nr_tot + 15) / 16, (nph + 15) / 16);
+
+    dim3 block_3d(16, 4, 4);
+    dim3 grid_3d((nph + 15) / 16, (nth + 3) / 4, (nr + 3) / 4);
+    dim3 grid_init((nph + 15) / 16, (nth_tot + 3) / 4, (nr + NGHOST + 3) / 4);
+
+    double mjd_init = (bc_type == 2) ? (cfg.mjd_start - cfg.relax_days) : cfg.mjd_start;
+    apply_boundary_conditions_kernel<<<grid_bc, block_bc>>>(
+        d_U, d_bc_map, d_cmes, n_cmes, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)th_min, (Real)dth, (Real)dph,
+        (Real)cfg.gamma, 0.0f, mjd_init, cfg.mjd_ref, cfg.phase_ref_deg, bc_type, cfg.enable_mag, 0
+    );
+    init_domain_from_inner_kernel<<<grid_init, block_3d>>>(
+        d_U, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)cfg.gamma
+    );
+    apply_boundary_conditions_kernel<<<grid_bc, block_bc>>>(
+        d_U, d_bc_map, d_cmes, n_cmes, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)th_min, (Real)dth, (Real)dph,
+        (Real)cfg.gamma, 0.0f, mjd_init, cfg.mjd_ref, cfg.phase_ref_deg, bc_type, cfg.enable_mag, 0
+    );
+    apply_lat_boundary_kernel<<<grid_lat, block_bc>>>(d_U, nr, nth, nph, (Real)cfg.gamma);
+    CUDA_CHECK(cudaDeviceSynchronize());
+
+    double dx_r = dr;
+    double dx_th = cfg.r_in * dth;
+    double dx_ph = cfg.r_in * sin(th_min) * dph;
+    double h_min = std::min({dx_r, dx_th, dx_ph});
+    double v_max_code = 9.5;
+    double dt_code = cfg.cfl * h_min / v_max_code;
+    Real ch_glm = 4.0f;
+
+    auto t_wall_start = std::chrono::high_resolution_clock::now();
+
+    // Phase A: Relaxation
+    double relax_code_time = cfg.relax_days / CODE_T0_DAYS;
+    int n_relax_steps = std::max(1, (int)std::ceil(relax_code_time / dt_code));
+    double dt_relax_code = relax_code_time / n_relax_steps;
+    printf("Phase A: Relaxing 3D heliosphere for %.1f days (%d RK2 steps, dt = %.5f d)...\n",
+           cfg.relax_days, n_relax_steps, dt_relax_code * CODE_T0_DAYS);
+
+    double t_code = 0.0;
+    for (int step = 0; step < n_relax_steps; ++step) {
+        Real t_bc = (bc_type == 1) ? (Real)t_code : 0.0f;
+        double mjd_bc1 = mjd_init + t_code * CODE_T0_DAYS;
+        double mjd_bc2 = mjd_init + (t_code + dt_relax_code) * CODE_T0_DAYS;
+        apply_boundary_conditions_kernel<<<grid_bc, block_bc>>>(
+            d_U, d_bc_map, d_cmes, n_cmes, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)th_min, (Real)dth, (Real)dph,
+            (Real)cfg.gamma, t_bc, mjd_bc1, cfg.mjd_ref, cfg.phase_ref_deg, bc_type, cfg.enable_mag, 0
+        );
+        apply_lat_boundary_kernel<<<grid_lat, block_bc>>>(d_U, nr, nth, nph, (Real)cfg.gamma);
+        mhd_rk_stage_kernel<<<grid_3d, block_3d>>>(
+            d_U, d_U, d_U1, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)th_min, (Real)dth, (Real)dph,
+            (Real)cfg.gamma, (Real)dt_relax_code, ch_glm, cfg.enable_grav, 1
+        );
+
+        apply_boundary_conditions_kernel<<<grid_bc, block_bc>>>(
+            d_U1, d_bc_map, d_cmes, n_cmes, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)th_min, (Real)dth, (Real)dph,
+            (Real)cfg.gamma, t_bc + (Real)dt_relax_code, mjd_bc2, cfg.mjd_ref, cfg.phase_ref_deg, bc_type, cfg.enable_mag, 0
+        );
+        apply_lat_boundary_kernel<<<grid_lat, block_bc>>>(d_U1, nr, nth, nph, (Real)cfg.gamma);
+        mhd_rk_stage_kernel<<<grid_3d, block_3d>>>(
+            d_U, d_U1, d_U, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)th_min, (Real)dth, (Real)dph,
+            (Real)cfg.gamma, (Real)dt_relax_code, ch_glm, cfg.enable_grav, 2
+        );
+        t_code += dt_relax_code;
+    }
+    CUDA_CHECK(cudaDeviceSynchronize());
+
+    std::vector<Real> h_U((size_t)NVAR * ncells);
+
+    if (bc_type == 0 || bc_type == 1) {
+        CUDA_CHECK(cudaMemcpy(h_U.data(), d_U, state_bytes, cudaMemcpyDeviceToHost));
+        auto t_wall_end = std::chrono::high_resolution_clock::now();
+        double elapsed_s = std::chrono::duration<double>(t_wall_end - t_wall_start).count();
+        printf("Completed %s in %.2f s wall time.\n", cfg.mode.c_str(), elapsed_s);
+
+        int ith_eq = NGHOST + nth / 2;
+        if (bc_type == 0) {
+            std::ofstream fout(cfg.out_prefix + "_parker_profile.tsv");
+            fout << "r_au\tn_cm3\tvr_kms\tvph_kms\tBr_nT\tBph_nT\tT_K\tf_hi\tmass_flux_rel_err\tbr_flux_rel_err\n";
+
+            // Exact injected inner boundary fluxes at r_in = 0.10 AU:
+            // rho_in = 700 cm^-3, vr_in = 4.0 (400 km/s), Br_in = 300.0 / CODE_B0_NT
+            double mflux0 = cfg.r_in * cfg.r_in * 700.0 * 4.0;
+            double bflux0 = cfg.r_in * cfg.r_in * (cfg.enable_mag ? (300.0 / CODE_B0_NT) : 0.0);
+
+            double sum_m_err = 0.0, sum_b_err = 0.0, sum_fhi_err = 0.0;
+            for (int ir = NGHOST; ir < nr + NGHOST; ++ir) {
+                double r = cfg.r_in + (ir - NGHOST + 0.5) * dr;
+                int c = idx3d(ir, ith_eq, 0, nr_tot, nth_tot, nph);
+                Real U_loc[NVAR], W[NVAR];
+                for (int m = 0; m < NVAR; ++m) U_loc[m] = h_U[m * ncells + c];
+                cons_to_prim(U_loc, W, (Real)cfg.gamma);
+                double m_err = std::fabs(r * r * (double)W[0] * (double)W[1] - mflux0) / mflux0;
+                double b_err = (std::fabs(bflux0) > 1e-8) ? std::fabs(r * r * (double)W[4] - bflux0) / std::fabs(bflux0) : 0.0;
+                double f_err = std::fabs((double)W[9] - 7.646e-4) / 7.646e-4;
+                sum_m_err += m_err / nr;
+                sum_b_err += b_err / nr;
+                sum_fhi_err += f_err / nr;
+
+                fout << std::fixed << std::setprecision(6)
+                     << r << "\t" << W[0] << "\t" << W[1] * CODE_V0_KMS << "\t" << W[3] * CODE_V0_KMS << "\t"
+                     << W[4] * CODE_B0_NT << "\t" << W[6] * CODE_B0_NT << "\t" << (W[7] / W[0]) * CODE_T_SCALE_K << "\t"
+                     << W[9] << "\t" << m_err << "\t" << b_err << "\n";
+            }
+            printf("Parker Steady Errors: mean |d(r^2 rho vr)| = %.4e, mean |d(r^2 Br)| = %.4e, mean |df_hi| = %.4e\n",
+                   sum_m_err, sum_b_err, sum_fhi_err);
+            std::ofstream fj(cfg.out_prefix + "_parker_metrics.json");
+            fj << "{\n"
+               << "  \"nr\": " << nr << ", \"nth\": " << nth << ", \"nph\": " << nph << ",\n"
+               << "  \"wall_time_s\": " << elapsed_s << ",\n"
+               << "  \"mean_mass_flux_rel_err\": " << sum_m_err << ",\n"
+               << "  \"mean_br_flux_rel_err\": " << sum_b_err << ",\n"
+               << "  \"mean_fhi_rel_err\": " << sum_fhi_err << "\n"
+               << "}\n";
+        } else {
+            std::ofstream fout(cfg.out_prefix + "_cir_azimuthal.tsv");
+            fout << "phi_deg\tn_1au\tvr_1au\tvph_1au\tBmag_1au\tT_1au\tfhi_1au\tn_187au\tvr_187au\tvph_187au\tBmag_187au\tT_187au\tfhi_187au\n";
+            double th_eq = 0.5 * PI;
+            for (int iph = 0; iph < nph; ++iph) {
+                double ph = (iph + 0.5) * dph;
+                double W1[NVAR], W2[NVAR];
+                sample_probe_trilinear(h_U, nr, nth, nph, cfg.r_in, dr, th_min, dth, dph, cfg.gamma, 1.00, th_eq, ph, W1);
+                sample_probe_trilinear(h_U, nr, nth, nph, cfg.r_in, dr, th_min, dth, dph, cfg.gamma, 1.873, th_eq, ph, W2);
+                double B1 = std::sqrt(W1[4]*W1[4] + W1[5]*W1[5] + W1[6]*W1[6]) * CODE_B0_NT;
+                double B2 = std::sqrt(W2[4]*W2[4] + W2[5]*W2[5] + W2[6]*W2[6]) * CODE_B0_NT;
+                fout << std::fixed << std::setprecision(5)
+                     << ph * RAD2DEG << "\t"
+                     << W1[0] << "\t" << W1[1] * CODE_V0_KMS << "\t" << W1[3] * CODE_V0_KMS << "\t" << B1 << "\t" << (W1[7]/W1[0])*CODE_T_SCALE_K << "\t" << W1[9] << "\t"
+                     << W2[0] << "\t" << W2[1] * CODE_V0_KMS << "\t" << W2[3] * CODE_V0_KMS << "\t" << B2 << "\t" << (W2[7]/W2[0])*CODE_T_SCALE_K << "\t" << W2[9] << "\n";
+            }
+        }
+        CUDA_CHECK(cudaFree(d_U));
+        CUDA_CHECK(cudaFree(d_U1));
+        return;
+    }
+
+    // Phase B: Time-Dependent Evolution
+    double total_days = cfg.mjd_end - cfg.mjd_start;
+    double dt_days = dt_code * CODE_T0_DAYS;
+    int n_evol_steps = (int)std::ceil(total_days / dt_days);
+    dt_days = total_days / n_evol_steps;
+    dt_code = dt_days / CODE_T0_DAYS;
+
+    printf("Phase B: Time-dependent evolution from MJD %.1f to %.1f (%d RK2 steps, dt = %.4f min)...\n",
+           cfg.mjd_start, cfg.mjd_end, n_evol_steps, dt_days * 1440.0);
+
+    std::ofstream fprobes(cfg.out_prefix + "_probes.tsv");
+    fprobes << "mjd_utc\tprobe\tr_au\tlat_hci_deg\tlon_hci_deg\tn_cm3\tvr_kms\tvth_kms\tvph_kms\tvmag_kms\tvrel_comet_kms\t"
+            << "flux_helio_cm2s\tflux_rel_cm2s\tBr_nT\tBth_nT\tBph_nT\tBmag_nT\tT_K\tf_hi\tflux_hi_helio_cm2s\tflux_hi_rel_cm2s\n";
+
+    const char* probe_names[NPROBES] = {"comet", "stereo_a", "solar_orbiter", "wind", "ace"};
+    int next_traj_idx = 0;
+    int slice_idx = 0;
+    double next_slice_mjd = 61006.0;
+
+    for (int step = 0; step <= n_evol_steps; ++step) {
+        double mjd_curr = cfg.mjd_start + step * dt_days;
+
+        bool need_host_copy = false;
+        if (next_traj_idx < NT_TRAJ && mjd_curr >= h_traj[next_traj_idx * NPROBES * 7 + 0] - 1e-7) {
+            need_host_copy = true;
+        }
+        if (cfg.save_slices && mjd_curr >= next_slice_mjd - 1e-7) {
+            need_host_copy = true;
+        }
+
+        if (need_host_copy) {
+            CUDA_CHECK(cudaMemcpy(h_U.data(), d_U, state_bytes, cudaMemcpyDeviceToHost));
+
+            while (next_traj_idx < NT_TRAJ && mjd_curr >= h_traj[next_traj_idx * NPROBES * 7 + 0] - 1e-7) {
+                double t_sample = h_traj[next_traj_idx * NPROBES * 7 + 0];
+                for (int p = 0; p < NPROBES; ++p) {
+                    const double* tr = &h_traj[(next_traj_idx * NPROBES + p) * 7];
+                    double r_p = tr[1];
+                    double th_p = tr[2];
+                    double ph_p = tr[3];
+                    double vr_body = tr[4];
+                    double vth_body = tr[5];
+                    double vph_body = tr[6];
+
+                    double W[NVAR];
+                    sample_probe_trilinear(h_U, nr, nth, nph, cfg.r_in, dr, th_min, dth, dph, cfg.gamma, r_p, th_p, ph_p, W);
+
+                    double n_p = W[0];
+                    double vr_sw = W[1] * CODE_V0_KMS;
+                    double vth_sw = W[2] * CODE_V0_KMS;
+                    double vph_sw = W[3] * CODE_V0_KMS;
+                    double vmag_sw = std::sqrt(vr_sw * vr_sw + vth_sw * vth_sw + vph_sw * vph_sw);
+                    double vrel = std::sqrt(
+                        (vr_sw - vr_body) * (vr_sw - vr_body) +
+                        (vth_sw - vth_body) * (vth_sw - vth_body) +
+                        (vph_sw - vph_body) * (vph_sw - vph_body)
+                    );
+                    double flux_helio = n_p * vmag_sw * 1.0e5;
+                    double flux_rel = n_p * vrel * 1.0e5;
+                    double br_nT = W[4] * CODE_B0_NT;
+                    double bth_nT = W[5] * CODE_B0_NT;
+                    double bph_nT = W[6] * CODE_B0_NT;
+                    double bmag_nT = std::sqrt(br_nT * br_nT + bth_nT * bth_nT + bph_nT * bph_nT);
+                    double T_K = (W[7] / W[0]) * CODE_T_SCALE_K;
+                    double f_hi = W[9];
+
+                    fprobes << std::fixed << std::setprecision(6)
+                            << t_sample << "\t" << probe_names[p] << "\t"
+                            << r_p << "\t" << (90.0 - th_p * RAD2DEG) << "\t" << (ph_p * RAD2DEG) << "\t"
+                            << n_p << "\t" << vr_sw << "\t" << vth_sw << "\t" << vph_sw << "\t"
+                            << vmag_sw << "\t" << vrel << "\t"
+                            << std::scientific << std::setprecision(6)
+                            << flux_helio << "\t" << flux_rel << "\t"
+                            << std::fixed << std::setprecision(4)
+                            << br_nT << "\t" << bth_nT << "\t" << bph_nT << "\t" << bmag_nT << "\t"
+                            << std::fixed << std::setprecision(1) << T_K << "\t"
+                            << std::scientific << std::setprecision(5)
+                            << f_hi << "\t" << (flux_helio * f_hi) << "\t" << (flux_rel * f_hi) << "\n";
+                }
+                next_traj_idx++;
+            }
+
+            if (cfg.save_slices && mjd_curr >= next_slice_mjd - 1e-7) {
+                double th_comet = (90.0 - (-6.455)) * DEG2RAD;
+                std::vector<float> slice_buf(4 * nr * nph);
+                for (int ir = 0; ir < nr; ++ir) {
+                    double r_val = cfg.r_in + (ir + 0.5) * dr;
+                    for (int iph = 0; iph < nph; ++iph) {
+                        double ph_val = (iph + 0.5) * dph;
+                        double W[NVAR];
+                        sample_probe_trilinear(h_U, nr, nth, nph, cfg.r_in, dr, th_min, dth, dph, cfg.gamma, r_val, th_comet, ph_val, W);
+                        double vmag = std::sqrt(W[1]*W[1] + W[2]*W[2] + W[3]*W[3]) * CODE_V0_KMS;
+                        double flux = W[0] * vmag * 1.0e5;
+                        int idx2d = ir * nph + iph;
+                        slice_buf[0 * nr * nph + idx2d] = (float)W[0];
+                        slice_buf[1 * nr * nph + idx2d] = (float)vmag;
+                        slice_buf[2 * nr * nph + idx2d] = (float)flux;
+                        slice_buf[3 * nr * nph + idx2d] = (float)W[9];
+                    }
+                }
+                char sname[512];
+                snprintf(sname, sizeof(sname), "%s_slice_%03d.bin", cfg.out_prefix.c_str(), slice_idx);
+                std::ofstream fsl(sname, std::ios::binary);
+                fsl.write(reinterpret_cast<const char*>(&mjd_curr), sizeof(double));
+                fsl.write(reinterpret_cast<const char*>(slice_buf.data()), slice_buf.size() * sizeof(float));
+                slice_idx++;
+                next_slice_mjd += 0.125;
+            }
+        }
+
+        if (step == n_evol_steps) break;
+
+        apply_boundary_conditions_kernel<<<grid_bc, block_bc>>>(
+            d_U, d_bc_map, d_cmes, n_cmes, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)th_min, (Real)dth, (Real)dph,
+            (Real)cfg.gamma, 0.0f, mjd_curr, cfg.mjd_ref, cfg.phase_ref_deg, bc_type, cfg.enable_mag, cfg.enable_cmes
+        );
+        apply_lat_boundary_kernel<<<grid_lat, block_bc>>>(d_U, nr, nth, nph, (Real)cfg.gamma);
+        mhd_rk_stage_kernel<<<grid_3d, block_3d>>>(
+            d_U, d_U, d_U1, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)th_min, (Real)dth, (Real)dph,
+            (Real)cfg.gamma, (Real)dt_code, ch_glm, cfg.enable_grav, 1
+        );
+
+        apply_boundary_conditions_kernel<<<grid_bc, block_bc>>>(
+            d_U1, d_bc_map, d_cmes, n_cmes, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)th_min, (Real)dth, (Real)dph,
+            (Real)cfg.gamma, 0.0f, mjd_curr + dt_days, cfg.mjd_ref, cfg.phase_ref_deg, bc_type, cfg.enable_mag, cfg.enable_cmes
+        );
+        apply_lat_boundary_kernel<<<grid_lat, block_bc>>>(d_U1, nr, nth, nph, (Real)cfg.gamma);
+        mhd_rk_stage_kernel<<<grid_3d, block_3d>>>(
+            d_U, d_U1, d_U, nr, nth, nph, (Real)cfg.r_in, (Real)dr, (Real)th_min, (Real)dth, (Real)dph,
+            (Real)cfg.gamma, (Real)dt_code, ch_glm, cfg.enable_grav, 2
+        );
+    }
+
+    CUDA_CHECK(cudaDeviceSynchronize());
+    auto t_wall_end = std::chrono::high_resolution_clock::now();
+    double elapsed_s = std::chrono::duration<double>(t_wall_end - t_wall_start).count();
+    printf("Completed 3D Solar Wind MHD Run [%s] in %.2f s wall time (%d slices saved).\n",
+           cfg.out_prefix.c_str(), elapsed_s, slice_idx);
+
+    CUDA_CHECK(cudaMemcpy(h_U.data(), d_U, state_bytes, cudaMemcpyDeviceToHost));
+    double num_divb = 0.0, den_b = 0.0;
+    for (int ir = NGHOST + 2; ir < nr + NGHOST - 2; ++ir) {
+        double r_c = cfg.r_in + (ir - NGHOST + 0.5) * dr;
+        if (r_c < 0.3 || r_c > 2.2) continue;
+        double r_m = r_c - 0.5 * dr, r_p = r_c + 0.5 * dr;
+        double dV_r = (r_p*r_p*r_p - r_m*r_m*r_m) / 3.0;
+        for (int ith = NGHOST + 2; ith < nth + NGHOST - 2; ++ith) {
+            double th_c = th_min + (ith - NGHOST + 0.5) * dth;
+            double d_mu = cos(th_c - 0.5*dth) - cos(th_c + 0.5*dth);
+            double sin_c = sin(th_c);
+            for (int iph = 0; iph < nph; ++iph) {
+                int c = idx3d(ir, ith, iph, nr_tot, nth_tot, nph);
+                int cp_r = idx3d(ir + 1, ith, iph, nr_tot, nth_tot, nph);
+                int cm_r = idx3d(ir - 1, ith, iph, nr_tot, nth_tot, nph);
+                int cp_t = idx3d(ir, ith + 1, iph, nr_tot, nth_tot, nph);
+                int cm_t = idx3d(ir, ith - 1, iph, nr_tot, nth_tot, nph);
+                int cp_p = idx3d(ir, ith, iph + 1, nr_tot, nth_tot, nph);
+                int cm_p = idx3d(ir, ith, iph - 1, nr_tot, nth_tot, nph);
+
+                double br_p = 0.5 * ((double)h_U[4*ncells + c] + (double)h_U[4*ncells + cp_r]);
+                double br_m = 0.5 * ((double)h_U[4*ncells + c] + (double)h_U[4*ncells + cm_r]);
+                double bt_p = 0.5 * ((double)h_U[5*ncells + c] + (double)h_U[5*ncells + cp_t]);
+                double bt_m = 0.5 * ((double)h_U[5*ncells + c] + (double)h_U[5*ncells + cm_t]);
+                double bp_p = 0.5 * ((double)h_U[6*ncells + c] + (double)h_U[6*ncells + cp_p]);
+                double bp_m = 0.5 * ((double)h_U[6*ncells + c] + (double)h_U[6*ncells + cm_p]);
+
+                double divB = (r_p*r_p*br_p - r_m*r_m*br_m) / dV_r
+                            + (sin(th_c + 0.5*dth)*bt_p - sin(th_c - 0.5*dth)*bt_m) / (r_c * d_mu)
+                            + (bp_p - bp_m) / (r_c * sin_c * dph);
+                double bmag = std::sqrt((double)h_U[4*ncells+c]*h_U[4*ncells+c] + (double)h_U[5*ncells+c]*h_U[5*ncells+c] + (double)h_U[6*ncells+c]*h_U[6*ncells+c]);
+                double h_cell = std::cbrt(dr * (r_c * dth) * (r_c * sin_c * dph));
+                double vol = dV_r * d_mu * dph;
+                num_divb += vol * h_cell * std::fabs(divB);
+                den_b += vol * bmag;
+            }
+        }
+    }
+    double weighted_divb = (den_b > 1e-12) ? (num_divb / den_b) : 0.0;
+    printf("Weighted dimensionless magnetic divergence <h|divB|> / <|B|> = %.5e\n", weighted_divb);
+
+    std::ofstream fmeta(cfg.out_prefix + "_run_meta.json");
+    fmeta << "{\n"
+          << "  \"mode\": \"" << cfg.mode << "\",\n"
+          << "  \"bc_file\": \"" << cfg.bc_file << "\",\n"
+          << "  \"nr\": " << nr << ", \"nth\": " << nth << ", \"nph\": " << nph << ",\n"
+          << "  \"lat_max_deg\": " << cfg.lat_max_deg << ",\n"
+          << "  \"gamma\": " << cfg.gamma << ",\n"
+          << "  \"cfl\": " << cfg.cfl << ",\n"
+          << "  \"enable_grav\": " << cfg.enable_grav << ",\n"
+          << "  \"enable_mag\": " << cfg.enable_mag << ",\n"
+          << "  \"enable_cmes\": " << cfg.enable_cmes << ",\n"
+          << "  \"wall_time_s\": " << elapsed_s << ",\n"
+          << "  \"weighted_divB\": " << weighted_divb << ",\n"
+          << "  \"n_slices\": " << slice_idx << "\n"
+          << "}\n";
+
+    if (d_bc_map) CUDA_CHECK(cudaFree(d_bc_map));
+    if (d_cmes) CUDA_CHECK(cudaFree(d_cmes));
+    CUDA_CHECK(cudaFree(d_U));
+    CUDA_CHECK(cudaFree(d_U1));
+}
+
+int main(int argc, char** argv) {
+    SimConfig cfg;
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "--mode" && i + 1 < argc) cfg.mode = argv[++i];
+        else if (arg == "--bc_file" && i + 1 < argc) cfg.bc_file = argv[++i];
+        else if (arg == "--traj_file" && i + 1 < argc) cfg.traj_file = argv[++i];
+        else if (arg == "--cme_file" && i + 1 < argc) cfg.cme_file = argv[++i];
+        else if (arg == "--out_prefix" && i + 1 < argc) cfg.out_prefix = argv[++i];
+        else if (arg == "--nr" && i + 1 < argc) cfg.nr = std::atoi(argv[++i]);
+        else if (arg == "--nth" && i + 1 < argc) cfg.nth = std::atoi(argv[++i]);
+        else if (arg == "--nph" && i + 1 < argc) cfg.nph = std::atoi(argv[++i]);
+        else if (arg == "--lat_max" && i + 1 < argc) cfg.lat_max_deg = std::atof(argv[++i]);
+        else if (arg == "--gamma" && i + 1 < argc) cfg.gamma = std::atof(argv[++i]);
+        else if (arg == "--cfl" && i + 1 < argc) cfg.cfl = std::atof(argv[++i]);
+        else if (arg == "--enable_grav" && i + 1 < argc) cfg.enable_grav = std::atoi(argv[++i]);
+        else if (arg == "--enable_mag" && i + 1 < argc) cfg.enable_mag = std::atoi(argv[++i]);
+        else if (arg == "--enable_cmes" && i + 1 < argc) cfg.enable_cmes = std::atoi(argv[++i]);
+        else if (arg == "--save_slices" && i + 1 < argc) cfg.save_slices = std::atoi(argv[++i]);
+        else if (arg == "--relax_days" && i + 1 < argc) cfg.relax_days = std::atof(argv[++i]);
+    }
+
+    if (cfg.mode == "brio_wu") {
+        run_brio_wu_benchmark(cfg);
+    } else {
+        run_3d_spherical_simulation(cfg);
+    }
+    return 0;
+}

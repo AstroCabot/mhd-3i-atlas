@@ -1,0 +1,44 @@
+Author: Codex-external_model
+Date: 18 October 2026
+Scope: independent narrative, official Feynman passage, CCMC provenance and comparison review. No report, simulation, scientific source or original scientific artifact was changed. Line numbers below refer to the reviewed draft hash.
+
+No blocking scientific or CCMC error found. The initial draft had 1377 whitespace-delimited words. Both reviewed versions use an agent-identified filename and contain two explanatory equations, a short code example and a compact comparison table, with no Markdown section headings. It assumes the requested prior knowledge. Its conclusion follows from the reported spacecraft and PN comparisons rather than from numerical convergence alone.
+
+I read the actual Caltech Feynman Lectures, Volume I Chapter 1, section 1-2, gas/piston argument around Fig. 1-3:
+https://www.feynmanlectures.caltech.edu/I_01.html
+Feynman changes density while holding particle speed fixed, traces collision rate to pressure, then explains compression heating through collisions with a moving piston. The dilute-gas restriction appears beside the argument. These provide concrete review criteria: identify what changes, explain the mechanism, state the consequence and attach the approximation. Our draft does this particularly well in the stream-interaction opening, the velocity subtraction, interpolation order and CT edge cancellation. It need not imitate his jokes or rhetorical questions. No copied Feynman wording is needed.
+
+Precise wording checks (items 1 and 2 were resolved in the updated draft during review):
+
+1. RESOLVED in updated draft. Original line 15: “Geometrically balanced STEREO-A and Solar Orbiter measurements” can imply spatial balancing. The actual preparation script first obtains each instrument's median normalization, then takes their geometric mean, giving the instruments equal weight. Replace it with “I took the geometric mean of the STEREO-A and Solar Orbiter median normalizations from 10–24 November.” Keep the later Wind holdout sentence. This is a factual clarification, not merely style.
+
+2. RESOLVED in updated draft. Original line 13: “including older far-side observations” can suggest direct far-side magnetic observations. Replace the two sentences with “These retrospective maps combine observations from different phases of solar rotation, rather than measuring the whole Sun simultaneously.” GONG observes the visible photosphere; a synoptic map carries historical information into currently hidden longitudes.
+
+3. Line 57: name the omitted eruptions as “two omitted 23 November eruptions.” The nearly equal CCMC ambient/CME solutions constrain only that run's included catalogue. Its 64-cone catalogue used speed/width selection. The omitted events and our assumed scalar-cone durations/density cannot establish that every transient is negligible. The draft already preserves this distinction.
+
+Optional tightening, without changing the argument: delete “I tested different possible mistakes separately” (line 39); the next three sentences demonstrate this. Replace “Refinement then changed the scientific decision” (line 41) by “Two refinement tests failed.” Replace “Physical assumptions matter more than those last numerical changes” (line 43) by “On coarse meshes, changes to the inflow assumptions produced larger flux changes than the last refinement.” This keeps the important difference of meshes in the claim. The present peer paragraph has concrete examples; its opening sentence can be deleted without loss. Avoid adding a second concluding summary.
+
+CCMC facts independently checked against actual archived evidence:
+
+The final comparison uses the same observer-arrival convention, comet-relative incidence definition and exact PN good-time intervals. Selected incident mean = 119310003.88909604 cm^-2 s^-1; CCMC-CME = 39632330.56551248; their ratio = 3.01042109. Density means = 2.663316386/1.072141772 cm^-3; heliocentric speeds = 485.083259/408.825585 km/s. All table roundings are correct. These are model estimates, not local plasma measurements. Do not substitute the older external report's heliocentric median for the matched incident mean.
+
+The primary run is Jan_Deca_120925_SH_1:
+https://ccmc.gsfc.nasa.gov/ror/results/viewrun.php?runnumber=Jan_Deca_120925_SH_1
+Its control file documents ENLIL gamma 5/3 with heating and adjusted WSA boundary input:
+https://ccmc.gsfc.nasa.gov/RoR_WWW/SH/ENLIL/2025/Jan_Deca_120925_SH_1/Jan_Deca_120925_SH_1_control_file.txt
+The related genuine GONG-driven WSA maps used here were not demonstrated byte-identical to ENLIL's processed boundary. The draft correctly avoids attributing the factor-three difference to solver superiority.
+
+CCMC-CME/ambient matched incident-mean ratio = 1.00072111, or +0.0721%. This small difference cannot establish CME irrelevance. The sentence restricting our scalar-cone prescriptions is necessary.
+
+The eight-frame numbers are also consistent with the copied benchmark: incident dynamic range 1.4469923, PN rate dynamic range 7.8688632, unweighted correlation 0.2817206. The model's frame means increase monotonically, so “increases” is accurate. The final text correctly treats this as a trend comparison rather than a SWCX count prediction, and does not infer that the mismatch disproves SWCX. Its distinction between failed/unqualified physical controls and usable responses is necessary.
+
+Reviewed-source SHA256 receipts:
+Initial draft Codex_report.md 4a16429bd79de008080254ae84a61f0788e805ff43daeeb47ee4947f6158436d
+mhd_llm_app/public/assets/reports/Codex_report.md f3e4ef94c66f1050b71e254134323586fa7842fe4ac0b3c66037cbd1417c6beb
+mhd_llm/codex/scripts/prepare_inputs.py e0fe0387a706f661b8b4bf6e93533c3822b7b419c9e9f1811bd736bbd4efd5ad
+mhd_llm_app/public/assets/reports/Codex_assets/summary.json a93f9d4413bcd2fe2f1724785c9cfed9ba644c71c38ae9f3f99103099ce86992
+mhd_llm_app/public/assets/reports/Codex_assets/input_metadata.json 54ebd0db108ae1ab7bdb15dcf456ab186965395ccac4cb578b260a0dc441c754
+mhd_llm_app/public/assets/reports/Codex_assets/manuscript_benchmark.json 6fca0de4f9a7f28e3b2badfab358f47cf8010e27eb53d6f684f68e54d8a07f0b
+mhd_llm_app/public/assets/reports/Codex_assets/ct_literature_benchmark.json 29f3654c9ddf8cd18f67f2ddd4a522632bd7afd9a5332a888cdd13e4b5780ce1
+mhd_llm/codex/external_model/report.txt 0e9be1ee4ea5a06b8b7076392fdde9e0c5174fd65159f1933756d14a99acd2b6
+mhd_llm/codex/external_model/cme_nov23/report.txt acecc943d8e45e2d8293c222fd8af3e6294487fdbe8d1629308fa4aa0e2ed417

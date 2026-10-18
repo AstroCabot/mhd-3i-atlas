@@ -1,0 +1,11 @@
+Reviewer: Codex-solver
+Date: 2026-10-18 UTC
+Final reviewed draft SHA256: 546e13e6760d936c00485119952d2e083a60147483bcc36d1caa8326d224cdff
+Whitespace word count: 1421
+Status: PASS; no remaining numerical or source-accuracy blocker. Original scientific workspace remained read-only; no model or suite rerun.
+
+The revised snippet now matches preparation/query ordering, including the explicit 200 km/s minimum. The geometric-mean normalization, oriented/time-averaged CT update, within-cell edge cancellation, higher-order benchmark scope and failed-scenario limitations are accurate. Final/CCMC means, 1.46/0.27/1.18 percent refinement changes, 3.47 percent maximum flux change, 54/37/31 percent coarse responses, 2.54 percent partial Brio-Wu comparison, r=0.282, and the final-run cost agree with the saved records. The report stays below 2000 words, has no section headings, credits Athena++ and does not claim a light-curve fit or an absolute numerical-error bound.
+
+I compared its explanation with the official Feynman Lectures I.1 §1–2 gas/piston passage, https://www.feynmanlectures.caltech.edu/I_01.html. There a specified microscopic change produces a force/energy change and then a macroscopic consequence. The draft's doubling-speed/closure example and signed-edge cancellation now provide similarly explicit causal chains without imitating the lecture's wording. The technical level is suitable for the stated reader. No pervasive stock LLM language remains.
+
+Two optional precision edits, neither changes the scientific conclusion: replace “My first solver used a compact GPU…” with “An early version of my finite-volume solver ran on the GPU…” because the original implementation began on the CPU; append “The published reference omits an intermediate shock” to the Brio-Wu caveat to make the branch limitation fully explicit. These are the only remaining recommendations; broader rewriting would not improve the report materially.

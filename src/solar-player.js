@@ -8,6 +8,13 @@ import { siteUrl } from './site-paths.js';
  * Intermediate opacity blending adds visual continuity, not native information.
  */
 const NS = 'http://www.w3.org/2000/svg';
+// JPL J2000 semi-major axes: circular scale guides, not orbital ephemerides.
+export const ORBIT_GUIDES = [
+  {id:'mercury',name:'Mercury',radius:.38709927,angle:215},
+  {id:'venus',name:'Venus',radius:.72333566,angle:315},
+  {id:'earth',name:'Earth',radius:1.00000261,angle:45},
+  {id:'mars',name:'Mars',radius:1.52371034,angle:120},
+];
 const clamp = (v, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, v));
 const utc = mjd => new Date((mjd - 40587) * 86400000).toISOString().slice(0, 16).replace('T', ' ') + ' UTC';
 const icons = {
@@ -162,11 +169,18 @@ export async function mountSolarPlayers(options = {}) {
     svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
     Object.assign(svg.style, {position: 'absolute', inset: '0', width: '100%', height: '100%', zIndex: '2', pointerEvents: 'none'});
     const grid = el('g', {fill: 'none', stroke: '#d4d6cc', 'stroke-opacity': '.24', 'stroke-width': '.8'});
-    for (const radius of [.5, 1, 1.5, 2]) grid.append(el('circle', {cx: 384, cy: 384, r: radius * 160, 'stroke-dasharray': '2 5'}));
+    for (const orbit of ORBIT_GUIDES) {
+      const circle=el('circle',{cx:384,cy:384,r:orbit.radius*160,'stroke-dasharray':'3 5','stroke-width':'.65','stroke-opacity':'.42','vector-effect':'non-scaling-stroke','data-orbit':orbit.id});
+      circle.append(el('title',{},`${orbit.name}: circular guide at ${orbit.radius.toFixed(3)} AU`));grid.append(circle);
+    }
+    grid.append(el('circle',{cx:384,cy:384,r:320,'stroke-dasharray':'1 7','stroke-opacity':'.3'}));
     grid.append(el('path', {d: 'M0 384H768M384 0V768', 'stroke-opacity': '.13'}));
     svg.append(grid);
     const labels = el('g', {'font-family': 'IBM Plex Mono, monospace', 'font-size': '11', fill: '#c0c4bd', 'paint-order': 'stroke', stroke: '#0c1014', 'stroke-width': '2.5', 'stroke-linejoin': 'round'});
-    for (const radius of [1, 2]) labels.append(el('text', {x: 379 + radius * 160, y: 399, 'text-anchor': 'end'}, `${radius} AU`));
+    for(const orbit of ORBIT_GUIDES){
+      const angle=orbit.angle*Math.PI/180,dx=Math.cos(angle),dy=-Math.sin(angle);
+      labels.append(el('text',{x:384+dx*orbit.radius*160+(dx<0?-7:7),y:384+dy*orbit.radius*160+(dy<0?-8:14),'text-anchor':dx<0?'end':'start','data-orbit-label':orbit.id},`${orbit.name} ${orbit.radius.toFixed(3)} AU`));
+    }
     labels.append(el('text', {x: 12, y: 752, 'font-size': '10'}, 'J2000 ecliptic x/y · AU'));
     svg.append(labels, el('circle', {cx: 384, cy: 384, r: 4, fill: '#fff1ad'}));
     const names = {comet: '3I/ATLAS', earth: 'Earth / L1', stereo_a: 'STEREO-A', solar_orbiter: 'SolO', mercury: 'Mercury', venus: 'Venus', mars: 'Mars'};

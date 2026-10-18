@@ -2,6 +2,7 @@
 from html.parser import HTMLParser
 from pathlib import Path
 import argparse
+import hashlib
 import json
 import re
 from urllib.parse import unquote, urlsplit
@@ -24,6 +25,8 @@ def check(directory):
     directory = Path(directory).resolve()
     required = ('index.html', '.nojekyll', 'app.js', 'site-paths.js', 'solar-player.js',
                 'styles.css', 'theme.js', 'data/science.json', 'data/models.json',
+                'research-pages.js', 'data/nasa-comparison.json', 'data/solver-code.json',
+                'data/model-writeups.json', 'docs/model-writeups.md', 'docs/nasa-comparison-audit.md',
                 'data/transcripts.json', 'data/physics-comparison.json', 'data/animation-v2.json', 'data/equations.json')
     for name in required:
         if not (directory / name).is_file():
@@ -63,6 +66,15 @@ def check(directory):
     for url in archive_urls:
         if not (directory / url.lstrip('/')).is_file():
             raise SystemExit(f'Missing packaged archive resource: {url}')
+    catalogue = json.loads((directory / 'data/solver-code.json').read_text())
+    reports = json.loads((directory / 'data/model-writeups.json').read_text())['reports']
+    for row in catalogue['files'] + [report for report in reports if report['status'] == 'submitted']:
+        path = directory / row['rawUrl'].lstrip('/')
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != row['sha256']:
+            raise SystemExit(f'Missing or changed source/report download: {path}')
+    for url in (catalogue['athena']['licenseUrl'], '/docs/model-writeups.md'):
+        if not (directory / url.lstrip('/')).is_file():
+            raise SystemExit(f'Missing source/report documentation: {url}')
     print(f'Standalone Pages artifact: {len(files):,} files, {total / 1_000_000:.1f} MB; '
           'relative index/CSS assets and all archive chunks verified.')
 

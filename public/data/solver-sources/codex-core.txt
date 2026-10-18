@@ -1,0 +1,273 @@
+// Isolated single-block MHD/CT wind control; pinned Athena++ supplies all fluxes,
+// spherical geometry, gravity, and SSPRK2. Own hooks prescribe physical edges.
+#include <memory>
+#include <mutex>
+#include "../athena.hpp"
+#include "../athena_arrays.hpp"
+#include "../bvals/bvals.hpp"
+#include "../coordinates/coordinates.hpp"
+#include "../eos/eos.hpp"
+#include "../field/field.hpp"
+#include "../hydro/hydro.hpp"
+#include "../mesh/mesh.hpp"
+#include "../parameter_input.hpp"
+#include "surface_driver.hpp"
+#include "cone_boundary.hpp"
+#include "ecliptic_export.hpp"
+#if !MAGNETIC_FIELDS_ENABLED
+#error x3i_ct requires magnetic CT
+#endif
+namespace {
+using namespace x3ict;
+std::unique_ptr<ConeBoundary> cones;
+std::unique_ptr<Config> cfg;std::unique_ptr<Boundary> boundary;std::unique_ptr<Surface> surface;std::unique_ptr<Target> target;
+std::string mode;std::filesystem::path out;double gamma_gas,rmin,GM;int nr,nt,np,joff,nradialblocks=1,native_threads=1;
+std::mutex surface_mutex,observer_mutex;
+std::vector<MeshBlock*> radial_owner;std::vector<int> radial_local_i;
+std::vector<double> initial_br;
+struct EndFlux{long double mass=0,energy=0;};
+std::vector<std::array<EndFlux,2>> left_flux,right_flux;
+double maximum_internal_flux_relative=0,maximum_internal_Br_difference=0;int native_rhs_calls=0;
+int block_index(MeshBlock*p){return int(p->loc.lx1);}
+int global_i(MeshBlock*p,int i){return block_index(p)*(p->ie-p->is+1)+i-p->is;}
+bool physical_inner(MeshBlock*p){return block_index(p)==0;}
+
+double cache_time=-1e99,cache_dt=0,init_mass=0,init_energy=0;
+long double integrated_mass=0,integrated_energy=0;double max_mass_budget=0,max_energy_budget=0,max_native_div=0,max_target_error=0,min_mach=1e99,min_density=1e99,min_pressure=1e99;
+double max_poynting_relative=0;long double ct_work=0,energy_minus_hydro_work=0;double max_monopole_removed=0;
+double minimum_native_ghost_mach=1e99,maximum_actual_trace_work_discrepancy=0,maximum_hlld_physical_energy_residual=0,maximum_stage_target_error=0;long double ct_actual_trace_work=0;
+int stages=0;std::ofstream trace,stage_trace;std::vector<double>radii,thetas,phis;
+using Z=std::array<double,8>;std::vector<Z>previous;double previous_day;
+
+std::unique_ptr<athena_ct_export::EclipticExport> ecliptic_movie;
+double ecliptic_next_day=0,ecliptic_cadence=0,ecliptic_max_lag=0;
+std::size_t ecliptic_frames=0;
+std::ofstream ecliptic_schedule;
+athena_ct_export::Fields ecliptic_fields(int i,int j,int k){
+ auto*p=radial_owner[i];int ii=radial_local_i[i],jj=p->js+j,kk=p->ks+k;
+ auto&w=p->phydro->w;auto&b=p->pfield->bcc;
+ return {w(IDN,kk,jj,ii),w(IVX,kk,jj,ii)*VUNIT/1000,w(IVY,kk,jj,ii)*VUNIT/1000,w(IVZ,kk,jj,ii)*VUNIT/1000,w(IPR,kk,jj,ii)*PUNIT*1e9,b(IB1,kk,jj,ii)*BUNIT*1e9,b(IB2,kk,jj,ii)*BUNIT*1e9,b(IB3,kk,jj,ii)*BUNIT*1e9};
+}
+void ecliptic_write_if_due(double day){
+ if(!ecliptic_movie||day+1e-12<ecliptic_next_day)return;
+ ecliptic_movie->write(day,ecliptic_fields);
+ std::ostringstream name;name<<"ecliptic_flux_"<<std::setfill('0')<<std::setw(5)<<ecliptic_frames<<".npy";
+ // Multiple requested epochs crossed by one accepted step share one actual frame.
+ do{ecliptic_max_lag=std::max(ecliptic_max_lag,std::max(0.,day-ecliptic_next_day));
+  ecliptic_schedule<<std::setprecision(17)<<ecliptic_next_day<<','<<day<<','<<name.str()<<'\n';
+  ecliptic_next_day+=ecliptic_cadence;
+ }while(ecliptic_next_day<=day+1e-12);
+ ecliptic_schedule.flush();if(!ecliptic_schedule)throw std::runtime_error("Ecliptic schedule write failed");++ecliptic_frames;
+}
+void ecliptic_initialize(double day){
+ double flag=cfg->d("ecliptic_slice_pixels",0);
+ if(!(std::isfinite(flag)&&flag==std::floor(flag)&&flag>=0&&flag<=768))throw std::runtime_error("ecliptic_slice_pixels must be integer0or2..768");
+ if(flag==0)return;
+ ecliptic_next_day=cfg->d("output_start_day",24);ecliptic_cadence=cfg->d("snapshot_days",.25);
+ if(!(std::isfinite(ecliptic_next_day)&&std::isfinite(ecliptic_cadence)&&ecliptic_cadence>1e-9))throw std::runtime_error("Invalid ecliptic output start/cadence");
+ double extent=cfg->d("ecliptic_extent_au",2.3);auto csv=cfg->s("ecliptic_to_solar_matrix_csv"),inline_basis=cfg->s("ecliptic_to_solar_matrix");
+ if(csv.empty()==inline_basis.empty())throw std::runtime_error("Supply exactly one ecliptic matrix CSV or inline9float matrix");
+ auto origin=cfg->s("origin_utc","2025-11-01T00:00:00Z");
+ if(!csv.empty())ecliptic_movie.reset(new athena_ct_export::EclipticExport(out,radii,thetas,phis,std::filesystem::path(csv),int(flag),extent,origin));
+ else{std::replace(inline_basis.begin(),inline_basis.end(),',',' ');std::istringstream input(inline_basis);athena_ct_export::Matrix matrix;
+  for(double&x:matrix)if(!(input>>x)||!std::isfinite(x))throw std::runtime_error("Inline ecliptic basis needs nine finite doubles");
+  std::string extra;if(input>>extra)throw std::runtime_error("Extra inline ecliptic matrix tokens");
+  ecliptic_movie.reset(new athena_ct_export::EclipticExport(out,radii,thetas,phis,matrix,cfg->s("ecliptic_matrix_source","run.cfg inline ecliptic_to_solar_matrix"),int(flag),extent,origin));
+ }
+ ecliptic_schedule.open(out/"ecliptic_schedule.csv");ecliptic_schedule<<"requested_day,actual_day,file\n";
+ ecliptic_write_if_due(day);
+}
+void write_feature_receipt(){
+ if(!ecliptic_movie&&cones->values.empty())return;
+ std::ofstream f(out/"feature_runtime.json");
+ f<<std::setprecision(17)<<"{\"cone_rows\":"<<cones->values.size()<<",\"ecliptic_frames\":"<<ecliptic_frames<<",\"ecliptic_cached_bytes\":"<<(ecliptic_movie?ecliptic_movie->cached_bytes():0)<<",\"snapshot_days\":"<<ecliptic_cadence<<",\"maximum_cadence_lag_days\":"<<ecliptic_max_lag<<",\"timesteps_trimmed_for_output\":false,\"volume_manifest\":\""<<(ecliptic_movie?"volume_snapshots.csv":"snapshots.csv")<<"\",\"plane_manifest\":\""<<(ecliptic_movie?"snapshots.csv":"")<<"\"}\n";
+}
+
+struct Probe{double day,r,lon,lat;int id;};std::vector<Probe>probes;size_t next_probe=0;std::ofstream probe_out;
+int sfj(double theta){return std::clamp(int(std::floor(theta/surface->dt)),0,surface->n-1);}
+int sfk(double phi){return int(std::floor(wrap(phi)/surface->dp))%surface->m;}
+int fj(int j,MeshBlock*p){return j-p->js+joff;}
+void fit(double t,double h){if(t==cache_time&&h==cache_dt)return;auto b0=target->at(t),b1=target->at(t+h);max_monopole_removed=std::max(max_monopole_removed,std::abs(target->last_removed_mean));surface->fit(b0,b1,h,mode=="uniform"?0:boundary->rotation);cache_time=t;cache_dt=h;}
+// [n,v_r,v_theta,v_phi,p] in code units. Initial radial profile is deliberately
+// unretarded; solenoidal initial B is set separately by integrated face flux.
+std::array<double,5> hydro(double day,double r,double th,double ph){
+ if(mode=="uniform")return {5.,0.,0.,0.,.02};
+ auto b=boundary->sample(day,ph,XPI/2-th);cones->apply(day,ph,XPI/2-th,b);double n=b[1]/(r*r),v=b[0]*1000/VUNIT,T=b[3]*std::pow(r/rmin,-2*(gamma_gas-1));
+ return {n,v,0.,0.,cfg->d("thermal_pressure_factor",2)*n*1e6*KB*T/PUNIT};
+}
+void inner(MeshBlock*p,Coordinates*co,AthenaArray<Real>&w,FaceField&b,Real day,Real,
+ int il,int,int jl,int ju,int kl,int ku,int ngh){
+ if(cache_dt==0)fit(day,1e-6);
+ for(int k=kl;k<=ku;++k)for(int j=jl;j<=ju;++j)for(int i=il-ngh;i<il;++i){
+  double rr=mode=="radial"?co->x1v(i):rmin;auto z=hydro(day,rr,co->x2v(j),co->x3v(k));
+  w(IDN,k,j,i)=z[0];w(IVX,k,j,i)=z[1];w(IVY,k,j,i)=z[2];w(IVZ,k,j,i)=z[3];w(IPR,k,j,i)=z[4];
+ }
+ // Set only ghost tangential faces. Active radial normal face at il is an
+ // immutable anchor here: ONLY native CT evolves it.
+ for(int k=kl;k<=ku;++k)for(int j=jl;j<=ju+1;++j)for(int i=il-ngh;i<il;++i){
+  if(mode=="uniform")b.x2f(k,j,i)=-cfg->d("br_1au_nt",3)*1e-9/BUNIT*std::sin(co->x2f(j));
+  else if(mode=="radial")b.x2f(k,j,i)=0;
+  else{int a=std::clamp(int(std::llround(co->x2f(j)/surface->dt)),0,surface->n),l=sfk(co->x3v(k));auto z=hydro(day,rmin,co->x2f(j),co->x3v(k));b.x2f(k,j,i)=-surface->ep[surface->ix(a,l)]/z[1];}
+ }
+ for(int k=kl;k<=ku+1;++k)for(int j=jl;j<=ju;++j)for(int i=il-ngh;i<il;++i){
+  if(mode=="uniform"||mode=="radial")b.x3f(k,j,i)=0;
+  else{int a=sfj(co->x2v(j)),l=int(std::llround(co->x3f(k)/surface->dp))%np;auto z=hydro(day,rmin,co->x2v(j),co->x3f(k));b.x3f(k,j,i)=surface->et[surface->ix(a,l)]/z[1];}
+ }
+ for(int k=kl;k<=ku;++k)for(int j=jl;j<=ju;++j)for(int i=il-1;i>=il-ngh;--i){
+  double tang=co->GetFace2Area(k,j+1,i)*b.x2f(k,j+1,i)-co->GetFace2Area(k,j,i)*b.x2f(k,j,i)+co->GetFace3Area(k+1,j,i)*b.x3f(k+1,j,i)-co->GetFace3Area(k,j,i)*b.x3f(k,j,i);
+  b.x1f(k,j,i)=(co->GetFace1Area(k,j,i+1)*b.x1f(k,j,i+1)+tang)/co->GetFace1Area(k,j,i);
+ }
+}
+void exact_outer(MeshBlock*p,Coordinates*co,AthenaArray<Real>&w,FaceField&b,Real day,Real,
+ int,int iu,int jl,int ju,int kl,int ku,int ngh){
+ for(int k=kl;k<=ku;++k)for(int j=jl;j<=ju;++j)for(int i=iu+1;i<=iu+ngh;++i){auto z=hydro(day,co->x1v(i),co->x2v(j),co->x3v(k));for(int v=0;v<5;++v)w(v,k,j,i)=z[v];}
+ for(int k=kl;k<=ku;++k)for(int j=jl;j<=ju+1;++j)for(int i=iu+1;i<=iu+ngh;++i)b.x2f(k,j,i)=mode=="uniform"?-cfg->d("br_1au_nt",3)*1e-9/BUNIT*std::sin(co->x2f(j)):0;
+ for(int k=kl;k<=ku+1;++k)for(int j=jl;j<=ju;++j)for(int i=iu+1;i<=iu+ngh;++i)b.x3f(k,j,i)=0;
+ for(int k=kl;k<=ku;++k)for(int j=jl;j<=ju;++j)for(int i=iu+1;i<=iu+ngh;++i){double tang=co->GetFace2Area(k,j+1,i)*b.x2f(k,j+1,i)-co->GetFace2Area(k,j,i)*b.x2f(k,j,i)+co->GetFace3Area(k+1,j,i)*b.x3f(k+1,j,i)-co->GetFace3Area(k,j,i)*b.x3f(k,j,i);b.x1f(k,j,i+1)=(co->GetFace1Area(k,j,i)*b.x1f(k,j,i)-tang)/co->GetFace1Area(k,j,i+1);}
+}
+void latitude(MeshBlock*p,Coordinates*co,AthenaArray<Real>&w,FaceField&b,Real day,Real,
+ int il,int iu,int jl,int ju,int kl,int ku,int ngh,bool north){
+ int ja=north?jl:ju;for(int g=1;g<=ngh;++g){int j=ja+(north?-g:g);for(int k=kl;k<=ku;++k)for(int i=il;i<=iu;++i){
+  if(mode=="uniform"||mode=="radial"){auto z=hydro(day,co->x1v(i),co->x2v(j),co->x3v(k));for(int v=0;v<5;++v)w(v,k,j,i)=z[v];}
+  else for(int v=0;v<5;++v)w(v,k,j,i)=w(v,k,ja,i);
+ }
+ for(int k=kl;k<=ku;++k)for(int i=il;i<=iu+1;++i){
+  if(mode=="uniform"){double lo=co->x2f(j),hi=co->x2f(j+1);b.x1f(k,j,i)=cfg->d("br_1au_nt",3)*1e-9/BUNIT*.5*(std::pow(std::sin(hi),2)-std::pow(std::sin(lo),2))/(std::cos(lo)-std::cos(hi));}
+  else b.x1f(k,j,i)=b.x1f(k,ja,i);
+ }
+ for(int k=kl;k<=ku+1;++k)for(int i=il;i<=iu;++i)b.x3f(k,j,i)=mode=="uniform"||mode=="radial"?0:b.x3f(k,ja,i);
+ // Normal active latitude face stays unchanged. Ghost normal faces extend by
+ // exact zero integrated divergence, anchored to that evolving face.
+ int face=north?j:j+1,anchor=north?j+1:j;
+ for(int k=kl;k<=ku;++k)for(int i=il;i<=iu;++i){double other=co->GetFace1Area(k,j,i+1)*b.x1f(k,j,i+1)-co->GetFace1Area(k,j,i)*b.x1f(k,j,i)+co->GetFace3Area(k+1,j,i)*b.x3f(k+1,j,i)-co->GetFace3Area(k,j,i)*b.x3f(k,j,i);b.x2f(k,face,i)=(co->GetFace2Area(k,anchor,i)*b.x2f(k,anchor,i)+(north?other:-other))/co->GetFace2Area(k,face,i);}
+ }
+}
+void north(MeshBlock*p,Coordinates*c,AthenaArray<Real>&w,FaceField&b,Real t,Real h,int il,int iu,int jl,int ju,int kl,int ku,int ng){latitude(p,c,w,b,t,h,il,iu,jl,ju,kl,ku,ng,true);}
+void south(MeshBlock*p,Coordinates*c,AthenaArray<Real>&w,FaceField&b,Real t,Real h,int il,int iu,int jl,int ju,int kl,int ku,int ng){latitude(p,c,w,b,t,h,il,iu,jl,ju,kl,ku,ng,false);}
+size_t index(int i,int j,int k){return ((size_t)i*nt+j)*np+k;}
+std::vector<Z> capture(Mesh*mesh){
+ std::vector<Z>a((size_t)nr*nt*np);
+ for(int ib=0;ib<mesh->nblocal;++ib){auto*p=mesh->my_blocks(ib);auto&u=p->phydro->u;auto&b=p->pfield->bcc;
+  for(int ii=p->is;ii<=p->ie;++ii)for(int j=0;j<nt;++j)for(int k=0;k<np;++k){int i=global_i(p,ii),jj=j+p->js,kk=k+p->ks;
+   V er_=er(thetas[j],phis[k]),et_=et(thetas[j],phis[k]),ep_=ep(phis[k]);
+   V mom=add(add(mul(er_,u(IM1,kk,jj,ii)),mul(et_,u(IM2,kk,jj,ii))),mul(ep_,u(IM3,kk,jj,ii)));
+   V mag=add(add(mul(er_,b(IB1,kk,jj,ii)),mul(et_,b(IB2,kk,jj,ii))),mul(ep_,b(IB3,kk,jj,ii)));
+   Z z={u(IDN,kk,jj,ii),mom[0],mom[1],mom[2],u(IEN,kk,jj,ii),mag[0],mag[1],mag[2]};double pgas=(gamma_gas-1)*(z[4]-.5*dot(mom,mom)/z[0]-.5*dot(mag,mag));
+   if(!(z[0]>0&&pgas>0&&std::isfinite(pgas)))throw std::runtime_error("CT output nonphysical");
+   min_density=std::min(min_density,z[0]);min_pressure=std::min(min_pressure,pgas);a[index(i,j,k)]=z;
+  }
+ }return a;
+}
+Z sample(const std::vector<Z>&a,const Probe&q){auto bracket=[](const std::vector<double>&v,double x){if(x<v.front()-1e-10||x>v.back()+1e-10)throw std::runtime_error("CT probe outside center domain");int i=std::clamp(int(std::upper_bound(v.begin(),v.end(),x)-v.begin())-1,0,int(v.size())-2);return std::pair<int,double>{i,(x-v[i])/(v[i+1]-v[i])};};auto[i,fi]=bracket(radii,q.r);auto[j,fj_]=bracket(thetas,XPI/2-q.lat);double kp=wrap(q.lon)/surface->dp-.5;int k=std::floor(kp);double fk=kp-k;Z z={};for(int di=0;di<2;++di)for(int dj=0;dj<2;++dj)for(int dk=0;dk<2;++dk){double w=(di?fi:1-fi)*(dj?fj_:1-fj_)*(dk?fk:1-fk);auto v=a[index(i+di,j+dj,(k+dk+np)%np)];for(int n=0;n<8;++n)z[n]+=w*v[n];}return z;}
+void write_probe(const Probe&q,const std::vector<Z>&cur,double day){auto a=sample(previous,q),b=sample(cur,q);double f=day==previous_day?1:std::clamp((q.day-previous_day)/(day-previous_day),0.,1.);for(int n=0;n<8;++n)a[n]=(1-f)*a[n]+f*b[n];V vel={a[1]/a[0],a[2]/a[0],a[3]/a[0]},mag={a[5],a[6],a[7]};double v=norm(vel)*VUNIT/1000,pressure=(gamma_gas-1)*(a[4]-.5*a[0]*dot(vel,vel)-.5*dot(mag,mag));if(!(pressure>0))throw std::runtime_error("CT interpolated pressure nonpositive");auto e=er(XPI/2-q.lat,q.lon),t=et(XPI/2-q.lat,q.lon),p=ep(q.lon);probe_out<<q.day<<','<<q.id<<','<<q.r<<','<<q.lon<<','<<q.lat<<','<<a[0]<<','<<v<<','<<a[0]*v*1e5<<','<<dot(vel,e)*VUNIT/1000<<','<<dot(vel,t)*VUNIT/1000<<','<<dot(vel,p)*VUNIT/1000<<','<<pressure*PUNIT*1e9<<','<<dot(mag,e)*BUNIT*1e9<<','<<dot(mag,t)*BUNIT*1e9<<','<<dot(mag,p)*BUNIT*1e9<<'\n';}
+void npy(const std::filesystem::path&path,const std::vector<double>&a,const std::vector<int>&shape){std::ofstream f(path,std::ios::binary);std::string h="{'descr': '<f8', 'fortran_order': False, 'shape': (";for(int n:shape)h+=std::to_string(n)+", ";h+="), }";while((10+h.size()+1)%64)h+=' ';h+='\n';f.write("\x93NUMPY\x01\x00",8);uint16_t size=h.size();f.put(size&255);f.put(size>>8);f.write(h.data(),h.size());f.write(reinterpret_cast<const char*>(a.data()),a.size()*8);if(!f)throw std::runtime_error("CT npy write failed");}
+std::pair<double,double>inventory(Mesh*mesh){
+ long double mass=0,energy=0;
+ for(int ib=0;ib<mesh->nblocal;++ib){auto*p=mesh->my_blocks(ib);
+  for(int k=p->ks;k<=p->ke;++k)for(int j=p->js;j<=p->je;++j)for(int i=p->is;i<=p->ie;++i){double vol=p->pcoord->GetCellVolume(k,j,i);mass+=p->phydro->u(IDN,k,j,i)*vol;energy+=p->phydro->u(IEN,k,j,i)*vol;}}
+ return {mass,energy};
+}
+void audit(Mesh*mesh,double time){
+ auto goal=target->at(time);double tracking=0,divmax=0,Bmax=0;
+ for(int ib=0;ib<mesh->nblocal;++ib){auto*p=mesh->my_blocks(ib);auto&b=p->pfield->b;auto*c=p->pcoord;
+  for(int k=p->ks;k<=p->ke;++k)for(int j=p->js;j<=p->je;++j){int a=fj(j,p),l=k-p->ks;
+   if(physical_inner(p))tracking=std::max(tracking,std::abs(b.x1f(k,j,p->is)-goal[surface->ix(a,l)]));
+   for(int i=p->is;i<=p->ie;++i){double flux=c->GetFace1Area(k,j,i+1)*b.x1f(k,j,i+1)-c->GetFace1Area(k,j,i)*b.x1f(k,j,i)+c->GetFace2Area(k,j+1,i)*b.x2f(k,j+1,i)-c->GetFace2Area(k,j,i)*b.x2f(k,j,i)+c->GetFace3Area(k+1,j,i)*b.x3f(k+1,j,i)-c->GetFace3Area(k,j,i)*b.x3f(k,j,i);divmax=std::max(divmax,std::abs(flux)/c->GetCellVolume(k,j,i));Bmax=std::max(Bmax,std::abs(b.x1f(k,j,i)));}
+  }
+ }
+ if(mode=="uniform")tracking=0;max_target_error=std::max(max_target_error,tracking);max_native_div=std::max(max_native_div,divmax);
+ auto inv=inventory(mesh);double mb=std::abs((inv.first-init_mass)-double(integrated_mass))/(std::abs(init_mass)+std::abs(inv.first)+1e-99),eb=std::abs((inv.second-init_energy)-double(integrated_energy))/(std::abs(init_energy)+std::abs(inv.second)+1e-99);max_mass_budget=std::max(max_mass_budget,mb);max_energy_budget=std::max(max_energy_budget,eb);
+ trace<<std::setprecision(17)<<time<<','<<tracking<<','<<divmax<<','<<Bmax<<','<<mb<<','<<eb<<'\n';trace.flush();
+}
+void interface_audit(){
+ for(int ib=0;ib<nradialblocks-1;++ib)for(int stage=0;stage<2;++stage){auto a=right_flux[ib][stage],b=left_flux[ib+1][stage];for(auto v:{std::pair<long double,long double>{a.mass,b.mass},{a.energy,b.energy}})maximum_internal_flux_relative=std::max(maximum_internal_flux_relative,double(std::abs(v.first-v.second)/(std::abs(v.first)+std::abs(v.second)+1e-99L)));}
+ int cells=nr/nradialblocks;
+ for(int ib=1;ib<nradialblocks;++ib){auto*a=radial_owner[ib*cells-1];auto*b=radial_owner[ib*cells];
+  for(int j=0;j<nt;++j)for(int k=0;k<np;++k)maximum_internal_Br_difference=std::max(maximum_internal_Br_difference,std::abs(a->pfield->b.x1f(a->ks+k,a->js+j,a->ie+1)-b->pfield->b.x1f(b->ks+k,b->js+j,b->is)));
+ }
+}
+
+}
+// Narrow explicit stage hooks, called only by this isolated build. Their
+// declarations and call sites are retained in core_hooks.patch.
+void X3ICTBeginStage(MeshBlock*p,int stage,Real rhs_time,Real full_dt){
+ double tn=p->pmy_mesh->time;{std::lock_guard<std::mutex> lock(surface_mutex);fit(tn,full_dt);}if(stage!=1&&stage!=2)throw std::runtime_error("CT control requires exactly SSPRK2");double expected=tn+(stage==2?full_dt:0);if(std::abs(rhs_time-expected)>1e-12)throw std::runtime_error("CT RHS stage time mismatch");
+ if(!physical_inner(p))return;
+ if(mode!="uniform"){const auto&goal=stage==1?surface->br0:surface->br1;for(int k=p->ks;k<=p->ke;++k)for(int j=p->js;j<=p->je;++j)maximum_stage_target_error=std::max(maximum_stage_target_error,std::abs(p->pfield->b.x1f(k,j,p->is)-goal[surface->ix(fj(j,p),k-p->ks)]));}
+ inner(p,p->pcoord,p->phydro->w,p->pfield->b,rhs_time,full_dt,p->is,p->ie,p->js-NGHOST,p->je+NGHOST,p->ks-NGHOST,p->ke+NGHOST,NGHOST);
+ p->pfield->CalculateCellCenteredField(p->pfield->b,p->pfield->bcc,p->pcoord,p->is-NGHOST,p->is-1,p->js-NGHOST,p->je+NGHOST,p->ks-NGHOST,p->ke+NGHOST);
+ ++stages;stage_trace<<std::setprecision(17)<<tn<<','<<full_dt<<','<<stage<<','<<rhs_time<<','<<surface->maximum_relative_residual<<'\n';
+}
+void X3ICTFluxAudit(MeshBlock*p,int stage,Real full_dt){
+ std::lock_guard<std::mutex> lock(observer_mutex);++native_rhs_calls;
+ auto&f=p->phydro->flux;auto*c=p->pcoord;long double rm=0,re=0;double weight=.5*full_dt;
+ for(int k=p->ks;k<=p->ke;++k)for(int j=p->js;j<=p->je;++j)for(int i=p->is;i<=p->ie;++i){
+  for(int d=0;d<3;++d){int ih=i+(d==0),jh=j+(d==1),kh=k+(d==2);double al=d==0?c->GetFace1Area(k,j,i):d==1?c->GetFace2Area(k,j,i):c->GetFace3Area(k,j,i);double ah=d==0?c->GetFace1Area(kh,jh,ih):d==1?c->GetFace2Area(kh,jh,ih):c->GetFace3Area(kh,jh,ih);rm-=ah*f[d](IDN,kh,jh,ih)-al*f[d](IDN,k,j,i);re-=ah*f[d](IEN,kh,jh,ih)-al*f[d](IEN,k,j,i);}
+  if(GM!=0)re-=.5*((1/(c->x1v(i)*c->x1v(i)))*f[X1DIR](IDN,k,j,i)*GM+(1/(c->x1v(i)*c->x1v(i)))*f[X1DIR](IDN,k,j,i+1)*GM)*c->GetCellVolume(k,j,i);
+ }
+ integrated_mass+=weight*rm;integrated_energy+=weight*re;
+ EndFlux left,right;
+ for(int k=p->ks;k<=p->ke;++k)for(int j=p->js;j<=p->je;++j){double al=c->GetFace1Area(k,j,p->is),ar=c->GetFace1Area(k,j,p->ie+1);left.mass+=al*f[X1DIR](IDN,k,j,p->is);left.energy+=al*f[X1DIR](IEN,k,j,p->is);right.mass+=ar*f[X1DIR](IDN,k,j,p->ie+1);right.energy+=ar*f[X1DIR](IEN,k,j,p->ie+1);}
+ left_flux[block_index(p)][stage-1]=left;right_flux[block_index(p)][stage-1]=right;
+ if(!physical_inner(p))return;
+
+ for(int k=p->ks;k<=p->ke;++k)for(int j=p->js;j<=p->je;++j){int a=fj(j,p),l=k-p->ks;double eth=.5*(surface->et[surface->ix(a,l)]+surface->et[surface->ix(a,l+1)]),eph=.5*(surface->ep[surface->ix(a,l)]+surface->ep[surface->ix(a+1,l)]);auto z=hydro(p->pmy_mesh->time+(stage==2?full_dt:0),rmin,c->x2v(j),c->x3v(k));if(z[1]<=0)continue;double bt=-eph/z[1],bp=eth/z[1],br=p->pfield->b.x1f(k,j,p->is);double sound=gamma_gas*z[4]/z[0],va=(br*br+bt*bt+bp*bp)/z[0],var=br*br/z[0],cf=std::sqrt(.5*(sound+va+std::sqrt(std::max(0.,(sound+va)*(sound+va)-4*sound*var))));min_mach=std::min(min_mach,z[1]/cf);double s=eth*bp-eph*bt,hyd=z[1]*(gamma_gas/(gamma_gas-1)*z[4]+.5*z[0]*z[1]*z[1]),num=f[X1DIR](IEN,k,j,p->is)-hyd,area=c->GetFace1Area(k,j,p->is);ct_work+=weight*area*s;energy_minus_hydro_work+=weight*area*num;max_poynting_relative=std::max(max_poynting_relative,std::abs(num-s)/(std::abs(s)+std::abs(hyd)+1e-99));double bt_actual=p->pfield->bcc(IB2,k,j,p->is-1),bp_actual=p->pfield->bcc(IB3,k,j,p->is-1);double va_actual=(br*br+bt_actual*bt_actual+bp_actual*bp_actual)/z[0],cf_actual=std::sqrt(.5*(sound+va_actual+std::sqrt(std::max(0.,(sound+va_actual)*(sound+va_actual)-4*sound*var))));minimum_native_ghost_mach=std::min(minimum_native_ghost_mach,z[1]/cf_actual);double work_actual=eth*bp_actual-eph*bt_actual,physical_actual=z[1]*(bt_actual*bt_actual+bp_actual*bp_actual);ct_actual_trace_work+=weight*area*work_actual;maximum_actual_trace_work_discrepancy=std::max(maximum_actual_trace_work_discrepancy,std::abs(num-work_actual)/(std::abs(physical_actual)+std::abs(hyd)+1e-99));maximum_hlld_physical_energy_residual=std::max(maximum_hlld_physical_energy_residual,std::abs(num-physical_actual)/(std::abs(physical_actual)+std::abs(hyd)+1e-99));}
+}
+void X3ICTBoundaryEMF(MeshBlock*p,int,Real,Real){if(!physical_inner(p))return;auto&e=p->pfield->e;for(int k=p->ks;k<=p->ke+1;++k)for(int j=p->js;j<=p->je;++j)e.x2e(k,j,p->is)=mode=="uniform"?0:surface->et[surface->ix(fj(j,p),k-p->ks)];for(int k=p->ks;k<=p->ke;++k)for(int j=p->js;j<=p->je+1;++j)e.x3e(k,j,p->is)=mode=="uniform"?0:surface->ep[surface->ix(fj(j,p),k-p->ks)];}
+void Mesh::InitUserMeshData(ParameterInput*pin){cfg.reset(new Config(pin->GetString("problem","config_file")));
+ nr=pin->GetInteger("mesh","nx1");nt=pin->GetInteger("mesh","nx2");np=pin->GetInteger("mesh","nx3");native_threads=pin->GetInteger("mesh","num_threads");nradialblocks=cfg->i("ct_radial_blocks",1);
+ if(nradialblocks!=1&&nradialblocks!=2&&nradialblocks!=4&&nradialblocks!=8)throw std::runtime_error("ct_radial_blocks must be1,2,4,8");
+ if(native_threads<1||native_threads>4||cfg->i("threads",1)!=native_threads)throw std::runtime_error("Need matching1..4native OpenMP threads");
+ if(cfg->s("radial_grid","uniform")!="uniform"||pin->GetReal("mesh","x1rat")!=1||nr%nradialblocks||nr/nradialblocks<4||pin->GetInteger("meshblock","nx1")!=nr/nradialblocks||pin->GetInteger("meshblock","nx2")!=nt||pin->GetInteger("meshblock","nx3")!=np)throw std::runtime_error("Only uniform radial decomposition with full angles is supported");
+ double dr=(pin->GetReal("mesh","x1max")-pin->GetReal("mesh","x1min"))/nr;
+ if(pin->GetReal("mesh","x1min")-(NGHOST-.5)*dr<=0)throw std::runtime_error("Inner ghost centers must stay at positive radius");
+ radii.resize(nr);thetas.resize(nt);phis.resize(np);radial_owner.resize(nr);radial_local_i.resize(nr);left_flux.resize(nradialblocks);right_flux.resize(nradialblocks);
+cones.reset(new ConeBoundary(*cfg));boundary.reset(new Boundary(*cfg));mode=cfg->s("ct_mode","real");if(mode!="real"&&mode!="radial"&&mode!="manufactured"&&mode!="uniform")throw std::runtime_error("unknown ct_mode");gamma_gas=pin->GetReal("hydro","gamma");rmin=pin->GetReal("mesh","x1min");GM=pin->GetReal("problem","GM");int ntheta=pin->GetInteger("mesh","nx2"),nphi=pin->GetInteger("mesh","nx3");double lo=pin->GetReal("mesh","x2min"),hi=pin->GetReal("mesh","x2max"),dtheta=(hi-lo)/ntheta;int full=std::llround(XPI/dtheta);if(std::abs(full*dtheta-XPI)>1e-10||std::abs(lo/dtheta-std::round(lo/dtheta))>1e-10)throw std::runtime_error("CT wedge must align fullsphere uniform angular grid");joff=std::llround(lo/dtheta);surface.reset(new Surface(full,nphi,rmin));target.reset(new Target(*boundary,*surface,mode,cfg->d("br_1au_nt",3),cfg->d("ct_manufactured_frequency_rad_day",2*XPI)));initial_br=target->at(start_time);max_monopole_removed=std::abs(target->last_removed_mean);out=pin->GetString("problem","output_dir");std::filesystem::create_directories(out);trace.open(out/"ct_trace.csv");trace<<"day,max_inner_target_B_code_error,max_native_face_divB_code,B_code_scale,mass_budget_error,energy_budget_error\n";stage_trace.open(out/"stage_trace.csv");stage_trace<<"base_day,full_dt,stage,rhs_day,maximum_surface_relative_residual\n";EnrollUserBoundaryFunction(BoundaryFace::inner_x1,inner);if(mode=="radial"||mode=="uniform")EnrollUserBoundaryFunction(BoundaryFace::outer_x1,exact_outer);EnrollUserBoundaryFunction(BoundaryFace::inner_x2,north);EnrollUserBoundaryFunction(BoundaryFace::outer_x2,south);
+ if(!cfg->s("probes_csv").empty()){Csv csv(cfg->s("probes_csv"));int it=csv.col("day"),ir=csv.col("r_au"),ip=csv.col("lon_rad"),il=csv.col("lat_rad"),id=csv.col("probe_id",false);for(auto&z:csv.rows)probes.push_back({z[it],z[ir],z[ip],z[il],id<0?0:int(z[id])});std::sort(probes.begin(),probes.end(),[](auto&a,auto&b){return a.day<b.day;});while(next_probe<probes.size()&&probes[next_probe].day<start_time-1e-12)++next_probe;probe_out.open(out/"probe.csv");probe_out<<std::setprecision(17)<<"day,probe_id,r_au,lon_rad,lat_rad,n_cm3,speed_kms,flux_cm2_s,vr_kms,vtheta_kms,vphi_kms,p_npa,Br_nt,Btheta_nt,Bphi_nt\n";}}
+void MeshBlock::ProblemGenerator(ParameterInput*){
+ if(pmy_mesh->adaptive||pmy_mesh->multilevel||loc.level!=pmy_mesh->root_level||loc.lx1<0||loc.lx1>=nradialblocks||je-js+1!=nt||ke-ks+1!=np||ie-is+1!=nr/nradialblocks||loc.lx2!=0||loc.lx3!=0)throw std::runtime_error("Unsupported MeshBlock decomposition");
+ for(int i=is;i<=ie;++i){int g=global_i(this,i);radii[g]=pcoord->x1v(i);radial_owner[g]=this;radial_local_i[g]=i;}
+ if(physical_inner(this)){for(int j=0;j<nt;++j)thetas[j]=pcoord->x2v(js+j);for(int k=0;k<np;++k)phis[k]=pcoord->x3v(ks+k);}
+ const auto&goal=initial_br;auto&b=pfield->b;
+ for(int k=ks-NGHOST;k<=ke+NGHOST;++k)for(int j=js-NGHOST;j<=je+NGHOST;++j)for(int i=is-NGHOST;i<=ie+NGHOST+1;++i){double th=pcoord->x2v(j),ph=pcoord->x3v(k),v;if(mode=="uniform"){double lo=pcoord->x2f(j),hi=pcoord->x2f(j+1);v=cfg->d("br_1au_nt",3)*1e-9/BUNIT*.5*(std::pow(std::sin(hi),2)-std::pow(std::sin(lo),2))/(std::cos(lo)-std::cos(hi));}else v=goal[surface->ix(sfj(th),sfk(ph))]*rmin*rmin/(pcoord->x1f(i)*pcoord->x1f(i));b.x1f(k,j,i)=v;}
+ for(int k=ks-NGHOST;k<=ke+NGHOST;++k)for(int j=js-NGHOST;j<=je+NGHOST+1;++j)for(int i=is-NGHOST;i<=ie+NGHOST;++i)b.x2f(k,j,i)=mode=="uniform"?-cfg->d("br_1au_nt",3)*1e-9/BUNIT*std::sin(pcoord->x2f(j)):0;
+ for(int k=ks-NGHOST;k<=ke+NGHOST+1;++k)for(int j=js-NGHOST;j<=je+NGHOST;++j)for(int i=is-NGHOST;i<=ie+NGHOST;++i)b.x3f(k,j,i)=0;
+ pfield->CalculateCellCenteredField(b,pfield->bcc,pcoord,is-NGHOST,ie+NGHOST,js-NGHOST,je+NGHOST,ks-NGHOST,ke+NGHOST);
+ for(int k=ks-NGHOST;k<=ke+NGHOST;++k)for(int j=js-NGHOST;j<=je+NGHOST;++j)for(int i=is-NGHOST;i<=ie+NGHOST;++i){auto z=hydro(pmy_mesh->time,pcoord->x1v(i),pcoord->x2v(j),pcoord->x3v(k));phydro->u(IDN,k,j,i)=z[0];phydro->u(IM1,k,j,i)=z[0]*z[1];phydro->u(IM2,k,j,i)=z[0]*z[2];phydro->u(IM3,k,j,i)=z[0]*z[3];double bs=0;for(int d=0;d<3;++d)bs+=std::pow(pfield->bcc(IB1+d,k,j,i),2);phydro->u(IEN,k,j,i)=z[4]/(gamma_gas-1)+.5*z[0]*(z[1]*z[1]+z[2]*z[2]+z[3]*z[3])+.5*bs;}
+}
+// Native Mesh::Initialize executes ProblemGenerator in OpenMP. This serial
+// post-initialization observer is explicitly called after that native barrier.
+void X3ICTAfterInitialize(Mesh*mesh){
+ if(mesh->nbtotal!=nradialblocks||mesh->nblocal!=nradialblocks)throw std::runtime_error("No MPI/AMR or angular block decomposition is supported");
+ for(auto*p:radial_owner)if(p==nullptr)throw std::runtime_error("Incomplete global radial owner map");
+ auto inv=inventory(mesh);init_mass=inv.first;init_energy=inv.second;previous=capture(mesh);previous_day=mesh->time;audit(mesh,mesh->time);
+ while(next_probe<probes.size()&&probes[next_probe].day<=previous_day+1e-12)write_probe(probes[next_probe++],previous,previous_day);
+ ecliptic_initialize(mesh->time);
+}
+void MeshBlock::UserWorkInLoop(){}
+void Mesh::UserWorkInLoop(){
+ double day=time+dt;interface_audit();audit(this,day);auto cur=capture(this);
+ while(next_probe<probes.size()&&probes[next_probe].day<=day+1e-12)write_probe(probes[next_probe++],cur,day);
+ previous.swap(cur);previous_day=day;
+ ecliptic_write_if_due(day);
+}
+
+void Mesh::UserWorkAfterLoop(ParameterInput*){
+ write_feature_receipt();
+ std::vector<double>a((size_t)nr*nt*np*8);
+ for(int i=0;i<nr;++i){auto*p=radial_owner[i];int ii=radial_local_i[i];auto&w=p->phydro->w;auto&b=p->pfield->bcc;
+  for(int j=0;j<nt;++j)for(int k=0;k<np;++k){int jj=p->js+j,kk=p->ks+k;size_t q=index(i,j,k)*8;a[q]=w(IDN,kk,jj,ii);for(int d=0;d<3;++d)a[q+1+d]=w(IVX+d,kk,jj,ii)*VUNIT/1000;a[q+4]=w(IPR,kk,jj,ii)*PUNIT*1e9;for(int d=0;d<3;++d)a[q+5+d]=b(IB1+d,kk,jj,ii)*BUNIT*1e9;}
+ }
+ npy(out/"snapshot_00000.npy",a,{nr,nt,np,8});npy(out/"r_au.npy",radii,{nr});npy(out/"theta_rad.npy",thetas,{nt});npy(out/"phi_rad.npy",phis,{np});
+ std::ofstream manifest(out/(ecliptic_movie?"volume_snapshots.csv":"snapshots.csv"));manifest<<"day,file\n"<<std::setprecision(17)<<time<<",snapshot_00000.npy\n";
+ std::vector<double>rf(nr+1),tf(nt+1),pf(np+1);auto*first=radial_owner[0];
+ for(int i=0;i<=nr;++i){auto*p=radial_owner[std::min(i,nr-1)];int ii=i==nr?p->ie+1:radial_local_i[i];rf[i]=p->pcoord->x1f(ii);}
+ for(int j=0;j<=nt;++j)tf[j]=first->pcoord->x2f(first->js+j);for(int k=0;k<=np;++k)pf[k]=first->pcoord->x3f(first->ks+k);
+ npy(out/"r_faces_au.npy",rf,{nr+1});npy(out/"theta_faces_rad.npy",tf,{nt+1});npy(out/"phi_faces_rad.npy",pf,{np+1});
+ std::vector<double>bf1((size_t)(nr+1)*nt*np),bf2((size_t)nr*(nt+1)*np),bf3((size_t)nr*nt*(np+1));
+ for(int i=0;i<=nr;++i){auto*p=radial_owner[std::min(i,nr-1)];int ii=i==nr?p->ie+1:radial_local_i[i];for(int j=0;j<nt;++j)for(int k=0;k<np;++k)bf1[((size_t)i*nt+j)*np+k]=p->pfield->b.x1f(p->ks+k,p->js+j,ii)*BUNIT*1e9;}
+ for(int i=0;i<nr;++i){auto*p=radial_owner[i];int ii=radial_local_i[i];for(int j=0;j<=nt;++j)for(int k=0;k<np;++k)bf2[((size_t)i*(nt+1)+j)*np+k]=p->pfield->b.x2f(p->ks+k,p->js+j,ii)*BUNIT*1e9;for(int j=0;j<nt;++j)for(int k=0;k<=np;++k)bf3[((size_t)i*nt+j)*(np+1)+k]=p->pfield->b.x3f(p->ks+k,p->js+j,ii)*BUNIT*1e9;}
+ npy(out/"Br_faces_nt.npy",bf1,{nr+1,nt,np});npy(out/"Btheta_faces_nt.npy",bf2,{nr,nt+1,np});npy(out/"Bphi_faces_nt.npy",bf3,{nr,nt,np+1});
+ std::ofstream stats(out/"statistics.json");stats<<std::setprecision(17)
+ <<"{\"steps\":"<<ncycle<<",\"stage_calls\":"<<stages<<",\"floor_activations\":0,\"strict_floor_abort\":true,\"minimum_density_cm3\":"<<min_density<<",\"minimum_pressure_code\":"<<min_pressure<<",\"minimum_inner_fast_Mach\":"<<(min_mach==1e99?0:min_mach)<<",\"max_native_face_divB_code\":"<<max_native_div<<",\"max_inner_target_B_error_code\":"<<max_target_error<<",\"max_surface_relative_residual\":"<<surface->maximum_relative_residual<<",\"max_mass_budget_relative_error\":"<<max_mass_budget<<",\"max_energy_budget_relative_error\":"<<max_energy_budget<<",\"integrated_CT_boundary_Poynting_code\":"<<double(ct_work)<<",\"integrated_boundary_energy_minus_hydro_code\":"<<double(energy_minus_hydro_work)<<",\"max_boundary_work_discrepancy_over_total_energy_flux\":"<<max_poynting_relative<<",\"minimum_inner_fast_Mach_actual_ghost_trace\":"<<(minimum_native_ghost_mach==1e99?0:minimum_native_ghost_mach)<<",\"integrated_CT_work_actual_ghost_trace_code\":"<<double(ct_actual_trace_work)<<",\"max_actual_trace_work_discrepancy_over_total_energy_flux\":"<<maximum_actual_trace_work_discrepancy<<",\"max_hlld_physical_energy_residual_over_total_energy_flux\":"<<maximum_hlld_physical_energy_residual<<",\"max_stage_inner_target_B_error_code\":"<<maximum_stage_target_error<<",\"maximum_removed_monopole_Br_1au_nt\":"<<max_monopole_removed<<",\"maximum_internal_radial_flux_disagreement_relative\":"<<maximum_internal_flux_relative<<",\"maximum_internal_Br_face_disagreement_code\":"<<maximum_internal_Br_difference<<",\"radial_meshblocks\":"<<nradialblocks<<",\"openmp_threads\":"<<native_threads<<",\"native_stage_rhs_calls\":"<<native_rhs_calls<<"}\n";probe_out.flush();
+}

@@ -1,16 +1,17 @@
 {
   "passed": true,
-  "date": "2026-10-18T01:09:53.795Z",
+  "date": "2026-10-18T01:38:59.536Z",
   "results": [
     {
       "prefix": "/",
       "passed": true,
-      "requests": 74,
+      "requests": 81,
       "checks": [
-        "eight views",
+        "eleven views",
         "768 px images and field switching",
         "six video downloads",
         "equations and local fonts",
+        "NASA comparison, solver sources and submitted writeups",
         "data and methods downloads",
         "transcript chunks, search and notes",
         "hash deep-link reload",
@@ -21,12 +22,13 @@
     {
       "prefix": "/example-repo/",
       "passed": true,
-      "requests": 74,
+      "requests": 81,
       "checks": [
-        "eight views",
+        "eleven views",
         "768 px images and field switching",
         "six video downloads",
         "equations and local fonts",
+        "NASA comparison, solver sources and submitted writeups",
         "data and methods downloads",
         "transcript chunks, search and notes",
         "hash deep-link reload",

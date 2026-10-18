@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" data-heading-style="sans">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#191a1b" />
   <script>
     try {
+      if (localStorage.getItem('3i-atlas-heading-style') === 'serif') document.documentElement.dataset.headingStyle = 'serif';
       if (localStorage.getItem('3i-atlas-theme') === 'light') {
         document.documentElement.dataset.theme = 'light';
         document.querySelector('meta[name="theme-color"]').content = '#ead7b1';

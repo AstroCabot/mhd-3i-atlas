@@ -1,0 +1,1091 @@
+#include "core.cuh"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cstdint>
+#include <cmath>
+#include <string>
+#include <vector>
+#include <map>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <chrono>
+
+#define CK(x) do { cudaError_t e_ = (x); if (e_ != cudaSuccess) { fprintf(stderr, "CUDA %s at %s:%d\n", cudaGetErrorString(e_), __FILE__, __LINE__); exit(1); } } while (0)
+
+static const double AU = 1.495978707e13, V0 = 1e7, T0 = AU / V0, MP = 1.67262192e-24, KB = 1.380649e-16;
+static const double P0 = MP * V0 * V0, B0NT = 1e5 * 2.0 * sqrt(M_PI * P0);
+static const double GMSUN = 1.32712440018e26;
+
+struct Par {
+    int nr, nt, np, NTg, NPg;
+    size_t N;
+    float rin, dr, th0, dth, dph;
+    float gam, gm, om, xa, kfac, dmin, pmin, va2max;
+    int ncme;
+};
+__constant__ Par P;
+__constant__ float C_cme[128 * 8];
+
+static std::map<std::string, std::string> cfg;
+static std::string sget(const char* k, const char* d) { auto it = cfg.find(k); return it == cfg.end() ? std::string(d) : it->second; }
+static double dget(const char* k, double d) { auto it = cfg.find(k); return it == cfg.end() ? d : atof(it->second.c_str()); }
+static std::vector<double> vget(const char* k)
+{
+    std::vector<double> v;
+    auto it = cfg.find(k);
+    if (it == cfg.end()) return v;
+    std::string s = it->second;
+    std::replace(s.begin(), s.end(), ',', ' ');
+    std::istringstream is(s);
+    double x;
+    while (is >> x) v.push_back(x);
+    return v;
+}
+
+__device__ inline size_t cid(int i, int j, int k) { return ((size_t)i * P.NTg + j) * P.NPg + k; }
+
+__device__ inline void load_prim(const float* __restrict__ U, size_t c, float* q)
+{
+    float u[NV];
+#pragma unroll
+    for (int m = 0; m < NV; m++) u[m] = U[m * P.N + c];
+    cons2prim(u, P.gam, P.dmin, P.pmin, q);
+}
+
+__device__ inline void rot_in(float* q, const float* b)
+{
+    float vx = q[1], vy = q[2], vz = q[3];
+    q[1] = vx * b[0] + vy * b[1] + vz * b[2];
+    q[2] = vx * b[3] + vy * b[4] + vz * b[5];
+    q[3] = vx * b[6] + vy * b[7] + vz * b[8];
+    float bx = q[5], by = q[6], bz = q[7];
+    q[5] = bx * b[0] + by * b[1] + bz * b[2];
+    q[6] = bx * b[3] + by * b[4] + bz * b[5];
+    q[7] = bx * b[6] + by * b[7] + bz * b[8];
+}
+
+__device__ inline void store_flux(float* __restrict__ F, size_t nf, size_t id, const float* f, const float* b, float A)
+{
+    float mx = f[1] * b[0] + f[2] * b[3] + f[3] * b[6];
+    float my = f[1] * b[1] + f[2] * b[4] + f[3] * b[7];
+    float mz = f[1] * b[2] + f[2] * b[5] + f[3] * b[8];
+    float bx = f[5] * b[0] + f[6] * b[3] + f[7] * b[6];
+    float by = f[5] * b[1] + f[6] * b[4] + f[7] * b[7];
+    float bz = f[5] * b[2] + f[6] * b[5] + f[7] * b[8];
+    F[RHO * nf + id] = f[0] * A;
+    F[MX * nf + id] = mx * A;
+    F[MY * nf + id] = my * A;
+    F[MZ * nf + id] = mz * A;
+    F[EN * nf + id] = f[4] * A;
+    F[BX * nf + id] = bx * A;
+    F[BY * nf + id] = by * A;
+    F[BZ * nf + id] = bz * A;
+    F[PSI * nf + id] = f[8] * A;
+    for (int m = ENT; m < NV; m++) F[m * nf + id] = f[m] * A;
+}
+
+template <int S, int L>
+__global__ void k_flux_r(const float* __restrict__ U, float* __restrict__ F, const float* __restrict__ nb, const float* __restrict__ wr, const float* __restrict__ rc, const float* __restrict__ rf, float ch)
+{
+    size_t nf = (size_t)(P.nr + 1) * P.nt * P.np;
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= nf) return;
+    int k = id % P.np, j = (id / P.np) % P.nt, fi = id / ((size_t)P.np * P.nt);
+    float b[9];
+#pragma unroll
+    for (int m = 0; m < 9; m++) b[m] = nb[(j * P.np + k) * 9 + m];
+    float q[4][NV];
+    float r2 = rf[fi];
+#pragma unroll
+    for (int s = 0; s < 4; s++) {
+        int i = fi + s;
+        load_prim(U, cid(i, j + 2, k + 2), q[s]);
+        rot_in(q[s], b);
+        float sc = sqr(rc[i] / r2);
+        q[s][0] *= sc; q[s][4] *= sc; q[s][5] *= sc; q[s][6] *= sc; q[s][7] *= sc;
+    }
+    float qL[NV], qR[NV], f[NV];
+    plm_face<L>(q[0], q[1], q[2], q[3], qL, qR);
+    riemann_glm<S>(qL, qR, P.gam, ch, f);
+    store_flux(F, nf, id, f, b, r2 * r2 * wr[j]);
+}
+
+template <int S, int L>
+__global__ void k_flux_t(const float* __restrict__ U, float* __restrict__ F, const float* __restrict__ nb, const float* __restrict__ wt, const float* __restrict__ rf, float ch)
+{
+    size_t nf = (size_t)P.nr * (P.nt + 1) * P.np;
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= nf) return;
+    int k = id % P.np, fj = (id / P.np) % (P.nt + 1), i = id / ((size_t)P.np * (P.nt + 1));
+    float b[9];
+#pragma unroll
+    for (int m = 0; m < 9; m++) b[m] = nb[(fj * P.np + k) * 9 + m];
+    float q[4][NV];
+#pragma unroll
+    for (int s = 0; s < 4; s++) {
+        load_prim(U, cid(i + 2, fj + s, k + 2), q[s]);
+        rot_in(q[s], b);
+    }
+    float qL[NV], qR[NV], f[NV];
+    plm_face<L>(q[0], q[1], q[2], q[3], qL, qR);
+    riemann_glm<S>(qL, qR, P.gam, ch, f);
+    store_flux(F, nf, id, f, b, 0.5f * (sqr(rf[i + 1]) - sqr(rf[i])) * wt[fj]);
+}
+
+template <int S, int L>
+__global__ void k_flux_p(const float* __restrict__ U, float* __restrict__ F, const float* __restrict__ nb, const float* __restrict__ rf, float ch)
+{
+    size_t nf = (size_t)P.nr * P.nt * (P.np + 1);
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= nf) return;
+    int fk = id % (P.np + 1), j = (id / (P.np + 1)) % P.nt, i = id / ((size_t)(P.np + 1) * P.nt);
+    float b[9];
+#pragma unroll
+    for (int m = 0; m < 9; m++) b[m] = nb[(j * (P.np + 1) + fk) * 9 + m];
+    float q[4][NV];
+#pragma unroll
+    for (int s = 0; s < 4; s++) {
+        load_prim(U, cid(i + 2, j + 2, fk + s), q[s]);
+        rot_in(q[s], b);
+    }
+    float qL[NV], qR[NV], f[NV];
+    plm_face<L>(q[0], q[1], q[2], q[3], qL, qR);
+    riemann_glm<S>(qL, qR, P.gam, ch, f);
+    store_flux(F, nf, id, f, b, 0.5f * (sqr(rf[i + 1]) - sqr(rf[i])) * P.dth);
+}
+
+template <int D>
+__global__ void k_accum(float* __restrict__ U, const float* __restrict__ F, const float* __restrict__ ivol, float dtf)
+{
+    size_t n = (size_t)P.nr * P.nt * P.np;
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= n) return;
+    int k = id % P.np, j = (id / P.np) % P.nt, i = id / ((size_t)P.np * P.nt);
+    size_t a, b, nf;
+    if (D == 0) { nf = (size_t)(P.nr + 1) * P.nt * P.np; a = ((size_t)i * P.nt + j) * P.np + k; b = a + (size_t)P.nt * P.np; }
+    else if (D == 1) { nf = (size_t)P.nr * (P.nt + 1) * P.np; a = ((size_t)i * (P.nt + 1) + j) * P.np + k; b = a + P.np; }
+    else { nf = (size_t)P.nr * P.nt * (P.np + 1); a = ((size_t)i * P.nt + j) * (P.np + 1) + k; b = a + 1; }
+    float w = dtf * ivol[i * P.nt + j];
+    size_t c = cid(i + 2, j + 2, k + 2);
+#pragma unroll
+    for (int m = 0; m < NV; m++) U[m * P.N + c] += w * (F[m * nf + a] - F[m * nf + b]);
+}
+
+__global__ void k_source(float* __restrict__ Ut, const float* __restrict__ Ue, const float* __restrict__ rc, const float* __restrict__ tc, const float* __restrict__ pc, float dtf)
+{
+    size_t n = (size_t)P.nr * P.nt * P.np;
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= n) return;
+    int k = id % P.np, j = (id / P.np) % P.nt, i = id / ((size_t)P.np * P.nt);
+    size_t c = cid(i + 2, j + 2, k + 2);
+    float r = rc[i + 2], st = sinf(tc[j + 2]), ct = cosf(tc[j + 2]), sp = sinf(pc[k + 2]), cp = cosf(pc[k + 2]);
+    float g = -P.gm / (r * r);
+    float gx = g * st * cp, gy = g * st * sp, gz = g * ct;
+    float d = Ue[RHO * P.N + c];
+    Ut[MX * P.N + c] += dtf * d * gx;
+    Ut[MY * P.N + c] += dtf * d * gy;
+    Ut[MZ * P.N + c] += dtf * d * gz;
+    Ut[EN * P.N + c] += dtf * (Ue[MX * P.N + c] * gx + Ue[MY * P.N + c] * gy + Ue[MZ * P.N + c] * gz);
+}
+
+__global__ void k_avg(float* __restrict__ A, const float* __restrict__ B, size_t n)
+{
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id < n) A[id] = 0.5f * (A[id] + B[id]);
+}
+
+__global__ void k_floor(float* __restrict__ U, const float* __restrict__ rc, const float* __restrict__ tc, const float* __restrict__ pc, float damp_a, float chdt, unsigned* nfix, unsigned* fmap)
+{
+    size_t n = (size_t)P.nr * P.nt * P.np;
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= n) return;
+    int k = id % P.np, j = (id / P.np) % P.nt, i = id / ((size_t)P.np * P.nt);
+    size_t c = cid(i + 2, j + 2, k + 2);
+    float u[NV];
+#pragma unroll
+    for (int m = 0; m < NV; m++) u[m] = U[m * P.N + c];
+    bool fix = false;
+    if (!(u[RHO] > P.dmin)) { u[RHO] = P.dmin; fix = true; }
+    float bb = u[BX] * u[BX] + u[BY] * u[BY] + u[BZ] * u[BZ];
+    if (bb > P.va2max * u[RHO]) {
+        float dn = bb / P.va2max;
+        float sc = dn / u[RHO];
+        float ke0 = 0.5f * (u[MX] * u[MX] + u[MY] * u[MY] + u[MZ] * u[MZ]) / u[RHO];
+        u[MX] *= sc; u[MY] *= sc; u[MZ] *= sc;
+        u[EN] += ke0 * (sc - 1.f);
+        u[SC] *= sc;
+        u[ENT] *= sc;
+        for (int m = SC + 1; m < NV; m++) u[m] *= sc;
+        u[RHO] = dn;
+        fix = true;
+    }
+    float ke = 0.5f * (u[MX] * u[MX] + u[MY] * u[MY] + u[MZ] * u[MZ]) / u[RHO];
+    float me = 0.5f * (u[BX] * u[BX] + u[BY] * u[BY] + u[BZ] * u[BZ]);
+    float eth = u[EN] - ke - me;
+    if (eth > ETA_DE * u[EN]) u[ENT] = (P.gam - 1.f) * eth * powf(u[RHO], 1.f - P.gam);
+    else {
+        float p = fmaxf(u[ENT] * powf(u[RHO], P.gam - 1.f), P.pmin);
+        if (!(u[ENT] > 0.f)) fix = true;
+        u[ENT] = p * powf(u[RHO], 1.f - P.gam);
+        u[EN] = p / (P.gam - 1.f) + ke + me;
+    }
+    float r = rc[i + 2];
+    float h = fminf(P.dr, r * fminf(P.dth, sinf(tc[j + 2]) * P.dph));
+    u[PSI] *= expf(-damp_a * chdt / h);
+#pragma unroll
+    for (int m = 0; m < NV; m++) U[m * P.N + c] = u[m];
+    if (fix) { atomicAdd(nfix, 1u); fmap[id] += 1u; }
+}
+
+__global__ void k_dt(const float* __restrict__ U, const float* __restrict__ rc, const float* __restrict__ tc, const float* __restrict__ pc, unsigned* out)
+{
+    size_t n = (size_t)P.nr * P.nt * P.np;
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    float s = 0.f, vm = 0.f, gx = 0.f;
+    if (id < n) {
+        int k = id % P.np, j = (id / P.np) % P.nt, i = id / ((size_t)P.np * P.nt);
+        float q[NV];
+        load_prim(U, cid(i + 2, j + 2, k + 2), q);
+        float th = tc[j + 2], ph = pc[k + 2], st = sinf(th), ct = cosf(th), sp = sinf(ph), cp = cosf(ph);
+        float er[3] = {st * cp, st * sp, ct}, et[3] = {ct * cp, ct * sp, -st}, ep[3] = {-sp, cp, 0.f};
+        float b2 = q[5] * q[5] + q[6] * q[6] + q[7] * q[7];
+        float r = rc[i + 2];
+        float hx[3] = {P.dr, r * P.dth, r * st * P.dph};
+        const float* e[3] = {er, et, ep};
+        for (int d = 0; d < 3; d++) {
+            float vn = q[1] * e[d][0] + q[2] * e[d][1] + q[3] * e[d][2];
+            float bn = q[5] * e[d][0] + q[6] * e[d][1] + q[7] * e[d][2];
+            float c = cfast(q[0], q[4], bn, b2, P.gam);
+            s += (fabsf(vn) + c) / hx[d];
+            gx += 1.f / hx[d];
+            vm = fmaxf(vm, fabsf(vn) + c);
+        }
+    }
+    for (int o = 16; o > 0; o >>= 1) {
+        s = fmaxf(s, __shfl_down_sync(0xffffffff, s, o));
+        vm = fmaxf(vm, __shfl_down_sync(0xffffffff, vm, o));
+        gx = fmaxf(gx, __shfl_down_sync(0xffffffff, gx, o));
+    }
+    if ((threadIdx.x & 31) == 0) {
+        atomicMax(out, __float_as_uint(s));
+        atomicMax(out + 1, __float_as_uint(vm));
+        atomicMax(out + 2, __float_as_uint(gx));
+    }
+}
+
+__device__ inline void sph_basis(float th, float ph, float* er, float* et, float* ep)
+{
+    float st = sinf(th), ct = cosf(th), sp = sinf(ph), cp = cosf(ph);
+    er[0] = st * cp; er[1] = st * sp; er[2] = ct;
+    et[0] = ct * cp; et[1] = ct * sp; et[2] = -st;
+    ep[0] = -sp; ep[1] = cp; ep[2] = 0.f;
+}
+
+__device__ inline void bnd_sample(const float* __restrict__ M, int nlat, int nlon, float lat0, float dlat, float lon0, float dlon, int m0, float w, float lat, float lon, float* o)
+{
+    float x = (lon - lon0) / dlon, y = (lat - lat0) / dlat;
+    x = x - floorf(x / nlon) * nlon;
+    int i0 = (int)floorf(x), i1 = (i0 + 1) % nlon;
+    float fx = x - i0;
+    i0 %= nlon;
+    y = fminf(fmaxf(y, 0.f), (float)(nlat - 1) - 1e-4f);
+    int j0 = (int)floorf(y);
+    int j1 = min(j0 + 1, nlat - 1);
+    float fy = y - j0;
+    size_t plane = (size_t)nlat * nlon;
+    for (int f = 0; f < 5; f++) {
+        float acc = 0.f;
+        for (int t = 0; t < (w > 0.f ? 2 : 1); t++) {
+            const float* A = M + ((size_t)(m0 + t) * 5 + f) * plane;
+            float a = (1.f - fx) * ((1.f - fy) * A[j0 * nlon + i0] + fy * A[j1 * nlon + i0]) + fx * ((1.f - fy) * A[j0 * nlon + i1] + fy * A[j1 * nlon + i1]);
+            acc += (t == 0 ? 1.f - w : w) * a;
+        }
+        o[f] = acc;
+    }
+}
+
+__device__ inline void cme_override(float tau, float th, float ph, float* o)
+{
+    float x[3] = {sinf(th) * cosf(ph), sinf(th) * sinf(ph), cosf(th)};
+    for (int c = 0; c < P.ncme; c++) {
+        const float* q = C_cme + c * 8;
+        float dtc = tau - q[0];
+        if (dtc <= 0.f) continue;
+        float R = q[4];
+        float d = P.rin - R + q[5] * dtc;
+        if (d - R > P.rin) continue;
+        float dx = P.rin * x[0] - d * q[1], dy = P.rin * x[1] - d * q[2], dz = P.rin * x[2] - d * q[3];
+        if (dx * dx + dy * dy + dz * dz < R * R) {
+            o[0] = q[5] * 100.f;
+            o[1] = q[6];
+            o[2] = q[7];
+            o[4] = 0.f;
+        }
+    }
+}
+
+__device__ inline void bnd_state(float r, float th, float ph, const float* o, float* u, float lam, float tau)
+{
+    float er[3], et[3], ep[3];
+    sph_basis(th, ph, er, et, ep);
+    float s2 = sqr(P.rin / r);
+    float vr = fmaxf(o[0], 50.f) / 100.f;
+    float d = o[1] * (1.f + 4.f * P.xa) * s2;
+    float p = o[1] * o[2] * P.kfac * s2;
+    float br = o[3] * s2;
+    float bp = -br * P.om * r * sinf(th) / vr;
+    float q[NV] = {d, vr * er[0], vr * er[1], vr * er[2], p, br * er[0] + bp * ep[0], br * er[1] + bp * ep[1], br * er[2], 0.f, 0.f};
+    q[SC] = o[4];
+#if NTR > 1
+    q[SC + 1] = cosf(lam * 0.01745329252f);
+    q[SC + 2] = sinf(lam * 0.01745329252f);
+    q[SC + 3] = 90.f - th * 57.29577951f;
+    q[SC + 4] = tau;
+#endif
+    prim2cons(q, P.gam, u);
+}
+
+__global__ void k_bc_inner(float* __restrict__ U, const float* __restrict__ M, int nlat, int nlon, float lat0, float dlat, float lon0, float dlon, int m0, float w, float lonshift, float tau, float bscale, const float* __restrict__ rc, const float* __restrict__ tc, const float* __restrict__ pc, int fluxform)
+{
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= P.nt * P.np) return;
+    int k = id % P.np, j = id / P.np;
+    float th = tc[j + 2], ph = pc[k + 2];
+    float lat = 90.f - th * 57.29577951f;
+    float lon = ph * 57.29577951f - lonshift;
+    float o[5];
+    bnd_sample(M, nlat, nlon, lat0, dlat, lon0, dlon, m0, w, lat, lon, o);
+    if (fluxform) {
+        float vv = fmaxf(o[0], 50.f);
+        o[1] = o[1] / (vv * vv);
+        o[2] = o[2] / o[1];
+    }
+    o[3] *= bscale;
+    cme_override(tau, th, ph, o);
+    for (int g = 0; g < 2; g++) {
+        float u[NV];
+        bnd_state(rc[g], th, ph, o, u, lon, tau - (P.rin - rc[g]) / fmaxf(o[0] / 100.f, 0.5f));
+        size_t c = cid(g, j + 2, k + 2);
+#pragma unroll
+        for (int m = 0; m < NV; m++) U[m * P.N + c] = u[m];
+    }
+}
+
+__global__ void k_init(float* __restrict__ U, const float* __restrict__ M, int nlat, int nlon, float lat0, float dlat, float lon0, float dlon, int m0, float w, float lonshift, float bscale, const float* __restrict__ rc, const float* __restrict__ tc, const float* __restrict__ pc, int fluxform)
+{
+    size_t n = (size_t)P.nr * P.nt * P.np;
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= n) return;
+    int k = id % P.np, j = (id / P.np) % P.nt, i = id / ((size_t)P.np * P.nt);
+    float th = tc[j + 2], ph = pc[k + 2], r = rc[i + 2];
+    float o[5];
+    bnd_sample(M, nlat, nlon, lat0, dlat, lon0, dlon, m0, w, 90.f - th * 57.29577951f, ph * 57.29577951f - lonshift, o);
+    if (fluxform) {
+        float vv = fmaxf(o[0], 50.f);
+        o[1] = o[1] / (vv * vv);
+        o[2] = o[2] / o[1];
+    }
+    o[3] *= bscale;
+    float u[NV];
+    bnd_state(r, th, ph, o, u, ph * 57.29577951f - lonshift, -1.f);
+    float q[NV];
+    cons2prim(u, P.gam, P.dmin, P.pmin, q);
+    float s2 = sqr(P.rin / r);
+    q[4] = o[1] * o[2] * P.kfac * powf(s2, P.gam);
+    prim2cons(q, P.gam, u);
+    size_t c = cid(i + 2, j + 2, k + 2);
+#pragma unroll
+    for (int m = 0; m < NV; m++) U[m * P.N + c] = u[m];
+}
+
+__global__ void k_bc_inner_copy(float* __restrict__ U)
+{
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= P.nt * P.np) return;
+    int k = id % P.np + 2, j = id / P.np + 2;
+    size_t s = cid(2, j, k);
+    for (int g = 0; g < 2; g++) {
+        size_t c = cid(g, j, k);
+#pragma unroll
+        for (int m = 0; m < NV; m++) U[m * P.N + c] = U[m * P.N + s];
+    }
+}
+
+__global__ void k_init_uniform(float* __restrict__ U, float d, float p, float vx, float vy, float vz, float bx, float by, float bz)
+{
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= P.N) return;
+    float q[NV] = {d, vx, vy, vz, p, bx, by, bz, 0.f, 0.f};
+    for (int m = SC; m < NV; m++) q[m] = 0.f;
+    float u[NV];
+    prim2cons(q, P.gam, u);
+#pragma unroll
+    for (int m = 0; m < NV; m++) U[m * P.N + id] = u[m];
+}
+
+__global__ void k_bc_outer(float* __restrict__ U, const float* __restrict__ rc, const float* __restrict__ tc, const float* __restrict__ pc, int copy)
+{
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= P.nt * P.np) return;
+    int k = id % P.np + 2, j = id / P.np + 2;
+    int is = P.nr + 1;
+    size_t s = cid(is, j, k);
+    float u[NV], q[NV];
+#pragma unroll
+    for (int m = 0; m < NV; m++) u[m] = U[m * P.N + s];
+    cons2prim(u, P.gam, P.dmin, P.pmin, q);
+    float er[3], et[3], ep[3];
+    sph_basis(tc[j], pc[k], er, et, ep);
+    float br = q[5] * er[0] + q[6] * er[1] + q[7] * er[2];
+    float vr = q[1] * er[0] + q[2] * er[1] + q[3] * er[2];
+    if (!copy) vr = fmaxf(vr, 0.f);
+    float vt[3] = {q[1] - (q[1] * er[0] + q[2] * er[1] + q[3] * er[2]) * er[0], q[2] - (q[1] * er[0] + q[2] * er[1] + q[3] * er[2]) * er[1], q[3] - (q[1] * er[0] + q[2] * er[1] + q[3] * er[2]) * er[2]};
+    for (int g = 0; g < 2; g++) {
+        float a = copy ? 1.f : rc[is] / rc[is + 1 + g], a2 = a * a;
+        float w[NV];
+        w[0] = q[0] * a2;
+        w[4] = q[4] * powf(a2, P.gam);
+        for (int c = 0; c < 3; c++) {
+            w[1 + c] = vr * er[c] + vt[c];
+            w[5 + c] = a2 * br * er[c] + a * (q[5 + c] - br * er[c]);
+        }
+        w[8] = q[8];
+        for (int m = ENT; m < NV; m++) w[m] = q[m];
+        float uu[NV];
+        prim2cons(w, P.gam, uu);
+        size_t c = cid(is + 1 + g, j, k);
+#pragma unroll
+        for (int m = 0; m < NV; m++) U[m * P.N + c] = uu[m];
+    }
+}
+
+__global__ void k_bc_theta(float* __restrict__ U, const float* __restrict__ tc, const float* __restrict__ pc, int cart)
+{
+    int nrg = P.nr + 4;
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= nrg * P.np * 4) return;
+    int k = id % P.np + 2, g = (id / P.np) % 4, i = id / (P.np * 4);
+    int j = g < 2 ? g : P.nt + g;
+    int js = g < 2 ? 2 : P.nt + 1;
+    size_t s = cid(i, js, k), c = cid(i, j, k);
+    float ph = pc[k];
+    float er0[3], et0[3], ep0[3], er1[3], et1[3], ep1[3];
+    sph_basis(tc[js], ph, er0, et0, ep0);
+    sph_basis(tc[j], ph, er1, et1, ep1);
+    float u[NV];
+#pragma unroll
+    for (int m = 0; m < NV; m++) u[m] = U[m * P.N + s];
+    for (int v = MX; v <= BX && !cart; v += 4) {
+        float x = u[v], y = u[v + 1], z = u[v + 2];
+        float a = x * er0[0] + y * er0[1] + z * er0[2];
+        float b = x * et0[0] + y * et0[1] + z * et0[2];
+        float cc = x * ep0[0] + y * ep0[1] + z * ep0[2];
+        u[v] = a * er1[0] + b * et1[0] + cc * ep1[0];
+        u[v + 1] = a * er1[1] + b * et1[1] + cc * ep1[1];
+        u[v + 2] = a * er1[2] + b * et1[2] + cc * ep1[2];
+    }
+#pragma unroll
+    for (int m = 0; m < NV; m++) U[m * P.N + c] = u[m];
+}
+
+__global__ void k_bc_phi(float* __restrict__ U)
+{
+    int nrg = P.nr + 4;
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= nrg * P.NTg * 4) return;
+    int g = id % 4, j = (id / 4) % P.NTg, i = id / (4 * P.NTg);
+    int k = g < 2 ? g : P.np + g;
+    int ks = g < 2 ? P.np + g : g;
+    size_t s = cid(i, j, ks), c = cid(i, j, k);
+#pragma unroll
+    for (int m = 0; m < NV; m++) U[m * P.N + c] = U[m * P.N + s];
+}
+
+__device__ void interp(const float* __restrict__ U, float r, float th, float ph, float* out)
+{
+    const float TPI = 6.283185307f;
+    ph = ph - floorf(ph / TPI) * TPI;
+    float fi = (r - P.rin) / P.dr - 0.5f + 2.f;
+    float fj = (th - P.th0) / P.dth - 0.5f + 2.f;
+    float fk = ph / P.dph - 0.5f + 2.f;
+    for (int m = 0; m < 9 + NTR; m++) out[m] = nanf("");
+    if (fi < 2.f || fi > P.nr + 1.f || fj < 1.5f || fj > P.nt + 1.5f) return;
+    int i0 = (int)floorf(fi), j0 = (int)floorf(fj), k0 = (int)floorf(fk);
+    float a = fi - i0, b = fj - j0, c = fk - k0;
+    float acc[NV] = {0};
+    for (int di = 0; di < 2; di++)
+        for (int dj = 0; dj < 2; dj++)
+            for (int dk = 0; dk < 2; dk++) {
+                float w = (di ? a : 1.f - a) * (dj ? b : 1.f - b) * (dk ? c : 1.f - c);
+                float q[NV];
+                load_prim(U, cid(min(i0 + di, P.nr + 1), j0 + dj, k0 + dk), q);
+                for (int m = 0; m < NV; m++) acc[m] += w * q[m];
+            }
+    float er[3], et[3], ep[3];
+    sph_basis(th, ph, er, et, ep);
+    out[0] = acc[0] / (1.f + 4.f * P.xa);
+    out[1] = 100.f * (acc[1] * er[0] + acc[2] * er[1] + acc[3] * er[2]);
+    out[2] = 100.f * (acc[1] * et[0] + acc[2] * et[1] + acc[3] * et[2]);
+    out[3] = 100.f * (acc[1] * ep[0] + acc[2] * ep[1] + acc[3] * ep[2]);
+    out[4] = acc[4] / (out[0] * P.kfac);
+    float bs = 1.f;
+    out[5] = bs * (acc[5] * er[0] + acc[6] * er[1] + acc[7] * er[2]);
+    out[6] = bs * (acc[5] * et[0] + acc[6] * et[1] + acc[7] * et[2]);
+    out[7] = bs * (acc[5] * ep[0] + acc[6] * ep[1] + acc[7] * ep[2]);
+    out[8] = acc[SC];
+    out[9] = r;
+    for (int m = 1; m < NTR; m++) out[9 + m] = acc[SC + m];
+}
+
+__global__ void k_probe(const float* __restrict__ U, const float* __restrict__ pos, int n, float* __restrict__ out, float b0)
+{
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= n) return;
+    float o[9 + NTR];
+    interp(U, pos[3 * id], pos[3 * id + 1], pos[3 * id + 2], o);
+    o[5] *= b0; o[6] *= b0; o[7] *= b0;
+    for (int m = 0; m < 9 + NTR; m++) out[id * (9 + NTR) + m] = o[m];
+}
+
+__global__ void k_slice(const float* __restrict__ U, int nrs, int nps, float rmax, float e1x, float e1y, float e1z, float e2x, float e2y, float e2z, float* __restrict__ out, float b0)
+{
+    int id = blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= nrs * nps) return;
+    int ip = id % nps, ir = id / nps;
+    float R = P.rin + (ir + 0.5f) * (rmax - P.rin) / nrs;
+    float lam = (ip + 0.5f) * 6.283185307f / nps;
+    float x = R * (cosf(lam) * e1x + sinf(lam) * e2x), y = R * (cosf(lam) * e1y + sinf(lam) * e2y), z = R * (cosf(lam) * e1z + sinf(lam) * e2z);
+    float th = acosf(fminf(fmaxf(z / R, -1.f), 1.f)), ph = atan2f(y, x);
+    float o[9 + NTR];
+    interp(U, R, th, ph, o);
+    size_t pl = (size_t)nrs * nps;
+    out[0 * pl + id] = o[0];
+    out[1 * pl + id] = o[1];
+    out[2 * pl + id] = o[4];
+    out[3 * pl + id] = o[5] * b0;
+    out[4 * pl + id] = o[8];
+}
+
+__global__ void k_snap(const float* __restrict__ U, const float* __restrict__ tc, const float* __restrict__ pc, float* __restrict__ out, float b0)
+{
+    size_t n = (size_t)P.nr * P.nt * P.np;
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= n) return;
+    int k = id % P.np, j = (id / P.np) % P.nt, i = id / ((size_t)P.np * P.nt);
+    float q[NV];
+    load_prim(U, cid(i + 2, j + 2, k + 2), q);
+    float er[3], et[3], ep[3];
+    sph_basis(tc[j + 2], pc[k + 2], er, et, ep);
+    float np_ = q[0] / (1.f + 4.f * P.xa);
+    out[0 * n + id] = np_;
+    out[1 * n + id] = 100.f * (q[1] * er[0] + q[2] * er[1] + q[3] * er[2]);
+    out[2 * n + id] = 100.f * (q[1] * et[0] + q[2] * et[1] + q[3] * et[2]);
+    out[3 * n + id] = 100.f * (q[1] * ep[0] + q[2] * ep[1] + q[3] * ep[2]);
+    out[4 * n + id] = q[4] / (np_ * P.kfac);
+    out[5 * n + id] = b0 * (q[5] * er[0] + q[6] * er[1] + q[7] * er[2]);
+    out[6 * n + id] = b0 * (q[5] * et[0] + q[6] * et[1] + q[7] * et[2]);
+    out[7 * n + id] = b0 * (q[5] * ep[0] + q[6] * ep[1] + q[7] * ep[2]);
+    out[8 * n + id] = q[SC];
+}
+
+__global__ void k_divb(const float* __restrict__ U, const float* __restrict__ nbr, const float* __restrict__ wr, const float* __restrict__ nbt, const float* __restrict__ wt, const float* __restrict__ nbp, const float* __restrict__ rf, const float* __restrict__ ivol, const float* __restrict__ tc, float* __restrict__ out)
+{
+    size_t n = (size_t)P.nr * P.nt * P.np;
+    size_t id = (size_t)blockIdx.x * blockDim.x + threadIdx.x;
+    if (id >= n) return;
+    int k = id % P.np, j = (id / P.np) % P.nt, i = id / ((size_t)P.np * P.nt);
+    size_t c = cid(i + 2, j + 2, k + 2);
+    auto B = [&](size_t q, int m) { return U[(BX + m) * P.N + q]; };
+    float s = 0.f;
+    const float* b;
+    float A;
+    b = nbr + (j * P.np + k) * 9;
+    for (int sd = 0; sd < 2; sd++) {
+        size_t q = cid(i + 2 + (sd ? 1 : -1), j + 2, k + 2);
+        A = sqr(rf[i + sd]) * wr[j];
+        float bn = 0.f;
+        for (int m = 0; m < 3; m++) bn += 0.5f * (B(c, m) + B(q, m)) * b[m];
+        s += (sd ? 1.f : -1.f) * bn * A;
+    }
+    for (int sd = 0; sd < 2; sd++) {
+        b = nbt + ((j + sd) * P.np + k) * 9;
+        size_t q = cid(i + 2, j + 2 + (sd ? 1 : -1), k + 2);
+        A = 0.5f * (sqr(rf[i + 1]) - sqr(rf[i])) * wt[j + sd];
+        float bn = 0.f;
+        for (int m = 0; m < 3; m++) bn += 0.5f * (B(c, m) + B(q, m)) * b[m];
+        s += (sd ? 1.f : -1.f) * bn * A;
+    }
+    for (int sd = 0; sd < 2; sd++) {
+        b = nbp + (j * (P.np + 1) + k + sd) * 9;
+        size_t q = cid(i + 2, j + 2, k + 2 + (sd ? 1 : -1));
+        A = 0.5f * (sqr(rf[i + 1]) - sqr(rf[i])) * P.dth;
+        float bn = 0.f;
+        for (int m = 0; m < 3; m++) bn += 0.5f * (B(c, m) + B(q, m)) * b[m];
+        s += (sd ? 1.f : -1.f) * bn * A;
+    }
+    float bm = sqrtf(B(c, 0) * B(c, 0) + B(c, 1) * B(c, 1) + B(c, 2) * B(c, 2));
+    float r = 0.5f * (rf[i] + rf[i + 1]);
+    float h = fminf(P.dr, r * fminf(P.dth, sinf(tc[j + 2]) * P.dph));
+    out[id] = fabsf(s) * ivol[i * P.nt + j] * h / fmaxf(bm, 1e-12f);
+}
+
+struct Bnd {
+    int nmap, nlat, nlon;
+    std::vector<double> t;
+    float lat0, dlat, lon0, dlon;
+    float* d = nullptr;
+};
+
+static Bnd read_bnd(const std::string& fn)
+{
+    Bnd b;
+    FILE* f = fopen(fn.c_str(), "rb");
+    if (!f) { fprintf(stderr, "cannot open %s\n", fn.c_str()); exit(1); }
+    int h[3];
+    if (fread(h, 4, 3, f) != 3) exit(1);
+    b.nmap = h[0]; b.nlat = h[1]; b.nlon = h[2];
+    b.t.resize(b.nmap);
+    if (fread(b.t.data(), 8, b.nmap, f) != (size_t)b.nmap) exit(1);
+    float g[4];
+    if (fread(g, 4, 4, f) != 4) exit(1);
+    b.lat0 = g[0]; b.dlat = g[1]; b.lon0 = g[2]; b.dlon = g[3];
+    size_t n = (size_t)b.nmap * 5 * b.nlat * b.nlon;
+    std::vector<float> h_d(n);
+    if (fread(h_d.data(), 4, n, f) != n) { fprintf(stderr, "short bnd\n"); exit(1); }
+    fclose(f);
+    CK(cudaMalloc(&b.d, n * 4));
+    CK(cudaMemcpy(b.d, h_d.data(), n * 4, cudaMemcpyHostToDevice));
+    return b;
+}
+
+struct Tracks {
+    int nb = 0, nt = 0;
+    std::vector<double> t;
+    std::vector<float> x;
+};
+
+static Tracks read_tracks(const std::string& fn)
+{
+    Tracks tr;
+    if (fn.empty()) return tr;
+    FILE* f = fopen(fn.c_str(), "rb");
+    if (!f) { fprintf(stderr, "cannot open %s\n", fn.c_str()); exit(1); }
+    int h[2];
+    if (fread(h, 4, 2, f) != 2) exit(1);
+    tr.nb = h[0]; tr.nt = h[1];
+    tr.t.resize(tr.nt);
+    if (fread(tr.t.data(), 8, tr.nt, f) != (size_t)tr.nt) exit(1);
+    tr.x.resize((size_t)tr.nb * tr.nt * 3);
+    if (fread(tr.x.data(), 4, tr.x.size(), f) != tr.x.size()) exit(1);
+    fclose(f);
+    return tr;
+}
+
+int main(int argc, char** argv)
+{
+    if (argc < 2) { fprintf(stderr, "usage: helio config\n"); return 1; }
+    {
+        std::ifstream in(argv[1]);
+        std::string line;
+        while (std::getline(in, line)) {
+            auto h = line.find('#');
+            if (h != std::string::npos) line = line.substr(0, h);
+            auto e = line.find('=');
+            if (e == std::string::npos) continue;
+            auto trim = [](std::string s) { s.erase(0, s.find_first_not_of(" \t")); s.erase(s.find_last_not_of(" \t\r") + 1); return s; };
+            cfg[trim(line.substr(0, e))] = trim(line.substr(e + 1));
+        }
+        for (int a = 2; a < argc; a++) {
+            std::string s = argv[a];
+            auto e = s.find('=');
+            if (e != std::string::npos) cfg[s.substr(0, e)] = s.substr(e + 1);
+        }
+    }
+    int dev = (int)dget("device", 0);
+    CK(cudaSetDevice(dev));
+    Par hp{};
+    hp.nr = (int)dget("nr", 128); hp.nt = (int)dget("nt", 30); hp.np = (int)dget("np", 90);
+    hp.NTg = hp.nt + 4; hp.NPg = hp.np + 4;
+    hp.N = (size_t)(hp.nr + 4) * hp.NTg * hp.NPg;
+    double rin = dget("rin_au", 0.1), rout = dget("rout_au", 2.5), latmax = dget("latmax_deg", 60.0) * M_PI / 180;
+    hp.rin = rin; hp.dr = (rout - rin) / hp.nr;
+    hp.th0 = M_PI / 2 - latmax; hp.dth = 2 * latmax / hp.nt; hp.dph = 2 * M_PI / hp.np;
+    hp.gam = dget("gamma", 5.0 / 3.0);
+    hp.gm = dget("gravity", 1) ? GMSUN / (AU * V0 * V0) : 0.0;
+    double omdeg = dget("omega_deg_day", 14.1844);
+    hp.om = omdeg * M_PI / 180 / 86400 * T0;
+    hp.xa = dget("xalpha", 0.05);
+    hp.kfac = KB * (2 + 3 * hp.xa) / P0;
+    hp.dmin = dget("dmin", 1e-4); hp.pmin = dget("pmin", 1e-9);
+    hp.va2max = sqr((float)(dget("vamax_kms", 3000.0) / 100.0));
+    float b0 = B0NT;
+    int solver = (int)dget("solver", 0), lim = (int)dget("limiter", 0);
+    double cfl = dget("cfl", 0.8), damp_a = dget("glm_alpha", 0.3), ch_frac = dget("ch_frac", 0.95);
+    double t_start = dget("t_start_s", 0), t_end = dget("t_end_s", 86400);
+    double phi0 = dget("phi0_deg", 0);
+    double bscale = dget("bscale", 1.0) / B0NT;
+    std::string out = sget("out_dir", ".");
+    double probe_dt = dget("probe_dt_s", 1800), slice_dt = dget("slice_dt_s", 0), diag_dt = dget("diag_dt_s", 86400);
+    int max_steps = (int)dget("max_steps", 2000000000);
+    int fluxform = (int)dget("bnd_fluxform", 0);
+    int inner_mode = (int)dget("inner_mode", 0), init_mode = (int)dget("init_mode", 0), theta_cart = (int)dget("theta_cart", 0), outer_copy = (int)dget("outer_copy", 0);
+
+    std::vector<float> rc(hp.nr + 4), rf(hp.nr + 1), tc(hp.nt + 4), pc(hp.np + 4), wr(hp.nt), wt(hp.nt + 1), ivol((size_t)hp.nr * hp.nt);
+    for (int i = 0; i < hp.nr + 4; i++) rc[i] = rin + (i - 2 + 0.5) * hp.dr;
+    for (int i = 0; i <= hp.nr; i++) rf[i] = rin + i * hp.dr;
+    for (int j = 0; j < hp.nt + 4; j++) tc[j] = hp.th0 + (j - 2 + 0.5) * hp.dth;
+    for (int k = 0; k < hp.np + 4; k++) pc[k] = (k - 2 + 0.5) * hp.dph;
+    double dth = hp.dth, dph = hp.dph, th0 = hp.th0;
+    std::vector<float> nbr((size_t)hp.nt * hp.np * 9), nbt((size_t)(hp.nt + 1) * hp.np * 9), nbp((size_t)hp.nt * (hp.np + 1) * 9);
+    auto put = [](float* o, const double* n, const double* t1) {
+        double t2[3] = {n[1] * t1[2] - n[2] * t1[1], n[2] * t1[0] - n[0] * t1[2], n[0] * t1[1] - n[1] * t1[0]};
+        for (int m = 0; m < 3; m++) { o[m] = n[m]; o[3 + m] = t1[m]; o[6 + m] = t2[m]; }
+    };
+    for (int j = 0; j < hp.nt; j++) {
+        double t1 = th0 + j * dth, t2 = t1 + dth, tcj = t1 + 0.5 * dth;
+        double Is = 0.5 * (t2 - t1) - 0.25 * (sin(2 * t2) - sin(2 * t1)), Ic = 0.5 * (sqr(sin(t2)) - sqr(sin(t1)));
+        double sx = Is * 2 * sin(0.5 * dph);
+        wr[j] = sqrt(sx * sx + Ic * Ic * dph * dph);
+        for (int k = 0; k < hp.np; k++) {
+            double p = (k + 0.5) * dph;
+            double n[3] = {sx * cos(p), sx * sin(p), Ic * dph};
+            double nn = sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+            for (double& x : n) x /= nn;
+            double e[3] = {cos(tcj) * cos(p), cos(tcj) * sin(p), -sin(tcj)};
+            double dd = e[0] * n[0] + e[1] * n[1] + e[2] * n[2];
+            double t1v[3] = {e[0] - dd * n[0], e[1] - dd * n[1], e[2] - dd * n[2]};
+            double tn = sqrt(t1v[0] * t1v[0] + t1v[1] * t1v[1] + t1v[2] * t1v[2]);
+            for (double& x : t1v) x /= tn;
+            put(&nbr[(j * hp.np + k) * 9], n, t1v);
+        }
+    }
+    for (int j = 0; j <= hp.nt; j++) {
+        double t = th0 + j * dth;
+        double a = sin(t) * cos(t) * 2 * sin(0.5 * dph), c = -sin(t) * sin(t) * dph;
+        wt[j] = sqrt(a * a + c * c);
+        for (int k = 0; k < hp.np; k++) {
+            double p = (k + 0.5) * dph;
+            double n[3] = {a * cos(p) / wt[j], a * sin(p) / wt[j], c / wt[j]};
+            double t1v[3] = {-sin(p), cos(p), 0};
+            put(&nbt[(j * hp.np + k) * 9], n, t1v);
+        }
+    }
+    for (int j = 0; j < hp.nt; j++) {
+        double t = th0 + (j + 0.5) * dth;
+        for (int k = 0; k <= hp.np; k++) {
+            double p = k * dph;
+            double n[3] = {-sin(p), cos(p), 0};
+            double t1v[3] = {sin(t) * cos(p), sin(t) * sin(p), cos(t)};
+            put(&nbp[(j * (hp.np + 1) + k) * 9], n, t1v);
+        }
+    }
+    double vclose = 0;
+    for (int i = 0; i < hp.nr; i++)
+        for (int j = 0; j < hp.nt; j++) {
+            double r1 = rf[i], r2 = rf[i + 1], t1 = th0 + j * dth, t2 = t1 + dth;
+            double V = (r2 * r2 * r2 - r1 * r1 * r1) / 3 * (cos(t1) - cos(t2)) * dph;
+            ivol[(size_t)i * hp.nt + j] = 1.0 / V;
+            if (i == hp.nr / 2) {
+                int k = 0;
+                double s[3] = {0, 0, 0};
+                for (int m = 0; m < 3; m++) {
+                    s[m] += (r2 * r2 - r1 * r1) * nbr[(j * hp.np + k) * 9 + m] * wr[j];
+                    s[m] += 0.5 * (r2 * r2 - r1 * r1) * (nbt[((j + 1) * hp.np + k) * 9 + m] * wt[j + 1] - nbt[(j * hp.np + k) * 9 + m] * wt[j]);
+                    s[m] += 0.5 * (r2 * r2 - r1 * r1) * dth * (nbp[(j * (hp.np + 1) + k + 1) * 9 + m] - nbp[(j * (hp.np + 1) + k) * 9 + m]);
+                }
+                vclose = std::max(vclose, sqrt(s[0] * s[0] + s[1] * s[1] + s[2] * s[2]) / (V / hp.dr));
+            }
+        }
+
+    Bnd bnd = read_bnd(sget("bnd_file", "bnd.bin"));
+    std::vector<float> hcme(128 * 8, 0.f);
+    {
+        std::string cf = sget("cme_file", "");
+        if (!cf.empty() && dget("cme_on", 1)) {
+            std::ifstream in(cf);
+            double t0, la, lo, hw, v, n, T;
+            int c = 0;
+            while (in >> t0 >> la >> lo >> hw >> v >> n >> T && c < 128) {
+                if (t0 < t_start - 10 * 86400 || t0 > t_end) continue;
+                double la_r = la * M_PI / 180, lo_r = lo * M_PI / 180, hw_r = hw * M_PI / 180;
+                float* q = &hcme[c * 8];
+                q[0] = t0 / T0;
+                q[1] = cos(la_r) * cos(lo_r); q[2] = cos(la_r) * sin(lo_r); q[3] = sin(la_r);
+                q[4] = rin * sin(hw_r);
+                q[5] = v / 100.0;
+                q[6] = n; q[7] = T;
+                c++;
+            }
+            hp.ncme = c;
+        }
+    }
+    CK(cudaMemcpyToSymbol(P, &hp, sizeof(Par)));
+    CK(cudaMemcpyToSymbol(C_cme, hcme.data(), hcme.size() * 4));
+
+    auto up = [](const std::vector<float>& v) { float* d; CK(cudaMalloc(&d, v.size() * 4)); CK(cudaMemcpy(d, v.data(), v.size() * 4, cudaMemcpyHostToDevice)); return d; };
+    float *d_rc = up(rc), *d_rf = up(rf), *d_tc = up(tc), *d_pc = up(pc), *d_wr = up(wr), *d_wt = up(wt), *d_iv = up(ivol), *d_nbr = up(nbr), *d_nbt = up(nbt), *d_nbp = up(nbp);
+    size_t nc = (size_t)hp.nr * hp.nt * hp.np;
+    size_t nfmax = std::max({(size_t)(hp.nr + 1) * hp.nt * hp.np, (size_t)hp.nr * (hp.nt + 1) * hp.np, (size_t)hp.nr * hp.nt * (hp.np + 1)});
+    float *U0, *U1, *F, *aux;
+    unsigned* d_red;
+    CK(cudaMalloc(&U0, hp.N * NV * 4));
+    CK(cudaMalloc(&U1, hp.N * NV * 4));
+    CK(cudaMalloc(&F, nfmax * NV * 4));
+    CK(cudaMalloc(&aux, nc * 9 * 4));
+    CK(cudaMalloc(&d_red, 16));
+    CK(cudaMemset(U0, 0, hp.N * NV * 4));
+    size_t free_b, tot_b;
+    cudaMemGetInfo(&free_b, &tot_b);
+    fprintf(stderr, "grid %d x %d x %d (%zu cells), GPU alloc %.2f GB, free %.2f GB, closure %.2e, ncme %d\n", hp.nr, hp.nt, hp.np, nc, (2.0 * hp.N * NV + nfmax * NV + nc * 9) * 4 / 1e9, free_b / 1e9, vclose, hp.ncme);
+
+    Tracks tr = read_tracks(sget("track_file", ""));
+    float *d_pos = nullptr, *d_pout = nullptr;
+    if (tr.nb) { CK(cudaMalloc(&d_pos, tr.nb * 3 * 4)); CK(cudaMalloc(&d_pout, tr.nb * (9 + NTR) * 4)); }
+
+    const int TB = 256;
+    auto nblk = [&](size_t n) { return (unsigned)((n + TB - 1) / TB); };
+    double tau = t_start / T0, tau_end = t_end / T0;
+    auto bnd_at = [&](double tsec, int& m0, float& w) {
+        if (bnd.nmap == 1) { m0 = 0; w = 0; return; }
+        if (tsec <= bnd.t[0]) { m0 = 0; w = 0; return; }
+        if (tsec >= bnd.t[bnd.nmap - 1]) { m0 = bnd.nmap - 2; w = 1; return; }
+        int m = std::upper_bound(bnd.t.begin(), bnd.t.end(), tsec) - bnd.t.begin() - 1;
+        m0 = m; w = (tsec - bnd.t[m]) / (bnd.t[m + 1] - bnd.t[m]);
+    };
+    auto lonshift = [&](double tsec) { double s = phi0 + omdeg * tsec / 86400.0; return (float)(s - 360.0 * floor(s / 360.0)); };
+    auto bc = [&](float* U, double ta) {
+        double ts = ta * T0;
+        int m0; float w;
+        bnd_at(ts, m0, w);
+        if (bnd.nmap == 1) { m0 = 0; }
+        if (inner_mode == 1) k_bc_inner_copy<<<nblk(hp.nt * hp.np), TB>>>(U);
+        else k_bc_inner<<<nblk(hp.nt * hp.np), TB>>>(U, bnd.d, bnd.nlat, bnd.nlon, bnd.lat0, bnd.dlat, bnd.lon0, bnd.dlon, bnd.nmap == 1 ? 0 : m0, bnd.nmap == 1 ? 0.f : w, lonshift(ts), (float)ta, (float)bscale, d_rc, d_tc, d_pc, fluxform);
+        k_bc_outer<<<nblk(hp.nt * hp.np), TB>>>(U, d_rc, d_tc, d_pc, outer_copy);
+        k_bc_theta<<<nblk((size_t)(hp.nr + 4) * hp.np * 4), TB>>>(U, d_tc, d_pc, theta_cart);
+        k_bc_phi<<<nblk((size_t)(hp.nr + 4) * hp.NTg * 4), TB>>>(U);
+    };
+
+    std::string rst_in = sget("restart_in", "");
+    if (!rst_in.empty()) {
+        FILE* f = fopen(rst_in.c_str(), "rb");
+        if (!f) { fprintf(stderr, "no restart %s\n", rst_in.c_str()); return 1; }
+        size_t hdr[4];
+        if (fread(hdr, 8, 4, f) != 4) return 1;
+        if (hdr[0] != (size_t)hp.nr || hdr[1] != (size_t)hp.nt || hdr[2] != (size_t)hp.np) { fprintf(stderr, "restart grid mismatch\n"); return 1; }
+        double tr_s;
+        if (fread(&tr_s, 8, 1, f) != 1) return 1;
+        std::vector<float> h(hp.N * NV);
+        if (fread(h.data(), 4, h.size(), f) != h.size()) return 1;
+        fclose(f);
+        CK(cudaMemcpy(U0, h.data(), h.size() * 4, cudaMemcpyHostToDevice));
+        if (dget("restart_keep_time", 1)) tau = tr_s / T0;
+        fprintf(stderr, "restart from %s at t=%.1f s\n", rst_in.c_str(), tr_s);
+    } else if (init_mode == 1) {
+        std::vector<double> v = vget("init_v"), b = vget("init_b");
+        if (v.size() != 3) v = {0, 0, 0};
+        if (b.size() != 3) b = {0, 0, 0};
+        double n = dget("init_n", 1), T = dget("init_T", 1e5);
+        k_init_uniform<<<nblk(hp.N), TB>>>(U0, n * (1 + 4 * hp.xa), n * T * hp.kfac, v[0] / 100, v[1] / 100, v[2] / 100, b[0] / B0NT, b[1] / B0NT, b[2] / B0NT);
+    } else {
+        int m0; float w;
+        bnd_at(t_start, m0, w);
+        k_init<<<nblk(nc), TB>>>(U0, bnd.d, bnd.nlat, bnd.nlon, bnd.lat0, bnd.dlat, bnd.lon0, bnd.dlon, bnd.nmap == 1 ? 0 : m0, bnd.nmap == 1 ? 0.f : w, lonshift(t_start), (float)bscale, d_rc, d_tc, d_pc, fluxform);
+    }
+    bc(U0, tau);
+    CK(cudaDeviceSynchronize());
+
+    FILE* fprobe = nullptr;
+    if (tr.nb) {
+        fprobe = fopen((out + "/probes.bin").c_str(), "wb");
+        int h[2] = {tr.nb, 9 + NTR};
+        fwrite(h, 4, 2, fprobe);
+    }
+    int srs = (int)dget("slice_nr", 240), sps = (int)dget("slice_np", 360);
+    double srmax = dget("slice_rmax_au", rout - 0.01);
+    std::vector<double> e1 = vget("slice_e1"), e2 = vget("slice_e2");
+    if (e1.size() != 3) e1 = {1, 0, 0};
+    if (e2.size() != 3) e2 = {0, 1, 0};
+    FILE* fslice = nullptr;
+    float* d_sl = nullptr;
+    if (slice_dt > 0) {
+        fslice = fopen((out + "/slices.bin").c_str(), "wb");
+        int h[3] = {srs, sps, 5};
+        fwrite(h, 4, 3, fslice);
+        float g[2] = {(float)rin, (float)srmax};
+        fwrite(g, 4, 2, fslice);
+        CK(cudaMalloc(&d_sl, (size_t)srs * sps * 5 * 4));
+    }
+    std::vector<double> snaps = vget("snap_times_s");
+    std::sort(snaps.begin(), snaps.end());
+    size_t isnap = 0;
+    while (isnap < snaps.size() && snaps[isnap] < tau * T0 - 1) isnap++;
+    FILE* flog = fopen((out + "/log.txt").c_str(), "w");
+
+    auto do_probe = [&](double ta) {
+        if (!tr.nb) return;
+        double ts = ta * T0;
+        int m = std::upper_bound(tr.t.begin(), tr.t.end(), ts) - tr.t.begin() - 1;
+        m = std::max(0, std::min(m, tr.nt - 2));
+        double w = (ts - tr.t[m]) / (tr.t[m + 1] - tr.t[m]);
+        std::vector<float> pos(tr.nb * 3);
+        for (int b = 0; b < tr.nb; b++) {
+            double x[3];
+            for (int c = 0; c < 3; c++) x[c] = (1 - w) * tr.x[((size_t)b * tr.nt + m) * 3 + c] + w * tr.x[((size_t)b * tr.nt + m + 1) * 3 + c];
+            double r = sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
+            pos[3 * b] = r; pos[3 * b + 1] = acos(x[2] / r); pos[3 * b + 2] = atan2(x[1], x[0]);
+        }
+        CK(cudaMemcpy(d_pos, pos.data(), pos.size() * 4, cudaMemcpyHostToDevice));
+        k_probe<<<1, 64>>>(U0, d_pos, tr.nb, d_pout, b0);
+        std::vector<float> o(tr.nb * (9 + NTR));
+        CK(cudaMemcpy(o.data(), d_pout, o.size() * 4, cudaMemcpyDeviceToHost));
+        fwrite(&ts, 8, 1, fprobe);
+        fwrite(o.data(), 4, o.size(), fprobe);
+    };
+    auto do_slice = [&](double ta) {
+        k_slice<<<nblk((size_t)srs * sps), TB>>>(U0, srs, sps, srmax, e1[0], e1[1], e1[2], e2[0], e2[1], e2[2], d_sl, b0);
+        std::vector<float> o((size_t)srs * sps * 5);
+        CK(cudaMemcpy(o.data(), d_sl, o.size() * 4, cudaMemcpyDeviceToHost));
+        double ts = ta * T0;
+        fwrite(&ts, 8, 1, fslice);
+        fwrite(o.data(), 4, o.size(), fslice);
+        fflush(fslice);
+    };
+    auto do_snap = [&](double ta) {
+        k_snap<<<nblk(nc), TB>>>(U0, d_tc, d_pc, aux, b0);
+        std::vector<float> o(nc * 9);
+        CK(cudaMemcpy(o.data(), aux, o.size() * 4, cudaMemcpyDeviceToHost));
+        char fn[512];
+        snprintf(fn, sizeof fn, "%s/snap_%010.0f.bin", out.c_str(), ta * T0);
+        FILE* f = fopen(fn, "wb");
+        int h[4] = {hp.nr, hp.nt, hp.np, 9};
+        fwrite(h, 4, 4, f);
+        double g[4] = {rin, rout, latmax, ta * T0};
+        fwrite(g, 8, 4, f);
+        fwrite(o.data(), 4, o.size(), f);
+        fclose(f);
+    };
+    auto do_diag = [&](double ta, long step, double dt) {
+        k_divb<<<nblk(nc), TB>>>(U0, d_nbr, d_wr, d_nbt, d_wt, d_nbp, d_rf, d_iv, d_tc, aux);
+        std::vector<float> o(nc);
+        CK(cudaMemcpy(o.data(), aux, nc * 4, cudaMemcpyDeviceToHost));
+        double s = 0, mx = 0;
+        for (float x : o) { s += x; mx = std::max(mx, (double)x); }
+        fprintf(flog, "t=%.1f step=%ld dt=%.2f divb_mean=%.3e divb_max=%.3e\n", ta * T0, step, dt * T0, s / nc, mx);
+        fflush(flog);
+    };
+
+    double next_probe = tr.nb ? ceil(tau * T0 / probe_dt) * probe_dt / T0 : 1e30;
+    double next_slice = slice_dt > 0 ? ceil(tau * T0 / slice_dt) * slice_dt / T0 : 1e30;
+    double next_diag = tau;
+    long step = 0;
+    unsigned nfix_tot = 0;
+    unsigned* d_nfix;
+    CK(cudaMalloc(&d_nfix, 4));
+    CK(cudaMemset(d_nfix, 0, 4));
+    unsigned* d_fmap;
+    CK(cudaMalloc(&d_fmap, nc * 4));
+    CK(cudaMemset(d_fmap, 0, nc * 4));
+    auto t_wall = std::chrono::steady_clock::now();
+    double chv = 1.0;
+    double dt_last = 0;
+    while (tau < tau_end - 1e-12 && step < max_steps) {
+        if (tau >= next_probe - 1e-9) { do_probe(tau); next_probe += probe_dt / T0; }
+        if (tau >= next_slice - 1e-9) { do_slice(tau); next_slice += slice_dt / T0; }
+        while (isnap < snaps.size() && tau * T0 >= snaps[isnap] - 1e-3) { do_snap(tau); isnap++; }
+        if (tau >= next_diag - 1e-9) { do_diag(tau, step, dt_last); next_diag += diag_dt / T0; }
+        CK(cudaMemset(d_red, 0, 12));
+        k_dt<<<nblk(nc), TB>>>(U0, d_rc, d_tc, d_pc, d_red);
+        unsigned red[3];
+        CK(cudaMemcpy(red, d_red, 12, cudaMemcpyDeviceToHost));
+        float smax, vmax, gmax;
+        memcpy(&smax, &red[0], 4);
+        memcpy(&vmax, &red[1], 4);
+        memcpy(&gmax, &red[2], 4);
+        if (!(smax > 0) || !std::isfinite(smax)) { fprintf(stderr, "bad dt at step %ld t=%.1f\n", step, tau * T0); break; }
+        double dt = cfl / smax;
+        double nxt = std::min({tau_end, next_probe, next_slice, isnap < snaps.size() ? snaps[isnap] / T0 : 1e30});
+        if (tau + dt > nxt) dt = std::max(nxt - tau, 1e-9);
+        chv = std::min((double)vmax, ch_frac * smax / gmax);
+        float ch = (float)chv;
+        CK(cudaMemcpy(U1, U0, hp.N * NV * 4, cudaMemcpyDeviceToDevice));
+        for (int stage = 0; stage < 2; stage++) {
+            float* Us = stage == 0 ? U0 : U1;
+            float* Ut = stage == 0 ? U1 : U0;
+            float dtf = stage == 0 ? dt : 0.5 * dt;
+            if (stage == 1) { bc(U1, tau + dt); k_avg<<<nblk(hp.N * NV), TB>>>(U0, U1, hp.N * NV); }
+            if (solver == 0 && lim == 0) {
+                k_flux_r<0, 0><<<nblk((size_t)(hp.nr + 1) * hp.nt * hp.np), TB>>>(Us, F, d_nbr, d_wr, d_rc, d_rf, ch);
+                k_accum<0><<<nblk(nc), TB>>>(Ut, F, d_iv, dtf);
+                k_flux_t<0, 0><<<nblk((size_t)hp.nr * (hp.nt + 1) * hp.np), TB>>>(Us, F, d_nbt, d_wt, d_rf, ch);
+                k_accum<1><<<nblk(nc), TB>>>(Ut, F, d_iv, dtf);
+                k_flux_p<0, 0><<<nblk((size_t)hp.nr * hp.nt * (hp.np + 1)), TB>>>(Us, F, d_nbp, d_rf, ch);
+                k_accum<2><<<nblk(nc), TB>>>(Ut, F, d_iv, dtf);
+            } else if (solver == 1 && lim == 0) {
+                k_flux_r<1, 0><<<nblk((size_t)(hp.nr + 1) * hp.nt * hp.np), TB>>>(Us, F, d_nbr, d_wr, d_rc, d_rf, ch);
+                k_accum<0><<<nblk(nc), TB>>>(Ut, F, d_iv, dtf);
+                k_flux_t<1, 0><<<nblk((size_t)hp.nr * (hp.nt + 1) * hp.np), TB>>>(Us, F, d_nbt, d_wt, d_rf, ch);
+                k_accum<1><<<nblk(nc), TB>>>(Ut, F, d_iv, dtf);
+                k_flux_p<1, 0><<<nblk((size_t)hp.nr * hp.nt * (hp.np + 1)), TB>>>(Us, F, d_nbp, d_rf, ch);
+                k_accum<2><<<nblk(nc), TB>>>(Ut, F, d_iv, dtf);
+            } else {
+                k_flux_r<0, 1><<<nblk((size_t)(hp.nr + 1) * hp.nt * hp.np), TB>>>(Us, F, d_nbr, d_wr, d_rc, d_rf, ch);
+                k_accum<0><<<nblk(nc), TB>>>(Ut, F, d_iv, dtf);
+                k_flux_t<0, 1><<<nblk((size_t)hp.nr * (hp.nt + 1) * hp.np), TB>>>(Us, F, d_nbt, d_wt, d_rf, ch);
+                k_accum<1><<<nblk(nc), TB>>>(Ut, F, d_iv, dtf);
+                k_flux_p<0, 1><<<nblk((size_t)hp.nr * hp.nt * (hp.np + 1)), TB>>>(Us, F, d_nbp, d_rf, ch);
+                k_accum<2><<<nblk(nc), TB>>>(Ut, F, d_iv, dtf);
+            }
+            if (hp.gm > 0) k_source<<<nblk(nc), TB>>>(Ut, Us, d_rc, d_tc, d_pc, dtf);
+            k_floor<<<nblk(nc), TB>>>(Ut, d_rc, d_tc, d_pc, stage == 1 ? damp_a : 0.f, (float)(ch * dt), d_nfix, d_fmap);
+        }
+        tau += dt;
+        dt_last = dt;
+        bc(U0, tau);
+        step++;
+        if (step % 500 == 0) {
+            FILE* sf = fopen((out + "/STOP").c_str(), "r");
+            if (!sf) sf = fopen(sget("stop_file", "/nonexistent").c_str(), "r");
+            if (sf) { fclose(sf); fprintf(stderr, "STOP file found at step %ld\n", step); break; }
+            CK(cudaDeviceSynchronize());
+            double el = std::chrono::duration<double>(std::chrono::steady_clock::now() - t_wall).count();
+            CK(cudaMemcpy(&nfix_tot, d_nfix, 4, cudaMemcpyDeviceToHost));
+            fprintf(stderr, "step %ld t=%.4f d (%.1f%%) dt=%.1f s ch=%.0f km/s wall %.1f s (%.2f ns/cell/step) floors %u\n", step, tau * T0 / 86400, 100 * (tau - t_start / T0) / (tau_end - t_start / T0), dt * T0, chv * 100, el, 1e9 * el / step / nc, nfix_tot);
+        }
+    }
+    if (tau >= next_probe - 1e-9) do_probe(tau);
+    if (tau >= next_slice - 1e-9) do_slice(tau);
+    while (isnap < snaps.size() && tau * T0 >= snaps[isnap] - 1e-3) { do_snap(tau); isnap++; }
+    do_diag(tau, step, dt_last);
+    CK(cudaDeviceSynchronize());
+    double el = std::chrono::duration<double>(std::chrono::steady_clock::now() - t_wall).count();
+    CK(cudaMemcpy(&nfix_tot, d_nfix, 4, cudaMemcpyDeviceToHost));
+    fprintf(stderr, "done %ld steps, t=%.4f d, wall %.1f s, %.2f ns/cell/step, floors %u\n", step, tau * T0 / 86400, el, step ? 1e9 * el / step / nc : 0.0, nfix_tot);
+    fprintf(flog, "done steps=%ld wall=%.2f ns_cell_step=%.3f floors=%u\n", step, el, step ? 1e9 * el / step / nc : 0.0, nfix_tot);
+    {
+        std::vector<unsigned> fm(nc);
+        CK(cudaMemcpy(fm.data(), d_fmap, nc * 4, cudaMemcpyDeviceToHost));
+        FILE* f = fopen((out + "/floormap.bin").c_str(), "wb");
+        int h[3] = {hp.nr, hp.nt, hp.np};
+        fwrite(h, 4, 3, f);
+        fwrite(fm.data(), 4, nc, f);
+        fclose(f);
+    }
+    std::string rst_out = sget("restart_out", "");
+    if (!rst_out.empty()) {
+        std::vector<float> h(hp.N * NV);
+        CK(cudaMemcpy(h.data(), U0, h.size() * 4, cudaMemcpyDeviceToHost));
+        FILE* f = fopen(rst_out.c_str(), "wb");
+        size_t hdr[4] = {(size_t)hp.nr, (size_t)hp.nt, (size_t)hp.np, NV};
+        fwrite(hdr, 8, 4, f);
+        double ts = tau * T0;
+        fwrite(&ts, 8, 1, f);
+        fwrite(h.data(), 4, h.size(), f);
+        fclose(f);
+    }
+    if (fprobe) fclose(fprobe);
+    if (fslice) fclose(fslice);
+    fclose(flog);
+    return 0;
+}

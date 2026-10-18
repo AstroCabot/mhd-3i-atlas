@@ -1,0 +1,4804 @@
+{
+  "requested_interval_start_utc": "2025-11-25T00:00:00",
+  "requested_stop_exclusive_utc": "2025-12-06T00:00:00",
+  "actual_coverage": "Per instrument/case coverage below; no extrapolation outside completed probe times.",
+  "normalization_metadata": {
+    "origin_utc": "2025-11-01T00:00:00Z",
+    "origin_mjd_utc": 60980.0,
+    "r0_au": 0.0999850461106864,
+    "rotation_rad_day": 0.24756448241988369,
+    "rotation_epoch_day": 0,
+    "longitude_offset_rad": -1.0502672621698068,
+    "phase_residual_max_deg": 0.7313945232730961,
+    "map_longitude_centers_deg": "(CARRLONG + 1 + 2*i) mod360; validated against photospheric GONG WCS",
+    "map_latitude_centers_deg": "-89 + 2*j, south to north",
+    "calibration_interval_utc": [
+      "2025-11-10T00:00:00",
+      "2025-11-25T00:00:00"
+    ],
+    "training_instruments": {
+      "stereo_a": {
+        "records": 349,
+        "n400_1au_cm3_p16_50_84": [
+          3.7175618523025635,
+          6.053138036028717,
+          14.735746142887635
+        ],
+        "T400_01au_K_p16_50_84": [
+          695941.6360535778,
+          1044305.9258631289,
+          1346068.5813049392
+        ],
+        "abs_Br_1au_nt_p16_50_84": [
+          2.347982846468678,
+          4.631014751292845,
+          6.663938530934045
+        ]
+      },
+      "solar_orbiter": {
+        "records": 348,
+        "n400_1au_cm3_p16_50_84": [
+          7.004063610716736,
+          11.25207740359005,
+          22.621200353157462
+        ],
+        "T400_01au_K_p16_50_84": [
+          527273.8625463239,
+          878121.8661885755,
+          1248390.8502227173
+        ],
+        "abs_Br_1au_nt_p16_50_84": [
+          0.9523756751010639,
+          3.0457721898820456,
+          5.2994712643565025
+        ]
+      }
+    },
+    "holdout": "Wind/OMNI never used to fit parameters",
+    "density_1au_at400_cm3": 8.252901169649991,
+    "proton_temperature_01au_at400_K": 957615.7206785604,
+    "Br_1au_absolute_median_target_nt": 3.755664513827249,
+    "WSA_Br_multiplier": 2.357096167258441,
+    "speed_offset_kms": -50,
+    "density_prescription": "n(r0)=n400*(400/v)^2/r0^2",
+    "temperature_prescription": "Tp(r0)=T400*(v/400)^2; gamma1.5 extrapolation from in-situ Tp",
+    "pressure": "p=2 np kB Tp, assuming equal electron and proton temperatures",
+    "limitations": [
+      "Scalar moments constrain normalization; density angular variation remains assumed constant n v^2.",
+      "Training contains compressions; ballistic inward extrapolation does not undo stream interactions.",
+      "Daily maps are retrospective time-interpolated boundary estimates; this is not an operational forecast.",
+      "Daily maps use historical synoptic far-side information, not simultaneous full-Sun measurements.",
+      "Single calibration interval and two spacecraft do not determine errors at the comet."
+    ],
+    "maps": [
+      {
+        "file": "external_model/raw/vel_202511101614R000_gongz.fits",
+        "mjd_utc": 60989.67640000023,
+        "day": 9.676400000229478,
+        "carrlong": 195.0,
+        "obslon": 255.23
+      },
+      {
+        "file": "external_model/raw/vel_202511110014R000_gongz.fits",
+        "mjd_utc": 60990.00969999982,
+        "day": 10.009699999820441,
+        "carrlong": 191.0,
+        "obslon": 250.84
+      },
+      {
+        "file": "external_model/raw/vel_202511120014R000_gongz.fits",
+        "mjd_utc": 60991.00969999982,
+        "day": 11.009699999820441,
+        "carrlong": 178.0,
+        "obslon": 237.66
+      },
+      {
+        "file": "external_model/raw/vel_202511130014R000_gongz.fits",
+        "mjd_utc": 60992.00969999982,
+        "day": 12.009699999820441,
+        "carrlong": 165.0,
+        "obslon": 224.56
+      },
+      {
+        "file": "external_model/raw/vel_202511140014R000_gongz.fits",
+        "mjd_utc": 60993.00969999982,
+        "day": 13.009699999820441,
+        "carrlong": 151.0,
+        "obslon": 211.29
+      },
+      {
+        "file": "external_model/raw/vel_202511150004R000_gongz.fits",
+        "mjd_utc": 60994.0027999999,
+        "day": 14.002799999900162,
+        "carrlong": 138.0,
+        "obslon": 198.19
+      },
+      {
+        "file": "external_model/raw/vel_202511160014R000_gongz.fits",
+        "mjd_utc": 60995.00969999982,
+        "day": 15.009699999820441,
+        "carrlong": 125.0,
+        "obslon": 185.45
+      },
+      {
+        "file": "external_model/raw/vel_202511170014R000_gongz.fits",
+        "mjd_utc": 60996.00969999982,
+        "day": 16.00969999982044,
+        "carrlong": 112.0,
+        "obslon": 172.27
+      },
+      {
+        "file": "external_model/raw/vel_202511180004R000_gongz.fits",
+        "mjd_utc": 60997.0027999999,
+        "day": 17.002799999900162,
+        "carrlong": 99.0,
+        "obslon": 158.82
+      },
+      {
+        "file": "external_model/raw/vel_202511190104R000_gongz.fits",
+        "mjd_utc": 60998.04440000001,
+        "day": 18.04440000001341,
+        "carrlong": 85.0,
+        "obslon": 144.76
+      },
+      {
+        "file": "external_model/raw/vel_202511200004R000_gongz.fits",
+        "mjd_utc": 60999.0027999999,
+        "day": 19.002799999900162,
+        "carrlong": 72.0,
+        "obslon": 132.1
+      },
+      {
+        "file": "external_model/raw/vel_202511210114R000_gongz.fits",
+        "mjd_utc": 61000.05140000023,
+        "day": 20.051400000229478,
+        "carrlong": 59.0,
+        "obslon": 119.36
+      },
+      {
+        "file": "external_model/raw/vel_202511220014R000_gongz.fits",
+        "mjd_utc": 61001.00969999982,
+        "day": 21.00969999982044,
+        "carrlong": 46.0,
+        "obslon": 105.73
+      },
+      {
+        "file": "external_model/raw/vel_202511230004R000_gongz.fits",
+        "mjd_utc": 61002.0027999999,
+        "day": 22.002799999900162,
+        "carrlong": 33.0,
+        "obslon": 93.25
+      },
+      {
+        "file": "external_model/raw/vel_202511240014R000_gongz.fits",
+        "mjd_utc": 61003.00969999982,
+        "day": 23.00969999982044,
+        "carrlong": 20.0,
+        "obslon": 80.33
+      },
+      {
+        "file": "external_model/raw/vel_202511250004R000_gongz.fits",
+        "mjd_utc": 61004.0027999999,
+        "day": 24.002799999900162,
+        "carrlong": 7.0,
+        "obslon": 67.06
+      },
+      {
+        "file": "external_model/raw/vel_202511260014R000_gongz.fits",
+        "mjd_utc": 61005.00969999982,
+        "day": 25.00969999982044,
+        "carrlong": 353.0,
+        "obslon": 53.0
+      },
+      {
+        "file": "external_model/raw/vel_202511270014R000_gongz.fits",
+        "mjd_utc": 61006.00969999982,
+        "day": 26.00969999982044,
+        "carrlong": 340.0,
+        "obslon": 40.34
+      },
+      {
+        "file": "external_model/raw/vel_202511280014R000_gongz.fits",
+        "mjd_utc": 61007.00969999982,
+        "day": 27.00969999982044,
+        "carrlong": 327.0,
+        "obslon": 26.63
+      },
+      {
+        "file": "external_model/raw/vel_202511290014R000_gongz.fits",
+        "mjd_utc": 61008.00969999982,
+        "day": 28.00969999982044,
+        "carrlong": 314.0,
+        "obslon": 14.15
+      },
+      {
+        "file": "external_model/raw/vel_202511300004R000_gongz.fits",
+        "mjd_utc": 61009.0027999999,
+        "day": 29.002799999900162,
+        "carrlong": 301.0,
+        "obslon": 1.49
+      },
+      {
+        "file": "external_model/raw/vel_202512010004R000_gongz.fits",
+        "mjd_utc": 61010.0027999999,
+        "day": 30.002799999900162,
+        "carrlong": 287.0,
+        "obslon": 346.9
+      },
+      {
+        "file": "external_model/raw/vel_202512020014R000_gongz.fits",
+        "mjd_utc": 61011.00969999982,
+        "day": 31.00969999982044,
+        "carrlong": 274.0,
+        "obslon": 334.51
+      },
+      {
+        "file": "external_model/raw/vel_202512030014R000_gongz.fits",
+        "mjd_utc": 61012.00969999982,
+        "day": 32.00969999982044,
+        "carrlong": 261.0,
+        "obslon": 321.5
+      },
+      {
+        "file": "external_model/raw/vel_202512040214R000_gongz.fits",
+        "mjd_utc": 61013.09310000017,
+        "day": 33.09310000017285,
+        "carrlong": 247.0,
+        "obslon": 307.18
+      }
+    ]
+  },
+  "validation_training_separation": "All native paired samples at or after the exclusive normalization training stop. Wind is entirely absent from normalization training.",
+  "frame": "STEREO-A and Solar Orbiter observations are compared at their actual spacecraft ephemeris positions. Wind-selected OMNI2_H0_MRG1HR records (PLS1800=52) are already propagated near Earth and are compared at Earth (probe 1; Horizons target 399); no second L1-to-Earth shift, additional corotation mapping or fitted phase shift is applied.",
+  "cadence": "Model native hourly means: COHO [timestamp,timestamp+1h]; OMNI [timestamp-0.5h,timestamp+0.5h], 1-minute trapezoid quadrature. In-house probe series interpolated between hourly outputs; CCMC between native approximately3.6-minute output.",
+  "caveats": [
+    "Hourly in-house probe cadence smooths unresolved subhour variability.",
+    "STEREO-A/Solar Orbiter post-training samples provide temporal validation, while Wind supplies independent-instrument validation.",
+    "The boundary solar maps are retrospective; this is a hindcast and not an operational forecast.",
+    "Results are not calibrated to the comet or to CCMC output; residual errors constrain representativeness of the solar-wind estimate."
+  ],
+  "cases": {
+    "ct156_w30_theta40_phi192": {
+      "wind": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:30:00.000",
+        "last_paired_utc": "2025-12-04T23:30:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 4.279535635542171,
+            "median_model_over_observed": 1.1936295123285139,
+            "observed_over_model_p16_50_84": [
+              0.4148645273048557,
+              0.8377808940474465,
+              1.4241908388215165
+            ],
+            "observed_minus_model_p16_50_84": [
+              -4.353200975847648,
+              -0.5184767415253719,
+              1.0889378878743137
+            ],
+            "median_absolute_fractional_error": 0.34644480258009036,
+            "rmse": 6.147122533643048,
+            "pearson_r": 0.09917687618701203,
+            "log_pearson_r": 0.30810419995780064,
+            "rms_log_ratio": 0.6779419437877895
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 532.6586638613637,
+            "median_model_over_observed": 1.0234570468162274,
+            "observed_over_model_p16_50_84": [
+              0.8248619298239884,
+              0.9770805752042084,
+              1.419203785402078
+            ],
+            "observed_minus_model_p16_50_84": [
+              -110.43847345570697,
+              -16.460393595453525,
+              219.1341772212659
+            ],
+            "median_absolute_fractional_error": 0.15887611395821566,
+            "rmse": 138.31629727772213,
+            "pearson_r": 0.46826698980226716,
+            "log_pearson_r": 0.485948887902765,
+            "rms_log_ratio": 0.23794253997877557
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 233697931.05481914,
+            "median_model_over_observed": 1.2063860555182406,
+            "observed_over_model_p16_50_84": [
+              0.5194352794682786,
+              0.8289220481501827,
+              1.2354683658731214
+            ],
+            "observed_minus_model_p16_50_84": [
+              -164103084.64219388,
+              -35024705.10407364,
+              46444809.71568136
+            ],
+            "median_absolute_fractional_error": 0.3298542955350081,
+            "rmse": 262785349.1137253,
+            "pearson_r": 0.08496292606591849,
+            "log_pearson_r": 0.26855869180314634,
+            "rms_log_ratio": 0.5605115111238931
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0395544444448777,
+            "median_model_over_observed": 0.5549857549848183,
+            "observed_over_model_p16_50_84": [
+              0.6662560123603086,
+              1.8018480492843554,
+              3.123931270343739
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.4967102026075316,
+              1.3053903133907188,
+              3.217089256570909
+            ],
+            "median_absolute_fractional_error": 0.5156192395701388,
+            "rmse": 5.946004641065048,
+            "pearson_r": -0.0530306555653191,
+            "log_pearson_r": 0.00902590207772014,
+            "rms_log_ratio": 0.8915513203367891
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.4013548015838,
+            "median_model_over_observed": 1.039291043947822,
+            "observed_over_model_p16_50_84": [
+              0.8937099562314398,
+              0.9621943783922431,
+              1.7248068711098032
+            ],
+            "observed_minus_model_p16_50_84": [
+              -61.716872228608516,
+              -22.879172627913476,
+              300.12460237691766
+            ],
+            "median_absolute_fractional_error": 0.11582050551178713,
+            "rmse": 164.52419043107164,
+            "pearson_r": 0.16950652253027026,
+            "log_pearson_r": 0.20220718560709558,
+            "rms_log_ratio": 0.2971897350983548
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102306945.13935821,
+            "median_model_over_observed": 0.5967791916594484,
+            "observed_over_model_p16_50_84": [
+              1.0562166152968886,
+              1.6756616416522936,
+              3.0380552641339085
+            ],
+            "observed_minus_model_p16_50_84": [
+              8645228.257545248,
+              71008490.67074208,
+              193285419.13762304
+            ],
+            "median_absolute_fractional_error": 0.40322080834055163,
+            "rmse": 276883301.04341936,
+            "pearson_r": -0.11715147829216822,
+            "log_pearson_r": -0.061098389878891234,
+            "rms_log_ratio": 0.8759658180969706
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0456877777776294,
+            "median_model_over_observed": 0.5559999999999998,
+            "observed_over_model_p16_50_84": [
+              0.6307537532001011,
+              1.7985611510791375,
+              3.0704974446706346
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.801600895319288,
+              1.27490168128543,
+              3.18158119038319
+            ],
+            "median_absolute_fractional_error": 0.5219030778447512,
+            "rmse": 5.935578999491685,
+            "pearson_r": -0.036354177213812726,
+            "log_pearson_r": 0.038716676609035314,
+            "rms_log_ratio": 0.8832762678645738
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.107788271586,
+            "median_model_over_observed": 1.0399587335463578,
+            "observed_over_model_p16_50_84": [
+              0.8925216115474127,
+              0.9615766162085155,
+              1.7159176935696407
+            ],
+            "observed_minus_model_p16_50_84": [
+              -62.53166474335482,
+              -23.350150607726505,
+              296.16309646573086
+            ],
+            "median_absolute_fractional_error": 0.11654913704554337,
+            "rmse": 163.83068506773304,
+            "pearson_r": 0.17172994901857822,
+            "log_pearson_r": 0.20651291248022163,
+            "rms_log_ratio": 0.29506065180460367
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102888970.13073778,
+            "median_model_over_observed": 0.6009282805694581,
+            "observed_over_model_p16_50_84": [
+              1.0403692899149877,
+              1.664092092740866,
+              3.022485411597259
+            ],
+            "observed_minus_model_p16_50_84": [
+              7205803.023225829,
+              67995922.45500097,
+              187570342.56468377
+            ],
+            "median_absolute_fractional_error": 0.39907171943054187,
+            "rmse": 275063596.15354645,
+            "pearson_r": -0.08414432696802226,
+            "log_pearson_r": -0.00923444950771106,
+            "rms_log_ratio": 0.858335569420408
+          }
+        }
+      },
+      "stereo_a": {
+        "samples": 240,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 5.4315872633648805,
+            "median_model_over_observed": 1.1257217264500288,
+            "observed_over_model_p16_50_84": [
+              0.41107941801067116,
+              0.8883277957449744,
+              1.901784308528738
+            ],
+            "observed_minus_model_p16_50_84": [
+              -3.3161794825555955,
+              -0.4498271752473413,
+              3.386686755912793
+            ],
+            "median_absolute_fractional_error": 0.48227750027764815,
+            "rmse": 6.3157834725622335,
+            "pearson_r": 0.006749566241216852,
+            "log_pearson_r": -0.02264559149832282,
+            "rms_log_ratio": 0.8097335396566648
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 544.0648210593135,
+            "median_model_over_observed": 1.1229801379672815,
+            "observed_over_model_p16_50_84": [
+              0.7731227023586713,
+              0.8904889890219839,
+              1.175702820126642
+            ],
+            "observed_minus_model_p16_50_84": [
+              -137.35689914885867,
+              -59.78043503234264,
+              94.65161431040814
+            ],
+            "median_absolute_fractional_error": 0.20033904957620807,
+            "rmse": 115.70295114066661,
+            "pearson_r": 0.36178711556717097,
+            "log_pearson_r": 0.401893653977358,
+            "rms_log_ratio": 0.20937199856441838
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 293525627.71010005,
+            "median_model_over_observed": 1.239166070796033,
+            "observed_over_model_p16_50_84": [
+              0.4533181811174886,
+              0.8070140520064144,
+              1.4932664652736094
+            ],
+            "observed_minus_model_p16_50_84": [
+              -179434605.3364588,
+              -48862842.2892998,
+              113175897.49498326
+            ],
+            "median_absolute_fractional_error": 0.44982277867950743,
+            "rmse": 261807915.84498772,
+            "pearson_r": -0.09004925095827064,
+            "log_pearson_r": -0.10451933966546433,
+            "rms_log_ratio": 0.691511436410333
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.340177647202028,
+            "median_model_over_observed": 0.5627538115278946,
+            "observed_over_model_p16_50_84": [
+              0.6961602470064022,
+              1.7769766067724637,
+              3.763297763091084
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2475325060693072,
+              1.863545115019111,
+              5.676936324787179
+            ],
+            "median_absolute_fractional_error": 0.5528959978558938,
+            "rmse": 6.279764846017699,
+            "pearson_r": 0.20225833338357127,
+            "log_pearson_r": 0.0906471569248432,
+            "rms_log_ratio": 0.9067408187738614
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.0321433909446,
+            "median_model_over_observed": 1.0294990077964967,
+            "observed_over_model_p16_50_84": [
+              0.8259745937806161,
+              0.9713462731655572,
+              1.3738065028524757
+            ],
+            "observed_minus_model_p16_50_84": [
+              -103.95102105876008,
+              -12.135395096094612,
+              177.92046771713953
+            ],
+            "median_absolute_fractional_error": 0.14993453077011204,
+            "rmse": 121.32368711079272,
+            "pearson_r": 0.2727338018172064,
+            "log_pearson_r": 0.3190050247465689,
+            "rms_log_ratio": 0.22425107206494124
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149276113.54729968,
+            "median_model_over_observed": 0.605758959311012,
+            "observed_over_model_p16_50_84": [
+              0.8171817218828991,
+              1.650862173890134,
+              3.1837472548382375
+            ],
+            "observed_minus_model_p16_50_84": [
+              -35397980.282759875,
+              80200543.86089864,
+              244715416.42309496
+            ],
+            "median_absolute_fractional_error": 0.4963320735230084,
+            "rmse": 263424224.19137442,
+            "pearson_r": 0.08912202899123312,
+            "log_pearson_r": 0.02591984056191503,
+            "rms_log_ratio": 0.803207771059178
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.318069220220514,
+            "median_model_over_observed": 0.5648494721527783,
+            "observed_over_model_p16_50_84": [
+              0.6994084759831544,
+              1.770383839533355,
+              3.7727256536311087
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2210814197542301,
+              1.8888649353738587,
+              5.680665213675944
+            ],
+            "median_absolute_fractional_error": 0.548818910856965,
+            "rmse": 6.284218822561204,
+            "pearson_r": 0.20300793251062066,
+            "log_pearson_r": 0.09068410109475293,
+            "rms_log_ratio": 0.9075122680268042
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.86899901690003,
+            "median_model_over_observed": 1.0311679016012585,
+            "observed_over_model_p16_50_84": [
+              0.8253134236433555,
+              0.9697741752192119,
+              1.3718478986052767
+            ],
+            "observed_minus_model_p16_50_84": [
+              -104.62893483951106,
+              -12.820573350017668,
+              176.78952857631646
+            ],
+            "median_absolute_fractional_error": 0.14953844054211513,
+            "rmse": 121.15740054279169,
+            "pearson_r": 0.2735267409223191,
+            "log_pearson_r": 0.31974891571382075,
+            "rms_log_ratio": 0.22378989370748723
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149002607.80018884,
+            "median_model_over_observed": 0.6041069916918737,
+            "observed_over_model_p16_50_84": [
+              0.8203529173087415,
+              1.655386054068972,
+              3.1887117758575383
+            ],
+            "observed_minus_model_p16_50_84": [
+              -34395220.151266344,
+              80303071.33139843,
+              245079326.18551114
+            ],
+            "median_absolute_fractional_error": 0.49487169575196566,
+            "rmse": 263563253.7017751,
+            "pearson_r": 0.08920711930552536,
+            "log_pearson_r": 0.025100082272351058,
+            "rms_log_ratio": 0.8039257780967418
+          }
+        }
+      },
+      "solar_orbiter": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 13,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 3.311522470630204,
+            "median_model_over_observed": 0.5557054012412909,
+            "observed_over_model_p16_50_84": [
+              1.1726899926136538,
+              1.7995146308930574,
+              2.4017305636707476
+            ],
+            "observed_minus_model_p16_50_84": [
+              0.7274875451259543,
+              2.807702121835337,
+              5.033298185434655
+            ],
+            "median_absolute_fractional_error": 0.4547508857212976,
+            "rmse": 7.353000144168998,
+            "pearson_r": 0.6294376188639681,
+            "log_pearson_r": 0.74070190370647,
+            "rms_log_ratio": 0.6821036714895524
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 768.700270447374,
+            "median_model_over_observed": 1.2324128509963386,
+            "observed_over_model_p16_50_84": [
+              0.7127385994236263,
+              0.8114164009175615,
+              0.9690032735926217
+            ],
+            "observed_minus_model_p16_50_84": [
+              -217.56940546401194,
+              -125.48505952658184,
+              -12.666865517933887
+            ],
+            "median_absolute_fractional_error": 0.23656146102992925,
+            "rmse": 153.1811429833604,
+            "pearson_r": 0.733191490806832,
+            "log_pearson_r": 0.76128981399286,
+            "rms_log_ratio": 0.24620978816918426
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 259473908.71166962,
+            "median_model_over_observed": 0.7040032076593526,
+            "observed_over_model_p16_50_84": [
+              1.0651885967186783,
+              1.420448073418256,
+              1.8607658231045912
+            ],
+            "observed_minus_model_p16_50_84": [
+              17778745.832234032,
+              102641498.00616941,
+              212207380.1544014
+            ],
+            "median_absolute_fractional_error": 0.3049359557549134,
+            "rmse": 282580587.68614393,
+            "pearson_r": 0.541429885904014,
+            "log_pearson_r": 0.6588444707403153,
+            "rms_log_ratio": 0.5061994019037211
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1646221114253503,
+            "median_model_over_observed": 0.3276254822112876,
+            "observed_over_model_p16_50_84": [
+              1.7622618839704112,
+              3.0522656334622167,
+              4.334227900210715
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1713883760677786,
+              4.243951754385159,
+              9.812230692202501
+            ],
+            "median_absolute_fractional_error": 0.6723745177887124,
+            "rmse": 9.510011522895194,
+            "pearson_r": 0.4785159921128983,
+            "log_pearson_r": 0.5370066244530692,
+            "rms_log_ratio": 1.1867489774574402
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 600.7264064397489,
+            "median_model_over_observed": 1.0575786271742103,
+            "observed_over_model_p16_50_84": [
+              0.7974490026891284,
+              0.9455561736075766,
+              1.2067475230973426
+            ],
+            "observed_minus_model_p16_50_84": [
+              -127.8669325279678,
+              -27.631822235643938,
+              115.62853434405821
+            ],
+            "median_absolute_fractional_error": 0.16692743319692016,
+            "rmse": 118.89522194743519,
+            "pearson_r": 0.51166959574518,
+            "log_pearson_r": 0.5736071585932604,
+            "rms_log_ratio": 0.20555216613004723
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129009461.13893683,
+            "median_model_over_observed": 0.360481958791975,
+            "observed_over_model_p16_50_84": [
+              2.088509675303654,
+              2.7740639319402796,
+              3.7790935999526543
+            ],
+            "observed_minus_model_p16_50_84": [
+              159730874.90546635,
+              220752801.86101645,
+              459061365.5396487
+            ],
+            "median_absolute_fractional_error": 0.639518041208025,
+            "rmse": 409218400.457312,
+            "pearson_r": 0.3251732227046922,
+            "log_pearson_r": 0.4332661789157505,
+            "rms_log_ratio": 1.1374848466688596
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1671547034923573,
+            "median_model_over_observed": 0.3273012717678944,
+            "observed_over_model_p16_50_84": [
+              1.760732886134007,
+              3.0552890754092448,
+              4.233379472911318
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1722501677740147,
+              4.247105452674234,
+              9.747921092118055
+            ],
+            "median_absolute_fractional_error": 0.6726987282321055,
+            "rmse": 9.397178973905005,
+            "pearson_r": 0.529472588064357,
+            "log_pearson_r": 0.5690160195776265,
+            "rms_log_ratio": 1.1706277549123167
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 601.0958911750416,
+            "median_model_over_observed": 1.0582613325580164,
+            "observed_over_model_p16_50_84": [
+              0.7968404256073714,
+              0.9449461765581213,
+              1.204685491329503
+            ],
+            "observed_minus_model_p16_50_84": [
+              -128.37448513773506,
+              -27.77479216118246,
+              115.44451231276616
+            ],
+            "median_absolute_fractional_error": 0.1660391425670571,
+            "rmse": 118.9069740930922,
+            "pearson_r": 0.5109685304467607,
+            "log_pearson_r": 0.5734994378667143,
+            "rms_log_ratio": 0.20524139013559792
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129856644.90216929,
+            "median_model_over_observed": 0.3640766239891601,
+            "observed_over_model_p16_50_84": [
+              2.088423268608318,
+              2.746674557248624,
+              3.7004274703897355
+            ],
+            "observed_minus_model_p16_50_84": [
+              159223433.30094564,
+              220871817.02146614,
+              454363775.61260986
+            ],
+            "median_absolute_fractional_error": 0.6359233760108399,
+            "rmse": 404757415.7359058,
+            "pearson_r": 0.3984088889056343,
+            "log_pearson_r": 0.49017143886751735,
+            "rms_log_ratio": 1.1189763678651385
+          }
+        }
+      }
+    },
+    "wide_fine": {
+      "wind": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:30:00.000",
+        "last_paired_utc": "2025-12-04T23:30:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 4.276935492694845,
+            "median_model_over_observed": 1.2277823808359716,
+            "observed_over_model_p16_50_84": [
+              0.6213609492186294,
+              0.8144765844571907,
+              1.2056649759636664
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.916102362791036,
+              -0.685930890824531,
+              0.8792926462537012
+            ],
+            "median_absolute_fractional_error": 0.332494869166178,
+            "rmse": 4.689749676531334,
+            "pearson_r": 0.4874613158166643,
+            "log_pearson_r": 0.5625213486536986,
+            "rms_log_ratio": 0.4821221766876121
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 592.3650744980097,
+            "median_model_over_observed": 1.0481802280321149,
+            "observed_over_model_p16_50_84": [
+              0.8145597614098237,
+              0.9540344048250463,
+              1.2146860525175915
+            ],
+            "observed_minus_model_p16_50_84": [
+              -96.50246677834136,
+              -30.04806765111539,
+              130.03282248121056
+            ],
+            "median_absolute_fractional_error": 0.12080206842461738,
+            "rmse": 93.8419451929883,
+            "pearson_r": 0.6634318474947876,
+            "log_pearson_r": 0.7060044483151287,
+            "rms_log_ratio": 0.1643496479716663
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 250199105.11295888,
+            "median_model_over_observed": 1.2246820941127259,
+            "observed_over_model_p16_50_84": [
+              0.5683665281319868,
+              0.8165384345922796,
+              1.1257170846281233
+            ],
+            "observed_minus_model_p16_50_84": [
+              -112035151.78053273,
+              -44672535.36714068,
+              37966158.28487394
+            ],
+            "median_absolute_fractional_error": 0.3161381595356543,
+            "rmse": 211612364.52807194,
+            "pearson_r": 0.4246720009964361,
+            "log_pearson_r": 0.5271704988514514,
+            "rms_log_ratio": 0.4449608221030891
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0395544444448777,
+            "median_model_over_observed": 0.5549857549848183,
+            "observed_over_model_p16_50_84": [
+              0.6662560123603086,
+              1.8018480492843554,
+              3.123931270343739
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.4967102026075316,
+              1.3053903133907188,
+              3.217089256570909
+            ],
+            "median_absolute_fractional_error": 0.5156192395701388,
+            "rmse": 5.946004641065048,
+            "pearson_r": -0.0530306555653191,
+            "log_pearson_r": 0.00902590207772014,
+            "rms_log_ratio": 0.8915513203367891
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.4013548015838,
+            "median_model_over_observed": 1.039291043947822,
+            "observed_over_model_p16_50_84": [
+              0.8937099562314398,
+              0.9621943783922431,
+              1.7248068711098032
+            ],
+            "observed_minus_model_p16_50_84": [
+              -61.716872228608516,
+              -22.879172627913476,
+              300.12460237691766
+            ],
+            "median_absolute_fractional_error": 0.11582050551178713,
+            "rmse": 164.52419043107164,
+            "pearson_r": 0.16950652253027026,
+            "log_pearson_r": 0.20220718560709558,
+            "rms_log_ratio": 0.2971897350983548
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102306945.13935821,
+            "median_model_over_observed": 0.5967791916594484,
+            "observed_over_model_p16_50_84": [
+              1.0562166152968886,
+              1.6756616416522936,
+              3.0380552641339085
+            ],
+            "observed_minus_model_p16_50_84": [
+              8645228.257545248,
+              71008490.67074208,
+              193285419.13762304
+            ],
+            "median_absolute_fractional_error": 0.40322080834055163,
+            "rmse": 276883301.04341936,
+            "pearson_r": -0.11715147829216822,
+            "log_pearson_r": -0.061098389878891234,
+            "rms_log_ratio": 0.8759658180969706
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0456877777776294,
+            "median_model_over_observed": 0.5559999999999998,
+            "observed_over_model_p16_50_84": [
+              0.6307537532001011,
+              1.7985611510791375,
+              3.0704974446706346
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.801600895319288,
+              1.27490168128543,
+              3.18158119038319
+            ],
+            "median_absolute_fractional_error": 0.5219030778447512,
+            "rmse": 5.935578999491685,
+            "pearson_r": -0.036354177213812726,
+            "log_pearson_r": 0.038716676609035314,
+            "rms_log_ratio": 0.8832762678645738
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.107788271586,
+            "median_model_over_observed": 1.0399587335463578,
+            "observed_over_model_p16_50_84": [
+              0.8925216115474127,
+              0.9615766162085155,
+              1.7159176935696407
+            ],
+            "observed_minus_model_p16_50_84": [
+              -62.53166474335482,
+              -23.350150607726505,
+              296.16309646573086
+            ],
+            "median_absolute_fractional_error": 0.11654913704554337,
+            "rmse": 163.83068506773304,
+            "pearson_r": 0.17172994901857822,
+            "log_pearson_r": 0.20651291248022163,
+            "rms_log_ratio": 0.29506065180460367
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102888970.13073778,
+            "median_model_over_observed": 0.6009282805694581,
+            "observed_over_model_p16_50_84": [
+              1.0403692899149877,
+              1.664092092740866,
+              3.022485411597259
+            ],
+            "observed_minus_model_p16_50_84": [
+              7205803.023225829,
+              67995922.45500097,
+              187570342.56468377
+            ],
+            "median_absolute_fractional_error": 0.39907171943054187,
+            "rmse": 275063596.15354645,
+            "pearson_r": -0.08414432696802226,
+            "log_pearson_r": -0.00923444950771106,
+            "rms_log_ratio": 0.858335569420408
+          }
+        }
+      },
+      "stereo_a": {
+        "samples": 240,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 4.802635247013264,
+            "median_model_over_observed": 1.0927869179231569,
+            "observed_over_model_p16_50_84": [
+              0.4600263115794808,
+              0.9150914828454668,
+              1.5904900473618309
+            ],
+            "observed_minus_model_p16_50_84": [
+              -3.614569916844055,
+              -0.43269289656422893,
+              2.2518386863556707
+            ],
+            "median_absolute_fractional_error": 0.4143753304034882,
+            "rmse": 5.111186491818023,
+            "pearson_r": 0.45945131212528323,
+            "log_pearson_r": 0.47391978296657034,
+            "rms_log_ratio": 0.6005800260737632
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 600.2427122635121,
+            "median_model_over_observed": 1.1499139646578167,
+            "observed_over_model_p16_50_84": [
+              0.7784692102214061,
+              0.8696302895691541,
+              1.0317399028949332
+            ],
+            "observed_minus_model_p16_50_84": [
+              -142.7478611365827,
+              -65.58778992102404,
+              17.270989663594985
+            ],
+            "median_absolute_fractional_error": 0.15150916553996352,
+            "rmse": 93.55212349961711,
+            "pearson_r": 0.7411171471392111,
+            "log_pearson_r": 0.7705666660238856,
+            "rms_log_ratio": 0.16902441840399324
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 309565036.63132685,
+            "median_model_over_observed": 1.2560029375599915,
+            "observed_over_model_p16_50_84": [
+              0.4680037633803617,
+              0.7961767019550868,
+              1.255332921010854
+            ],
+            "observed_minus_model_p16_50_84": [
+              -189988103.2558511,
+              -53648805.651817724,
+              69181015.54269063
+            ],
+            "median_absolute_fractional_error": 0.4059194915066278,
+            "rmse": 210386915.79088816,
+            "pearson_r": 0.388141268072266,
+            "log_pearson_r": 0.35596242928548294,
+            "rms_log_ratio": 0.5628939873886252
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.340177647202028,
+            "median_model_over_observed": 0.5627538115278946,
+            "observed_over_model_p16_50_84": [
+              0.6961602470064022,
+              1.7769766067724637,
+              3.763297763091084
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2475325060693072,
+              1.863545115019111,
+              5.676936324787179
+            ],
+            "median_absolute_fractional_error": 0.5528959978558938,
+            "rmse": 6.279764846017699,
+            "pearson_r": 0.20225833338357127,
+            "log_pearson_r": 0.0906471569248432,
+            "rms_log_ratio": 0.9067408187738614
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.0321433909446,
+            "median_model_over_observed": 1.0294990077964967,
+            "observed_over_model_p16_50_84": [
+              0.8259745937806161,
+              0.9713462731655572,
+              1.3738065028524757
+            ],
+            "observed_minus_model_p16_50_84": [
+              -103.95102105876008,
+              -12.135395096094612,
+              177.92046771713953
+            ],
+            "median_absolute_fractional_error": 0.14993453077011204,
+            "rmse": 121.32368711079272,
+            "pearson_r": 0.2727338018172064,
+            "log_pearson_r": 0.3190050247465689,
+            "rms_log_ratio": 0.22425107206494124
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149276113.54729968,
+            "median_model_over_observed": 0.605758959311012,
+            "observed_over_model_p16_50_84": [
+              0.8171817218828991,
+              1.650862173890134,
+              3.1837472548382375
+            ],
+            "observed_minus_model_p16_50_84": [
+              -35397980.282759875,
+              80200543.86089864,
+              244715416.42309496
+            ],
+            "median_absolute_fractional_error": 0.4963320735230084,
+            "rmse": 263424224.19137442,
+            "pearson_r": 0.08912202899123312,
+            "log_pearson_r": 0.02591984056191503,
+            "rms_log_ratio": 0.803207771059178
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.318069220220514,
+            "median_model_over_observed": 0.5648494721527783,
+            "observed_over_model_p16_50_84": [
+              0.6994084759831544,
+              1.770383839533355,
+              3.7727256536311087
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2210814197542301,
+              1.8888649353738587,
+              5.680665213675944
+            ],
+            "median_absolute_fractional_error": 0.548818910856965,
+            "rmse": 6.284218822561204,
+            "pearson_r": 0.20300793251062066,
+            "log_pearson_r": 0.09068410109475293,
+            "rms_log_ratio": 0.9075122680268042
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.86899901690003,
+            "median_model_over_observed": 1.0311679016012585,
+            "observed_over_model_p16_50_84": [
+              0.8253134236433555,
+              0.9697741752192119,
+              1.3718478986052767
+            ],
+            "observed_minus_model_p16_50_84": [
+              -104.62893483951106,
+              -12.820573350017668,
+              176.78952857631646
+            ],
+            "median_absolute_fractional_error": 0.14953844054211513,
+            "rmse": 121.15740054279169,
+            "pearson_r": 0.2735267409223191,
+            "log_pearson_r": 0.31974891571382075,
+            "rms_log_ratio": 0.22378989370748723
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149002607.80018884,
+            "median_model_over_observed": 0.6041069916918737,
+            "observed_over_model_p16_50_84": [
+              0.8203529173087415,
+              1.655386054068972,
+              3.1887117758575383
+            ],
+            "observed_minus_model_p16_50_84": [
+              -34395220.151266344,
+              80303071.33139843,
+              245079326.18551114
+            ],
+            "median_absolute_fractional_error": 0.49487169575196566,
+            "rmse": 263563253.7017751,
+            "pearson_r": 0.08920711930552536,
+            "log_pearson_r": 0.025100082272351058,
+            "rms_log_ratio": 0.8039257780967418
+          }
+        }
+      },
+      "solar_orbiter": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 13,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 5.028901970318593,
+            "median_model_over_observed": 0.7465212450777163,
+            "observed_over_model_p16_50_84": [
+              0.9524301944513305,
+              1.3395466057980645,
+              1.6654241414994515
+            ],
+            "observed_minus_model_p16_50_84": [
+              -0.2588428206702525,
+              1.5081093492650819,
+              4.805249159043753
+            ],
+            "median_absolute_fractional_error": 0.2826784281605822,
+            "rmse": 7.0534384998440025,
+            "pearson_r": 0.7229757056317997,
+            "log_pearson_r": 0.7712740267343957,
+            "rms_log_ratio": 0.48337950997070217
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 612.2160424209569,
+            "median_model_over_observed": 1.1538208405149455,
+            "observed_over_model_p16_50_84": [
+              0.7998510581827379,
+              0.8666856802081198,
+              1.10134154784916
+            ],
+            "observed_minus_model_p16_50_84": [
+              -113.23384182241601,
+              -74.75806939482942,
+              66.47766143526691
+            ],
+            "median_absolute_fractional_error": 0.1737141436822227,
+            "rmse": 97.1872595410622,
+            "pearson_r": 0.718697151244808,
+            "log_pearson_r": 0.766283323471032,
+            "rms_log_ratio": 0.17591864289930292
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 318625147.9932273,
+            "median_model_over_observed": 0.8445680149375512,
+            "observed_over_model_p16_50_84": [
+              1.001236850817577,
+              1.184037262024352,
+              1.4204900750328793
+            ],
+            "observed_minus_model_p16_50_84": [
+              308277.68444251246,
+              53321735.77714789,
+              166091763.17015186
+            ],
+            "median_absolute_fractional_error": 0.17454972328608542,
+            "rmse": 250755034.58899763,
+            "pearson_r": 0.7396436485617032,
+            "log_pearson_r": 0.792922175677939,
+            "rms_log_ratio": 0.3684633140513725
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1646221114253503,
+            "median_model_over_observed": 0.3276254822112876,
+            "observed_over_model_p16_50_84": [
+              1.7622618839704112,
+              3.0522656334622167,
+              4.334227900210715
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1713883760677786,
+              4.243951754385159,
+              9.812230692202501
+            ],
+            "median_absolute_fractional_error": 0.6723745177887124,
+            "rmse": 9.510011522895194,
+            "pearson_r": 0.4785159921128983,
+            "log_pearson_r": 0.5370066244530692,
+            "rms_log_ratio": 1.1867489774574402
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 600.7264064397489,
+            "median_model_over_observed": 1.0575786271742103,
+            "observed_over_model_p16_50_84": [
+              0.7974490026891284,
+              0.9455561736075766,
+              1.2067475230973426
+            ],
+            "observed_minus_model_p16_50_84": [
+              -127.8669325279678,
+              -27.631822235643938,
+              115.62853434405821
+            ],
+            "median_absolute_fractional_error": 0.16692743319692016,
+            "rmse": 118.89522194743519,
+            "pearson_r": 0.51166959574518,
+            "log_pearson_r": 0.5736071585932604,
+            "rms_log_ratio": 0.20555216613004723
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129009461.13893683,
+            "median_model_over_observed": 0.360481958791975,
+            "observed_over_model_p16_50_84": [
+              2.088509675303654,
+              2.7740639319402796,
+              3.7790935999526543
+            ],
+            "observed_minus_model_p16_50_84": [
+              159730874.90546635,
+              220752801.86101645,
+              459061365.5396487
+            ],
+            "median_absolute_fractional_error": 0.639518041208025,
+            "rmse": 409218400.457312,
+            "pearson_r": 0.3251732227046922,
+            "log_pearson_r": 0.4332661789157505,
+            "rms_log_ratio": 1.1374848466688596
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1671547034923573,
+            "median_model_over_observed": 0.3273012717678944,
+            "observed_over_model_p16_50_84": [
+              1.760732886134007,
+              3.0552890754092448,
+              4.233379472911318
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1722501677740147,
+              4.247105452674234,
+              9.747921092118055
+            ],
+            "median_absolute_fractional_error": 0.6726987282321055,
+            "rmse": 9.397178973905005,
+            "pearson_r": 0.529472588064357,
+            "log_pearson_r": 0.5690160195776265,
+            "rms_log_ratio": 1.1706277549123167
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 601.0958911750416,
+            "median_model_over_observed": 1.0582613325580164,
+            "observed_over_model_p16_50_84": [
+              0.7968404256073714,
+              0.9449461765581213,
+              1.204685491329503
+            ],
+            "observed_minus_model_p16_50_84": [
+              -128.37448513773506,
+              -27.77479216118246,
+              115.44451231276616
+            ],
+            "median_absolute_fractional_error": 0.1660391425670571,
+            "rmse": 118.9069740930922,
+            "pearson_r": 0.5109685304467607,
+            "log_pearson_r": 0.5734994378667143,
+            "rms_log_ratio": 0.20524139013559792
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129856644.90216929,
+            "median_model_over_observed": 0.3640766239891601,
+            "observed_over_model_p16_50_84": [
+              2.088423268608318,
+              2.746674557248624,
+              3.7004274703897355
+            ],
+            "observed_minus_model_p16_50_84": [
+              159223433.30094564,
+              220871817.02146614,
+              454363775.61260986
+            ],
+            "median_absolute_fractional_error": 0.6359233760108399,
+            "rmse": 404757415.7359058,
+            "pearson_r": 0.3984088889056343,
+            "log_pearson_r": 0.49017143886751735,
+            "rms_log_ratio": 1.1189763678651385
+          }
+        }
+      }
+    },
+    "wide_medium": {
+      "wind": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:30:00.000",
+        "last_paired_utc": "2025-12-04T23:30:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 4.303882592878147,
+            "median_model_over_observed": 1.209799007055924,
+            "observed_over_model_p16_50_84": [
+              0.6318838460714394,
+              0.8265835846844716,
+              1.297451512060743
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.6848260545247706,
+              -0.644055617075272,
+              1.1087348519813625
+            ],
+            "median_absolute_fractional_error": 0.3248214533209488,
+            "rmse": 4.830605917091831,
+            "pearson_r": 0.43245003268418,
+            "log_pearson_r": 0.5218959929248959,
+            "rms_log_ratio": 0.48917467976199047
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 592.2954684637783,
+            "median_model_over_observed": 1.0510396002902278,
+            "observed_over_model_p16_50_84": [
+              0.7975367333388417,
+              0.951438936957148,
+              1.193615109626417
+            ],
+            "observed_minus_model_p16_50_84": [
+              -107.1086390773427,
+              -30.361363609318232,
+              120.79572729546508
+            ],
+            "median_absolute_fractional_error": 0.12367908569566555,
+            "rmse": 94.25744853741082,
+            "pearson_r": 0.6694143267508653,
+            "log_pearson_r": 0.7041270162780736,
+            "rms_log_ratio": 0.16919916696841955
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 256361906.65400285,
+            "median_model_over_observed": 1.2213503698695296,
+            "observed_over_model_p16_50_84": [
+              0.5644211043193238,
+              0.8187658715056718,
+              1.1974024438497062
+            ],
+            "observed_minus_model_p16_50_84": [
+              -115828842.14708793,
+              -40822119.18932441,
+              51308023.840489835
+            ],
+            "median_absolute_fractional_error": 0.3247035673225085,
+            "rmse": 216266408.9009406,
+            "pearson_r": 0.3708329125631123,
+            "log_pearson_r": 0.4623046611475648,
+            "rms_log_ratio": 0.4562052435944916
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0395544444448777,
+            "median_model_over_observed": 0.5549857549848183,
+            "observed_over_model_p16_50_84": [
+              0.6662560123603086,
+              1.8018480492843554,
+              3.123931270343739
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.4967102026075316,
+              1.3053903133907188,
+              3.217089256570909
+            ],
+            "median_absolute_fractional_error": 0.5156192395701388,
+            "rmse": 5.946004641065048,
+            "pearson_r": -0.0530306555653191,
+            "log_pearson_r": 0.00902590207772014,
+            "rms_log_ratio": 0.8915513203367891
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.4013548015838,
+            "median_model_over_observed": 1.039291043947822,
+            "observed_over_model_p16_50_84": [
+              0.8937099562314398,
+              0.9621943783922431,
+              1.7248068711098032
+            ],
+            "observed_minus_model_p16_50_84": [
+              -61.716872228608516,
+              -22.879172627913476,
+              300.12460237691766
+            ],
+            "median_absolute_fractional_error": 0.11582050551178713,
+            "rmse": 164.52419043107164,
+            "pearson_r": 0.16950652253027026,
+            "log_pearson_r": 0.20220718560709558,
+            "rms_log_ratio": 0.2971897350983548
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102306945.13935821,
+            "median_model_over_observed": 0.5967791916594484,
+            "observed_over_model_p16_50_84": [
+              1.0562166152968886,
+              1.6756616416522936,
+              3.0380552641339085
+            ],
+            "observed_minus_model_p16_50_84": [
+              8645228.257545248,
+              71008490.67074208,
+              193285419.13762304
+            ],
+            "median_absolute_fractional_error": 0.40322080834055163,
+            "rmse": 276883301.04341936,
+            "pearson_r": -0.11715147829216822,
+            "log_pearson_r": -0.061098389878891234,
+            "rms_log_ratio": 0.8759658180969706
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0456877777776294,
+            "median_model_over_observed": 0.5559999999999998,
+            "observed_over_model_p16_50_84": [
+              0.6307537532001011,
+              1.7985611510791375,
+              3.0704974446706346
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.801600895319288,
+              1.27490168128543,
+              3.18158119038319
+            ],
+            "median_absolute_fractional_error": 0.5219030778447512,
+            "rmse": 5.935578999491685,
+            "pearson_r": -0.036354177213812726,
+            "log_pearson_r": 0.038716676609035314,
+            "rms_log_ratio": 0.8832762678645738
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.107788271586,
+            "median_model_over_observed": 1.0399587335463578,
+            "observed_over_model_p16_50_84": [
+              0.8925216115474127,
+              0.9615766162085155,
+              1.7159176935696407
+            ],
+            "observed_minus_model_p16_50_84": [
+              -62.53166474335482,
+              -23.350150607726505,
+              296.16309646573086
+            ],
+            "median_absolute_fractional_error": 0.11654913704554337,
+            "rmse": 163.83068506773304,
+            "pearson_r": 0.17172994901857822,
+            "log_pearson_r": 0.20651291248022163,
+            "rms_log_ratio": 0.29506065180460367
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102888970.13073778,
+            "median_model_over_observed": 0.6009282805694581,
+            "observed_over_model_p16_50_84": [
+              1.0403692899149877,
+              1.664092092740866,
+              3.022485411597259
+            ],
+            "observed_minus_model_p16_50_84": [
+              7205803.023225829,
+              67995922.45500097,
+              187570342.56468377
+            ],
+            "median_absolute_fractional_error": 0.39907171943054187,
+            "rmse": 275063596.15354645,
+            "pearson_r": -0.08414432696802226,
+            "log_pearson_r": -0.00923444950771106,
+            "rms_log_ratio": 0.858335569420408
+          }
+        }
+      },
+      "stereo_a": {
+        "samples": 240,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 4.573593358794316,
+            "median_model_over_observed": 1.0876972814322394,
+            "observed_over_model_p16_50_84": [
+              0.46967961124796376,
+              0.9193768500066066,
+              1.6112880168262649
+            ],
+            "observed_minus_model_p16_50_84": [
+              -3.203432143111987,
+              -0.27167786959347096,
+              2.3764386836701337
+            ],
+            "median_absolute_fractional_error": 0.4111228599418958,
+            "rmse": 5.256818462485576,
+            "pearson_r": 0.41154742459471577,
+            "log_pearson_r": 0.4520396080768107,
+            "rms_log_ratio": 0.6013593642448583
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 600.1650861467463,
+            "median_model_over_observed": 1.1684627322510115,
+            "observed_over_model_p16_50_84": [
+              0.7819418887188323,
+              0.8558270721232739,
+              1.0189075695663887
+            ],
+            "observed_minus_model_p16_50_84": [
+              -135.7493484287374,
+              -77.59296432907303,
+              11.243197509571992
+            ],
+            "median_absolute_fractional_error": 0.1684627322510115,
+            "rmse": 91.92131356109093,
+            "pearson_r": 0.7719319390694549,
+            "log_pearson_r": 0.7939246061419769,
+            "rms_log_ratio": 0.16945677844839288
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 298257253.1399678,
+            "median_model_over_observed": 1.280420273749597,
+            "observed_over_model_p16_50_84": [
+              0.4665515153237092,
+              0.7810767019236946,
+              1.2863638223660443
+            ],
+            "observed_minus_model_p16_50_84": [
+              -178785998.09146923,
+              -57766566.95950034,
+              71821993.85109726
+            ],
+            "median_absolute_fractional_error": 0.40469627548134773,
+            "rmse": 214123191.9468887,
+            "pearson_r": 0.33645684716357505,
+            "log_pearson_r": 0.3163010313131468,
+            "rms_log_ratio": 0.5638848677799341
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.340177647202028,
+            "median_model_over_observed": 0.5627538115278946,
+            "observed_over_model_p16_50_84": [
+              0.6961602470064022,
+              1.7769766067724637,
+              3.763297763091084
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2475325060693072,
+              1.863545115019111,
+              5.676936324787179
+            ],
+            "median_absolute_fractional_error": 0.5528959978558938,
+            "rmse": 6.279764846017699,
+            "pearson_r": 0.20225833338357127,
+            "log_pearson_r": 0.0906471569248432,
+            "rms_log_ratio": 0.9067408187738614
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.0321433909446,
+            "median_model_over_observed": 1.0294990077964967,
+            "observed_over_model_p16_50_84": [
+              0.8259745937806161,
+              0.9713462731655572,
+              1.3738065028524757
+            ],
+            "observed_minus_model_p16_50_84": [
+              -103.95102105876008,
+              -12.135395096094612,
+              177.92046771713953
+            ],
+            "median_absolute_fractional_error": 0.14993453077011204,
+            "rmse": 121.32368711079272,
+            "pearson_r": 0.2727338018172064,
+            "log_pearson_r": 0.3190050247465689,
+            "rms_log_ratio": 0.22425107206494124
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149276113.54729968,
+            "median_model_over_observed": 0.605758959311012,
+            "observed_over_model_p16_50_84": [
+              0.8171817218828991,
+              1.650862173890134,
+              3.1837472548382375
+            ],
+            "observed_minus_model_p16_50_84": [
+              -35397980.282759875,
+              80200543.86089864,
+              244715416.42309496
+            ],
+            "median_absolute_fractional_error": 0.4963320735230084,
+            "rmse": 263424224.19137442,
+            "pearson_r": 0.08912202899123312,
+            "log_pearson_r": 0.02591984056191503,
+            "rms_log_ratio": 0.803207771059178
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.318069220220514,
+            "median_model_over_observed": 0.5648494721527783,
+            "observed_over_model_p16_50_84": [
+              0.6994084759831544,
+              1.770383839533355,
+              3.7727256536311087
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2210814197542301,
+              1.8888649353738587,
+              5.680665213675944
+            ],
+            "median_absolute_fractional_error": 0.548818910856965,
+            "rmse": 6.284218822561204,
+            "pearson_r": 0.20300793251062066,
+            "log_pearson_r": 0.09068410109475293,
+            "rms_log_ratio": 0.9075122680268042
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.86899901690003,
+            "median_model_over_observed": 1.0311679016012585,
+            "observed_over_model_p16_50_84": [
+              0.8253134236433555,
+              0.9697741752192119,
+              1.3718478986052767
+            ],
+            "observed_minus_model_p16_50_84": [
+              -104.62893483951106,
+              -12.820573350017668,
+              176.78952857631646
+            ],
+            "median_absolute_fractional_error": 0.14953844054211513,
+            "rmse": 121.15740054279169,
+            "pearson_r": 0.2735267409223191,
+            "log_pearson_r": 0.31974891571382075,
+            "rms_log_ratio": 0.22378989370748723
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149002607.80018884,
+            "median_model_over_observed": 0.6041069916918737,
+            "observed_over_model_p16_50_84": [
+              0.8203529173087415,
+              1.655386054068972,
+              3.1887117758575383
+            ],
+            "observed_minus_model_p16_50_84": [
+              -34395220.151266344,
+              80303071.33139843,
+              245079326.18551114
+            ],
+            "median_absolute_fractional_error": 0.49487169575196566,
+            "rmse": 263563253.7017751,
+            "pearson_r": 0.08920711930552536,
+            "log_pearson_r": 0.025100082272351058,
+            "rms_log_ratio": 0.8039257780967418
+          }
+        }
+      },
+      "solar_orbiter": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 13,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 5.099977828266102,
+            "median_model_over_observed": 0.7515127173430592,
+            "observed_over_model_p16_50_84": [
+              0.9433742446530424,
+              1.3306494712896635,
+              1.6844592099182638
+            ],
+            "observed_minus_model_p16_50_84": [
+              -0.35071017921892217,
+              1.5327650297663062,
+              5.305919178268653
+            ],
+            "median_absolute_fractional_error": 0.274921938378361,
+            "rmse": 7.37183269294048,
+            "pearson_r": 0.6571242183562336,
+            "log_pearson_r": 0.7188149582194715,
+            "rms_log_ratio": 0.5145999151575382
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 605.9751246806629,
+            "median_model_over_observed": 1.1584246703810923,
+            "observed_over_model_p16_50_84": [
+              0.7873405929291287,
+              0.8632412841061347,
+              1.1152870909631383
+            ],
+            "observed_minus_model_p16_50_84": [
+              -121.18288533437246,
+              -80.66948138007137,
+              74.02296247078294
+            ],
+            "median_absolute_fractional_error": 0.17638512718100174,
+            "rmse": 102.6537764095867,
+            "pearson_r": 0.6774577625042947,
+            "log_pearson_r": 0.7207109146561492,
+            "rms_log_ratio": 0.1890393159426148
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 315564781.11308146,
+            "median_model_over_observed": 0.853375989829727,
+            "observed_over_model_p16_50_84": [
+              0.9734110159452608,
+              1.171816423144889,
+              1.4421726749057424
+            ],
+            "observed_minus_model_p16_50_84": [
+              -9481159.71694153,
+              51431990.890176564,
+              194989358.96630636
+            ],
+            "median_absolute_fractional_error": 0.1633232330726222,
+            "rmse": 259951794.40517503,
+            "pearson_r": 0.6955360131175169,
+            "log_pearson_r": 0.7614995166124287,
+            "rms_log_ratio": 0.3851567022957153
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1646221114253503,
+            "median_model_over_observed": 0.3276254822112876,
+            "observed_over_model_p16_50_84": [
+              1.7622618839704112,
+              3.0522656334622167,
+              4.334227900210715
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1713883760677786,
+              4.243951754385159,
+              9.812230692202501
+            ],
+            "median_absolute_fractional_error": 0.6723745177887124,
+            "rmse": 9.510011522895194,
+            "pearson_r": 0.4785159921128983,
+            "log_pearson_r": 0.5370066244530692,
+            "rms_log_ratio": 1.1867489774574402
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 600.7264064397489,
+            "median_model_over_observed": 1.0575786271742103,
+            "observed_over_model_p16_50_84": [
+              0.7974490026891284,
+              0.9455561736075766,
+              1.2067475230973426
+            ],
+            "observed_minus_model_p16_50_84": [
+              -127.8669325279678,
+              -27.631822235643938,
+              115.62853434405821
+            ],
+            "median_absolute_fractional_error": 0.16692743319692016,
+            "rmse": 118.89522194743519,
+            "pearson_r": 0.51166959574518,
+            "log_pearson_r": 0.5736071585932604,
+            "rms_log_ratio": 0.20555216613004723
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129009461.13893683,
+            "median_model_over_observed": 0.360481958791975,
+            "observed_over_model_p16_50_84": [
+              2.088509675303654,
+              2.7740639319402796,
+              3.7790935999526543
+            ],
+            "observed_minus_model_p16_50_84": [
+              159730874.90546635,
+              220752801.86101645,
+              459061365.5396487
+            ],
+            "median_absolute_fractional_error": 0.639518041208025,
+            "rmse": 409218400.457312,
+            "pearson_r": 0.3251732227046922,
+            "log_pearson_r": 0.4332661789157505,
+            "rms_log_ratio": 1.1374848466688596
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1671547034923573,
+            "median_model_over_observed": 0.3273012717678944,
+            "observed_over_model_p16_50_84": [
+              1.760732886134007,
+              3.0552890754092448,
+              4.233379472911318
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1722501677740147,
+              4.247105452674234,
+              9.747921092118055
+            ],
+            "median_absolute_fractional_error": 0.6726987282321055,
+            "rmse": 9.397178973905005,
+            "pearson_r": 0.529472588064357,
+            "log_pearson_r": 0.5690160195776265,
+            "rms_log_ratio": 1.1706277549123167
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 601.0958911750416,
+            "median_model_over_observed": 1.0582613325580164,
+            "observed_over_model_p16_50_84": [
+              0.7968404256073714,
+              0.9449461765581213,
+              1.204685491329503
+            ],
+            "observed_minus_model_p16_50_84": [
+              -128.37448513773506,
+              -27.77479216118246,
+              115.44451231276616
+            ],
+            "median_absolute_fractional_error": 0.1660391425670571,
+            "rmse": 118.9069740930922,
+            "pearson_r": 0.5109685304467607,
+            "log_pearson_r": 0.5734994378667143,
+            "rms_log_ratio": 0.20524139013559792
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129856644.90216929,
+            "median_model_over_observed": 0.3640766239891601,
+            "observed_over_model_p16_50_84": [
+              2.088423268608318,
+              2.746674557248624,
+              3.7004274703897355
+            ],
+            "observed_minus_model_p16_50_84": [
+              159223433.30094564,
+              220871817.02146614,
+              454363775.61260986
+            ],
+            "median_absolute_fractional_error": 0.6359233760108399,
+            "rmse": 404757415.7359058,
+            "pearson_r": 0.3984088889056343,
+            "log_pearson_r": 0.49017143886751735,
+            "rms_log_ratio": 1.1189763678651385
+          }
+        }
+      }
+    },
+    "fine": {
+      "wind": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:30:00.000",
+        "last_paired_utc": "2025-12-04T23:30:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 4.206007390487332,
+            "median_model_over_observed": 1.2490890626377031,
+            "observed_over_model_p16_50_84": [
+              0.5713596730423637,
+              0.8005834250828348,
+              1.2042245366255797
+            ],
+            "observed_minus_model_p16_50_84": [
+              -3.093556392885263,
+              -0.7513858293168898,
+              0.731352069211423
+            ],
+            "median_absolute_fractional_error": 0.36664269865692267,
+            "rmse": 4.625525652164125,
+            "pearson_r": 0.4850979379731696,
+            "log_pearson_r": 0.5691412618136708,
+            "rms_log_ratio": 0.4944306769805276
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 593.4568707382665,
+            "median_model_over_observed": 1.0451874759674618,
+            "observed_over_model_p16_50_84": [
+              0.8445884623606426,
+              0.9567661524784014,
+              1.2331798854815637
+            ],
+            "observed_minus_model_p16_50_84": [
+              -86.08224433222719,
+              -26.579046033199347,
+              137.74401179659785
+            ],
+            "median_absolute_fractional_error": 0.11741302352967509,
+            "rmse": 93.61003656936919,
+            "pearson_r": 0.6640048708407332,
+            "log_pearson_r": 0.7010586893527523,
+            "rms_log_ratio": 0.16180556002791255
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 243456901.3121592,
+            "median_model_over_observed": 1.294536590565069,
+            "observed_over_model_p16_50_84": [
+              0.5811494145233379,
+              0.7724771993995915,
+              1.1191091646161002
+            ],
+            "observed_minus_model_p16_50_84": [
+              -131556160.71075109,
+              -52124214.93671733,
+              40413988.41945853
+            ],
+            "median_absolute_fractional_error": 0.350098076940357,
+            "rmse": 209235352.64122328,
+            "pearson_r": 0.438989302178972,
+            "log_pearson_r": 0.5414739560332296,
+            "rms_log_ratio": 0.44872645618818696
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0395544444448777,
+            "median_model_over_observed": 0.5549857549848183,
+            "observed_over_model_p16_50_84": [
+              0.6662560123603086,
+              1.8018480492843554,
+              3.123931270343739
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.4967102026075316,
+              1.3053903133907188,
+              3.217089256570909
+            ],
+            "median_absolute_fractional_error": 0.5156192395701388,
+            "rmse": 5.946004641065048,
+            "pearson_r": -0.0530306555653191,
+            "log_pearson_r": 0.00902590207772014,
+            "rms_log_ratio": 0.8915513203367891
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.4013548015838,
+            "median_model_over_observed": 1.039291043947822,
+            "observed_over_model_p16_50_84": [
+              0.8937099562314398,
+              0.9621943783922431,
+              1.7248068711098032
+            ],
+            "observed_minus_model_p16_50_84": [
+              -61.716872228608516,
+              -22.879172627913476,
+              300.12460237691766
+            ],
+            "median_absolute_fractional_error": 0.11582050551178713,
+            "rmse": 164.52419043107164,
+            "pearson_r": 0.16950652253027026,
+            "log_pearson_r": 0.20220718560709558,
+            "rms_log_ratio": 0.2971897350983548
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102306945.13935821,
+            "median_model_over_observed": 0.5967791916594484,
+            "observed_over_model_p16_50_84": [
+              1.0562166152968886,
+              1.6756616416522936,
+              3.0380552641339085
+            ],
+            "observed_minus_model_p16_50_84": [
+              8645228.257545248,
+              71008490.67074208,
+              193285419.13762304
+            ],
+            "median_absolute_fractional_error": 0.40322080834055163,
+            "rmse": 276883301.04341936,
+            "pearson_r": -0.11715147829216822,
+            "log_pearson_r": -0.061098389878891234,
+            "rms_log_ratio": 0.8759658180969706
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0456877777776294,
+            "median_model_over_observed": 0.5559999999999998,
+            "observed_over_model_p16_50_84": [
+              0.6307537532001011,
+              1.7985611510791375,
+              3.0704974446706346
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.801600895319288,
+              1.27490168128543,
+              3.18158119038319
+            ],
+            "median_absolute_fractional_error": 0.5219030778447512,
+            "rmse": 5.935578999491685,
+            "pearson_r": -0.036354177213812726,
+            "log_pearson_r": 0.038716676609035314,
+            "rms_log_ratio": 0.8832762678645738
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.107788271586,
+            "median_model_over_observed": 1.0399587335463578,
+            "observed_over_model_p16_50_84": [
+              0.8925216115474127,
+              0.9615766162085155,
+              1.7159176935696407
+            ],
+            "observed_minus_model_p16_50_84": [
+              -62.53166474335482,
+              -23.350150607726505,
+              296.16309646573086
+            ],
+            "median_absolute_fractional_error": 0.11654913704554337,
+            "rmse": 163.83068506773304,
+            "pearson_r": 0.17172994901857822,
+            "log_pearson_r": 0.20651291248022163,
+            "rms_log_ratio": 0.29506065180460367
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102888970.13073778,
+            "median_model_over_observed": 0.6009282805694581,
+            "observed_over_model_p16_50_84": [
+              1.0403692899149877,
+              1.664092092740866,
+              3.022485411597259
+            ],
+            "observed_minus_model_p16_50_84": [
+              7205803.023225829,
+              67995922.45500097,
+              187570342.56468377
+            ],
+            "median_absolute_fractional_error": 0.39907171943054187,
+            "rmse": 275063596.15354645,
+            "pearson_r": -0.08414432696802226,
+            "log_pearson_r": -0.00923444950771106,
+            "rms_log_ratio": 0.858335569420408
+          }
+        }
+      },
+      "stereo_a": {
+        "samples": 240,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 5.710467961468119,
+            "median_model_over_observed": 1.1122240264420447,
+            "observed_over_model_p16_50_84": [
+              0.4483590449254235,
+              0.8990999676514742,
+              1.6392052347186667
+            ],
+            "observed_minus_model_p16_50_84": [
+              -3.80390654969204,
+              -0.4857581175062191,
+              2.3987073682986675
+            ],
+            "median_absolute_fractional_error": 0.4246806153594601,
+            "rmse": 5.209108607744433,
+            "pearson_r": 0.4215468458510984,
+            "log_pearson_r": 0.40036987862136325,
+            "rms_log_ratio": 0.633310936544251
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 595.7915338084816,
+            "median_model_over_observed": 1.1639238396373126,
+            "observed_over_model_p16_50_84": [
+              0.7668116819487,
+              0.859163424925334,
+              1.0526287985853382
+            ],
+            "observed_minus_model_p16_50_84": [
+              -154.74267141601726,
+              -73.89606824923348,
+              33.42529747951965
+            ],
+            "median_absolute_fractional_error": 0.1689160370054641,
+            "rmse": 102.43500514889774,
+            "pearson_r": 0.6692536195741554,
+            "log_pearson_r": 0.709744533101363,
+            "rms_log_ratio": 0.18269156803797632
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 347869848.61992663,
+            "median_model_over_observed": 1.2898930727486004,
+            "observed_over_model_p16_50_84": [
+              0.4628868782662105,
+              0.7752738222523902,
+              1.2702248029854166
+            ],
+            "observed_minus_model_p16_50_84": [
+              -194891745.9478357,
+              -63138671.90416631,
+              72530828.75245602
+            ],
+            "median_absolute_fractional_error": 0.44776565906590066,
+            "rmse": 217220153.27799836,
+            "pearson_r": 0.3127905787415525,
+            "log_pearson_r": 0.27563479450241124,
+            "rms_log_ratio": 0.5875782668288245
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.340177647202028,
+            "median_model_over_observed": 0.5627538115278946,
+            "observed_over_model_p16_50_84": [
+              0.6961602470064022,
+              1.7769766067724637,
+              3.763297763091084
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2475325060693072,
+              1.863545115019111,
+              5.676936324787179
+            ],
+            "median_absolute_fractional_error": 0.5528959978558938,
+            "rmse": 6.279764846017699,
+            "pearson_r": 0.20225833338357127,
+            "log_pearson_r": 0.0906471569248432,
+            "rms_log_ratio": 0.9067408187738614
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.0321433909446,
+            "median_model_over_observed": 1.0294990077964967,
+            "observed_over_model_p16_50_84": [
+              0.8259745937806161,
+              0.9713462731655572,
+              1.3738065028524757
+            ],
+            "observed_minus_model_p16_50_84": [
+              -103.95102105876008,
+              -12.135395096094612,
+              177.92046771713953
+            ],
+            "median_absolute_fractional_error": 0.14993453077011204,
+            "rmse": 121.32368711079272,
+            "pearson_r": 0.2727338018172064,
+            "log_pearson_r": 0.3190050247465689,
+            "rms_log_ratio": 0.22425107206494124
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149276113.54729968,
+            "median_model_over_observed": 0.605758959311012,
+            "observed_over_model_p16_50_84": [
+              0.8171817218828991,
+              1.650862173890134,
+              3.1837472548382375
+            ],
+            "observed_minus_model_p16_50_84": [
+              -35397980.282759875,
+              80200543.86089864,
+              244715416.42309496
+            ],
+            "median_absolute_fractional_error": 0.4963320735230084,
+            "rmse": 263424224.19137442,
+            "pearson_r": 0.08912202899123312,
+            "log_pearson_r": 0.02591984056191503,
+            "rms_log_ratio": 0.803207771059178
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.318069220220514,
+            "median_model_over_observed": 0.5648494721527783,
+            "observed_over_model_p16_50_84": [
+              0.6994084759831544,
+              1.770383839533355,
+              3.7727256536311087
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2210814197542301,
+              1.8888649353738587,
+              5.680665213675944
+            ],
+            "median_absolute_fractional_error": 0.548818910856965,
+            "rmse": 6.284218822561204,
+            "pearson_r": 0.20300793251062066,
+            "log_pearson_r": 0.09068410109475293,
+            "rms_log_ratio": 0.9075122680268042
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.86899901690003,
+            "median_model_over_observed": 1.0311679016012585,
+            "observed_over_model_p16_50_84": [
+              0.8253134236433555,
+              0.9697741752192119,
+              1.3718478986052767
+            ],
+            "observed_minus_model_p16_50_84": [
+              -104.62893483951106,
+              -12.820573350017668,
+              176.78952857631646
+            ],
+            "median_absolute_fractional_error": 0.14953844054211513,
+            "rmse": 121.15740054279169,
+            "pearson_r": 0.2735267409223191,
+            "log_pearson_r": 0.31974891571382075,
+            "rms_log_ratio": 0.22378989370748723
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149002607.80018884,
+            "median_model_over_observed": 0.6041069916918737,
+            "observed_over_model_p16_50_84": [
+              0.8203529173087415,
+              1.655386054068972,
+              3.1887117758575383
+            ],
+            "observed_minus_model_p16_50_84": [
+              -34395220.151266344,
+              80303071.33139843,
+              245079326.18551114
+            ],
+            "median_absolute_fractional_error": 0.49487169575196566,
+            "rmse": 263563253.7017751,
+            "pearson_r": 0.08920711930552536,
+            "log_pearson_r": 0.025100082272351058,
+            "rms_log_ratio": 0.8039257780967418
+          }
+        }
+      },
+      "solar_orbiter": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 13,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 4.745948222463272,
+            "median_model_over_observed": 0.7212089147857765,
+            "observed_over_model_p16_50_84": [
+              1.0354874959093212,
+              1.3865607863389124,
+              1.6923558590961991
+            ],
+            "observed_minus_model_p16_50_84": [
+              0.16603940442558232,
+              1.8152167206378058,
+              3.9396619033257965
+            ],
+            "median_absolute_fractional_error": 0.29328878443628026,
+            "rmse": 5.960465987350266,
+            "pearson_r": 0.908078629025901,
+            "log_pearson_r": 0.8877510187017033,
+            "rms_log_ratio": 0.41396548400995087
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 628.0751872044883,
+            "median_model_over_observed": 1.1356692234853698,
+            "observed_over_model_p16_50_84": [
+              0.81494225246711,
+              0.8805380821459606,
+              1.080535436439636
+            ],
+            "observed_minus_model_p16_50_84": [
+              -118.61118731932316,
+              -59.88561894571137,
+              52.318559145169324
+            ],
+            "median_absolute_fractional_error": 0.15283808693480672,
+            "rmse": 90.7319140054123,
+            "pearson_r": 0.7643567024638955,
+            "log_pearson_r": 0.8128577269965389,
+            "rms_log_ratio": 0.1588795383440725
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 303430856.43036383,
+            "median_model_over_observed": 0.815931016354387,
+            "observed_over_model_p16_50_84": [
+              1.0555427287571824,
+              1.225593806285292,
+              1.4464638974511905
+            ],
+            "observed_minus_model_p16_50_84": [
+              17236563.000416137,
+              66617586.71737301,
+              180568121.92818186
+            ],
+            "median_absolute_fractional_error": 0.19187200170001317,
+            "rmse": 214603534.64828652,
+            "pearson_r": 0.9025698076630169,
+            "log_pearson_r": 0.9054289625820838,
+            "rms_log_ratio": 0.3146757805135564
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1646221114253503,
+            "median_model_over_observed": 0.3276254822112876,
+            "observed_over_model_p16_50_84": [
+              1.7622618839704112,
+              3.0522656334622167,
+              4.334227900210715
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1713883760677786,
+              4.243951754385159,
+              9.812230692202501
+            ],
+            "median_absolute_fractional_error": 0.6723745177887124,
+            "rmse": 9.510011522895194,
+            "pearson_r": 0.4785159921128983,
+            "log_pearson_r": 0.5370066244530692,
+            "rms_log_ratio": 1.1867489774574402
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 600.7264064397489,
+            "median_model_over_observed": 1.0575786271742103,
+            "observed_over_model_p16_50_84": [
+              0.7974490026891284,
+              0.9455561736075766,
+              1.2067475230973426
+            ],
+            "observed_minus_model_p16_50_84": [
+              -127.8669325279678,
+              -27.631822235643938,
+              115.62853434405821
+            ],
+            "median_absolute_fractional_error": 0.16692743319692016,
+            "rmse": 118.89522194743519,
+            "pearson_r": 0.51166959574518,
+            "log_pearson_r": 0.5736071585932604,
+            "rms_log_ratio": 0.20555216613004723
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129009461.13893683,
+            "median_model_over_observed": 0.360481958791975,
+            "observed_over_model_p16_50_84": [
+              2.088509675303654,
+              2.7740639319402796,
+              3.7790935999526543
+            ],
+            "observed_minus_model_p16_50_84": [
+              159730874.90546635,
+              220752801.86101645,
+              459061365.5396487
+            ],
+            "median_absolute_fractional_error": 0.639518041208025,
+            "rmse": 409218400.457312,
+            "pearson_r": 0.3251732227046922,
+            "log_pearson_r": 0.4332661789157505,
+            "rms_log_ratio": 1.1374848466688596
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1671547034923573,
+            "median_model_over_observed": 0.3273012717678944,
+            "observed_over_model_p16_50_84": [
+              1.760732886134007,
+              3.0552890754092448,
+              4.233379472911318
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1722501677740147,
+              4.247105452674234,
+              9.747921092118055
+            ],
+            "median_absolute_fractional_error": 0.6726987282321055,
+            "rmse": 9.397178973905005,
+            "pearson_r": 0.529472588064357,
+            "log_pearson_r": 0.5690160195776265,
+            "rms_log_ratio": 1.1706277549123167
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 601.0958911750416,
+            "median_model_over_observed": 1.0582613325580164,
+            "observed_over_model_p16_50_84": [
+              0.7968404256073714,
+              0.9449461765581213,
+              1.204685491329503
+            ],
+            "observed_minus_model_p16_50_84": [
+              -128.37448513773506,
+              -27.77479216118246,
+              115.44451231276616
+            ],
+            "median_absolute_fractional_error": 0.1660391425670571,
+            "rmse": 118.9069740930922,
+            "pearson_r": 0.5109685304467607,
+            "log_pearson_r": 0.5734994378667143,
+            "rms_log_ratio": 0.20524139013559792
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129856644.90216929,
+            "median_model_over_observed": 0.3640766239891601,
+            "observed_over_model_p16_50_84": [
+              2.088423268608318,
+              2.746674557248624,
+              3.7004274703897355
+            ],
+            "observed_minus_model_p16_50_84": [
+              159223433.30094564,
+              220871817.02146614,
+              454363775.61260986
+            ],
+            "median_absolute_fractional_error": 0.6359233760108399,
+            "rmse": 404757415.7359058,
+            "pearson_r": 0.3984088889056343,
+            "log_pearson_r": 0.49017143886751735,
+            "rms_log_ratio": 1.1189763678651385
+          }
+        }
+      }
+    },
+    "medium": {
+      "wind": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:30:00.000",
+        "last_paired_utc": "2025-12-04T23:30:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 4.32236512380703,
+            "median_model_over_observed": 1.2550168447587204,
+            "observed_over_model_p16_50_84": [
+              0.6067285900068163,
+              0.7968020542323893,
+              1.1970933156229915
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.923966702970912,
+              -0.8039377768318179,
+              0.811847982020471
+            ],
+            "median_absolute_fractional_error": 0.3459833977920659,
+            "rmse": 4.612627536742362,
+            "pearson_r": 0.5210726116987244,
+            "log_pearson_r": 0.5813811864054645,
+            "rms_log_ratio": 0.4791045230686726
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 597.2062064382972,
+            "median_model_over_observed": 1.0559653554009996,
+            "observed_over_model_p16_50_84": [
+              0.8086130625199114,
+              0.947000765588804,
+              1.2084644486156753
+            ],
+            "observed_minus_model_p16_50_84": [
+              -99.59578780813399,
+              -31.41744497114746,
+              126.31382506355443
+            ],
+            "median_absolute_fractional_error": 0.12104413039796036,
+            "rmse": 92.72988172979947,
+            "pearson_r": 0.6772488518056946,
+            "log_pearson_r": 0.7193232466809165,
+            "rms_log_ratio": 0.16349638553808188
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 250206919.5665912,
+            "median_model_over_observed": 1.2591511200434362,
+            "observed_over_model_p16_50_84": [
+              0.5690323902120226,
+              0.7941858479747081,
+              1.0948605574771373
+            ],
+            "observed_minus_model_p16_50_84": [
+              -110600978.77796213,
+              -52226233.85139242,
+              29999043.69418876
+            ],
+            "median_absolute_fractional_error": 0.32235971553503684,
+            "rmse": 207570700.05062544,
+            "pearson_r": 0.4716872928983343,
+            "log_pearson_r": 0.5604542775603297,
+            "rms_log_ratio": 0.44288879547471216
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0395544444448777,
+            "median_model_over_observed": 0.5549857549848183,
+            "observed_over_model_p16_50_84": [
+              0.6662560123603086,
+              1.8018480492843554,
+              3.123931270343739
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.4967102026075316,
+              1.3053903133907188,
+              3.217089256570909
+            ],
+            "median_absolute_fractional_error": 0.5156192395701388,
+            "rmse": 5.946004641065048,
+            "pearson_r": -0.0530306555653191,
+            "log_pearson_r": 0.00902590207772014,
+            "rms_log_ratio": 0.8915513203367891
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.4013548015838,
+            "median_model_over_observed": 1.039291043947822,
+            "observed_over_model_p16_50_84": [
+              0.8937099562314398,
+              0.9621943783922431,
+              1.7248068711098032
+            ],
+            "observed_minus_model_p16_50_84": [
+              -61.716872228608516,
+              -22.879172627913476,
+              300.12460237691766
+            ],
+            "median_absolute_fractional_error": 0.11582050551178713,
+            "rmse": 164.52419043107164,
+            "pearson_r": 0.16950652253027026,
+            "log_pearson_r": 0.20220718560709558,
+            "rms_log_ratio": 0.2971897350983548
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102306945.13935821,
+            "median_model_over_observed": 0.5967791916594484,
+            "observed_over_model_p16_50_84": [
+              1.0562166152968886,
+              1.6756616416522936,
+              3.0380552641339085
+            ],
+            "observed_minus_model_p16_50_84": [
+              8645228.257545248,
+              71008490.67074208,
+              193285419.13762304
+            ],
+            "median_absolute_fractional_error": 0.40322080834055163,
+            "rmse": 276883301.04341936,
+            "pearson_r": -0.11715147829216822,
+            "log_pearson_r": -0.061098389878891234,
+            "rms_log_ratio": 0.8759658180969706
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0456877777776294,
+            "median_model_over_observed": 0.5559999999999998,
+            "observed_over_model_p16_50_84": [
+              0.6307537532001011,
+              1.7985611510791375,
+              3.0704974446706346
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.801600895319288,
+              1.27490168128543,
+              3.18158119038319
+            ],
+            "median_absolute_fractional_error": 0.5219030778447512,
+            "rmse": 5.935578999491685,
+            "pearson_r": -0.036354177213812726,
+            "log_pearson_r": 0.038716676609035314,
+            "rms_log_ratio": 0.8832762678645738
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.107788271586,
+            "median_model_over_observed": 1.0399587335463578,
+            "observed_over_model_p16_50_84": [
+              0.8925216115474127,
+              0.9615766162085155,
+              1.7159176935696407
+            ],
+            "observed_minus_model_p16_50_84": [
+              -62.53166474335482,
+              -23.350150607726505,
+              296.16309646573086
+            ],
+            "median_absolute_fractional_error": 0.11654913704554337,
+            "rmse": 163.83068506773304,
+            "pearson_r": 0.17172994901857822,
+            "log_pearson_r": 0.20651291248022163,
+            "rms_log_ratio": 0.29506065180460367
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102888970.13073778,
+            "median_model_over_observed": 0.6009282805694581,
+            "observed_over_model_p16_50_84": [
+              1.0403692899149877,
+              1.664092092740866,
+              3.022485411597259
+            ],
+            "observed_minus_model_p16_50_84": [
+              7205803.023225829,
+              67995922.45500097,
+              187570342.56468377
+            ],
+            "median_absolute_fractional_error": 0.39907171943054187,
+            "rmse": 275063596.15354645,
+            "pearson_r": -0.08414432696802226,
+            "log_pearson_r": -0.00923444950771106,
+            "rms_log_ratio": 0.858335569420408
+          }
+        }
+      },
+      "stereo_a": {
+        "samples": 240,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 5.461451416232649,
+            "median_model_over_observed": 1.1044693638641316,
+            "observed_over_model_p16_50_84": [
+              0.44018117923157735,
+              0.9054131037532318,
+              1.5900826389870948
+            ],
+            "observed_minus_model_p16_50_84": [
+              -3.85156985656038,
+              -0.4271115284790883,
+              2.4016737218552597
+            ],
+            "median_absolute_fractional_error": 0.406798035890223,
+            "rmse": 5.255542895368335,
+            "pearson_r": 0.40570826689450257,
+            "log_pearson_r": 0.405006516738713,
+            "rms_log_ratio": 0.6262124121990921
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 595.0483031526114,
+            "median_model_over_observed": 1.1742701238579245,
+            "observed_over_model_p16_50_84": [
+              0.7727035787653647,
+              0.8515933893199574,
+              1.0340450249864384
+            ],
+            "observed_minus_model_p16_50_84": [
+              -146.98090177801035,
+              -77.64561556603951,
+              20.71168693886855
+            ],
+            "median_absolute_fractional_error": 0.1742701238579245,
+            "rmse": 98.64108975285875,
+            "pearson_r": 0.7192079991510382,
+            "log_pearson_r": 0.7517824799965956,
+            "rms_log_ratio": 0.17904312106214346
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 346434134.6605435,
+            "median_model_over_observed": 1.2829493554480387,
+            "observed_over_model_p16_50_84": [
+              0.45553511396266644,
+              0.7794564223023299,
+              1.2608566600111968
+            ],
+            "observed_minus_model_p16_50_84": [
+              -200278271.831204,
+              -60653657.673146546,
+              67688109.65721324
+            ],
+            "median_absolute_fractional_error": 0.4414781512169592,
+            "rmse": 218324693.6126369,
+            "pearson_r": 0.2971448700555742,
+            "log_pearson_r": 0.2688054426389224,
+            "rms_log_ratio": 0.5876318262338451
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.340177647202028,
+            "median_model_over_observed": 0.5627538115278946,
+            "observed_over_model_p16_50_84": [
+              0.6961602470064022,
+              1.7769766067724637,
+              3.763297763091084
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2475325060693072,
+              1.863545115019111,
+              5.676936324787179
+            ],
+            "median_absolute_fractional_error": 0.5528959978558938,
+            "rmse": 6.279764846017699,
+            "pearson_r": 0.20225833338357127,
+            "log_pearson_r": 0.0906471569248432,
+            "rms_log_ratio": 0.9067408187738614
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.0321433909446,
+            "median_model_over_observed": 1.0294990077964967,
+            "observed_over_model_p16_50_84": [
+              0.8259745937806161,
+              0.9713462731655572,
+              1.3738065028524757
+            ],
+            "observed_minus_model_p16_50_84": [
+              -103.95102105876008,
+              -12.135395096094612,
+              177.92046771713953
+            ],
+            "median_absolute_fractional_error": 0.14993453077011204,
+            "rmse": 121.32368711079272,
+            "pearson_r": 0.2727338018172064,
+            "log_pearson_r": 0.3190050247465689,
+            "rms_log_ratio": 0.22425107206494124
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149276113.54729968,
+            "median_model_over_observed": 0.605758959311012,
+            "observed_over_model_p16_50_84": [
+              0.8171817218828991,
+              1.650862173890134,
+              3.1837472548382375
+            ],
+            "observed_minus_model_p16_50_84": [
+              -35397980.282759875,
+              80200543.86089864,
+              244715416.42309496
+            ],
+            "median_absolute_fractional_error": 0.4963320735230084,
+            "rmse": 263424224.19137442,
+            "pearson_r": 0.08912202899123312,
+            "log_pearson_r": 0.02591984056191503,
+            "rms_log_ratio": 0.803207771059178
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.318069220220514,
+            "median_model_over_observed": 0.5648494721527783,
+            "observed_over_model_p16_50_84": [
+              0.6994084759831544,
+              1.770383839533355,
+              3.7727256536311087
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2210814197542301,
+              1.8888649353738587,
+              5.680665213675944
+            ],
+            "median_absolute_fractional_error": 0.548818910856965,
+            "rmse": 6.284218822561204,
+            "pearson_r": 0.20300793251062066,
+            "log_pearson_r": 0.09068410109475293,
+            "rms_log_ratio": 0.9075122680268042
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.86899901690003,
+            "median_model_over_observed": 1.0311679016012585,
+            "observed_over_model_p16_50_84": [
+              0.8253134236433555,
+              0.9697741752192119,
+              1.3718478986052767
+            ],
+            "observed_minus_model_p16_50_84": [
+              -104.62893483951106,
+              -12.820573350017668,
+              176.78952857631646
+            ],
+            "median_absolute_fractional_error": 0.14953844054211513,
+            "rmse": 121.15740054279169,
+            "pearson_r": 0.2735267409223191,
+            "log_pearson_r": 0.31974891571382075,
+            "rms_log_ratio": 0.22378989370748723
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149002607.80018884,
+            "median_model_over_observed": 0.6041069916918737,
+            "observed_over_model_p16_50_84": [
+              0.8203529173087415,
+              1.655386054068972,
+              3.1887117758575383
+            ],
+            "observed_minus_model_p16_50_84": [
+              -34395220.151266344,
+              80303071.33139843,
+              245079326.18551114
+            ],
+            "median_absolute_fractional_error": 0.49487169575196566,
+            "rmse": 263563253.7017751,
+            "pearson_r": 0.08920711930552536,
+            "log_pearson_r": 0.025100082272351058,
+            "rms_log_ratio": 0.8039257780967418
+          }
+        }
+      },
+      "solar_orbiter": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 13,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 4.854237408597573,
+            "median_model_over_observed": 0.7250603197910428,
+            "observed_over_model_p16_50_84": [
+              0.9516035714125126,
+              1.3791955961514937,
+              1.70856258417762
+            ],
+            "observed_minus_model_p16_50_84": [
+              -0.23981857889193445,
+              1.7860033214693116,
+              3.545862637005108
+            ],
+            "median_absolute_fractional_error": 0.3005854329769183,
+            "rmse": 6.89029384992647,
+            "pearson_r": 0.7539521839917284,
+            "log_pearson_r": 0.77947678675941,
+            "rms_log_ratio": 0.4804686586403315
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 624.3815033209577,
+            "median_model_over_observed": 1.1631599304582938,
+            "observed_over_model_p16_50_84": [
+              0.78705685479279,
+              0.8597270021208455,
+              1.0865590828997322
+            ],
+            "observed_minus_model_p16_50_84": [
+              -125.76391079610151,
+              -79.21414623750161,
+              59.04225914463979
+            ],
+            "median_absolute_fractional_error": 0.183405569192999,
+            "rmse": 100.95434873288615,
+            "pearson_r": 0.7109069144204645,
+            "log_pearson_r": 0.7583893804541495,
+            "rms_log_ratio": 0.1828595164973685
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 318688414.0456289,
+            "median_model_over_observed": 0.8350418269134307,
+            "observed_over_model_p16_50_84": [
+              0.9689450260106984,
+              1.1975448028708995,
+              1.4383606812294771
+            ],
+            "observed_minus_model_p16_50_84": [
+              -11464097.403345004,
+              59682974.63441312,
+              180007423.8150729
+            ],
+            "median_absolute_fractional_error": 0.18185433617114588,
+            "rmse": 241874974.0499252,
+            "pearson_r": 0.7713251067777562,
+            "log_pearson_r": 0.7957248080400335,
+            "rms_log_ratio": 0.3575169186196251
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1646221114253503,
+            "median_model_over_observed": 0.3276254822112876,
+            "observed_over_model_p16_50_84": [
+              1.7622618839704112,
+              3.0522656334622167,
+              4.334227900210715
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1713883760677786,
+              4.243951754385159,
+              9.812230692202501
+            ],
+            "median_absolute_fractional_error": 0.6723745177887124,
+            "rmse": 9.510011522895194,
+            "pearson_r": 0.4785159921128983,
+            "log_pearson_r": 0.5370066244530692,
+            "rms_log_ratio": 1.1867489774574402
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 600.7264064397489,
+            "median_model_over_observed": 1.0575786271742103,
+            "observed_over_model_p16_50_84": [
+              0.7974490026891284,
+              0.9455561736075766,
+              1.2067475230973426
+            ],
+            "observed_minus_model_p16_50_84": [
+              -127.8669325279678,
+              -27.631822235643938,
+              115.62853434405821
+            ],
+            "median_absolute_fractional_error": 0.16692743319692016,
+            "rmse": 118.89522194743519,
+            "pearson_r": 0.51166959574518,
+            "log_pearson_r": 0.5736071585932604,
+            "rms_log_ratio": 0.20555216613004723
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129009461.13893683,
+            "median_model_over_observed": 0.360481958791975,
+            "observed_over_model_p16_50_84": [
+              2.088509675303654,
+              2.7740639319402796,
+              3.7790935999526543
+            ],
+            "observed_minus_model_p16_50_84": [
+              159730874.90546635,
+              220752801.86101645,
+              459061365.5396487
+            ],
+            "median_absolute_fractional_error": 0.639518041208025,
+            "rmse": 409218400.457312,
+            "pearson_r": 0.3251732227046922,
+            "log_pearson_r": 0.4332661789157505,
+            "rms_log_ratio": 1.1374848466688596
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1671547034923573,
+            "median_model_over_observed": 0.3273012717678944,
+            "observed_over_model_p16_50_84": [
+              1.760732886134007,
+              3.0552890754092448,
+              4.233379472911318
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1722501677740147,
+              4.247105452674234,
+              9.747921092118055
+            ],
+            "median_absolute_fractional_error": 0.6726987282321055,
+            "rmse": 9.397178973905005,
+            "pearson_r": 0.529472588064357,
+            "log_pearson_r": 0.5690160195776265,
+            "rms_log_ratio": 1.1706277549123167
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 601.0958911750416,
+            "median_model_over_observed": 1.0582613325580164,
+            "observed_over_model_p16_50_84": [
+              0.7968404256073714,
+              0.9449461765581213,
+              1.204685491329503
+            ],
+            "observed_minus_model_p16_50_84": [
+              -128.37448513773506,
+              -27.77479216118246,
+              115.44451231276616
+            ],
+            "median_absolute_fractional_error": 0.1660391425670571,
+            "rmse": 118.9069740930922,
+            "pearson_r": 0.5109685304467607,
+            "log_pearson_r": 0.5734994378667143,
+            "rms_log_ratio": 0.20524139013559792
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129856644.90216929,
+            "median_model_over_observed": 0.3640766239891601,
+            "observed_over_model_p16_50_84": [
+              2.088423268608318,
+              2.746674557248624,
+              3.7004274703897355
+            ],
+            "observed_minus_model_p16_50_84": [
+              159223433.30094564,
+              220871817.02146614,
+              454363775.61260986
+            ],
+            "median_absolute_fractional_error": 0.6359233760108399,
+            "rmse": 404757415.7359058,
+            "pearson_r": 0.3984088889056343,
+            "log_pearson_r": 0.49017143886751735,
+            "rms_log_ratio": 1.1189763678651385
+          }
+        }
+      }
+    },
+    "coarse": {
+      "wind": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:30:00.000",
+        "last_paired_utc": "2025-12-04T23:30:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 4.729403350530768,
+            "median_model_over_observed": 1.343650735243942,
+            "observed_over_model_p16_50_84": [
+              0.5653793663014628,
+              0.7442410246725675,
+              1.2358106195520164
+            ],
+            "observed_minus_model_p16_50_84": [
+              -2.063748353355352,
+              -1.006775435391372,
+              0.856057058389061
+            ],
+            "median_absolute_fractional_error": 0.4048361107317533,
+            "rmse": 4.9125134139967885,
+            "pearson_r": 0.37855590382461657,
+            "log_pearson_r": 0.4700572433014914,
+            "rms_log_ratio": 0.5296740214439662
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 571.3181974517381,
+            "median_model_over_observed": 1.0083738299182299,
+            "observed_over_model_p16_50_84": [
+              0.8164052825441749,
+              0.9916957088038383,
+              1.2715710494322983
+            ],
+            "observed_minus_model_p16_50_84": [
+              -95.0808733959136,
+              -4.597232625108177,
+              153.88283846517206
+            ],
+            "median_absolute_fractional_error": 0.0839093750226223,
+            "rmse": 99.28741658593279,
+            "pearson_r": 0.624851398774912,
+            "log_pearson_r": 0.6496565434069153,
+            "rms_log_ratio": 0.17504841732348958
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 259846518.43337342,
+            "median_model_over_observed": 1.3285666253583117,
+            "observed_over_model_p16_50_84": [
+              0.559462048663178,
+              0.7526908932627312,
+              1.2006660816735317
+            ],
+            "observed_minus_model_p16_50_84": [
+              -115890574.15342419,
+              -60861301.18553081,
+              50163113.43610152
+            ],
+            "median_absolute_fractional_error": 0.38238052482588714,
+            "rmse": 222288093.77198088,
+            "pearson_r": 0.28645505777516106,
+            "log_pearson_r": 0.40161868439763776,
+            "rms_log_ratio": 0.48331274653811773
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0395544444448777,
+            "median_model_over_observed": 0.5549857549848183,
+            "observed_over_model_p16_50_84": [
+              0.6662560123603086,
+              1.8018480492843554,
+              3.123931270343739
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.4967102026075316,
+              1.3053903133907188,
+              3.217089256570909
+            ],
+            "median_absolute_fractional_error": 0.5156192395701388,
+            "rmse": 5.946004641065048,
+            "pearson_r": -0.0530306555653191,
+            "log_pearson_r": 0.00902590207772014,
+            "rms_log_ratio": 0.8915513203367891
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.4013548015838,
+            "median_model_over_observed": 1.039291043947822,
+            "observed_over_model_p16_50_84": [
+              0.8937099562314398,
+              0.9621943783922431,
+              1.7248068711098032
+            ],
+            "observed_minus_model_p16_50_84": [
+              -61.716872228608516,
+              -22.879172627913476,
+              300.12460237691766
+            ],
+            "median_absolute_fractional_error": 0.11582050551178713,
+            "rmse": 164.52419043107164,
+            "pearson_r": 0.16950652253027026,
+            "log_pearson_r": 0.20220718560709558,
+            "rms_log_ratio": 0.2971897350983548
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102306945.13935821,
+            "median_model_over_observed": 0.5967791916594484,
+            "observed_over_model_p16_50_84": [
+              1.0562166152968886,
+              1.6756616416522936,
+              3.0380552641339085
+            ],
+            "observed_minus_model_p16_50_84": [
+              8645228.257545248,
+              71008490.67074208,
+              193285419.13762304
+            ],
+            "median_absolute_fractional_error": 0.40322080834055163,
+            "rmse": 276883301.04341936,
+            "pearson_r": -0.11715147829216822,
+            "log_pearson_r": -0.061098389878891234,
+            "rms_log_ratio": 0.8759658180969706
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0456877777776294,
+            "median_model_over_observed": 0.5559999999999998,
+            "observed_over_model_p16_50_84": [
+              0.6307537532001011,
+              1.7985611510791375,
+              3.0704974446706346
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.801600895319288,
+              1.27490168128543,
+              3.18158119038319
+            ],
+            "median_absolute_fractional_error": 0.5219030778447512,
+            "rmse": 5.935578999491685,
+            "pearson_r": -0.036354177213812726,
+            "log_pearson_r": 0.038716676609035314,
+            "rms_log_ratio": 0.8832762678645738
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.107788271586,
+            "median_model_over_observed": 1.0399587335463578,
+            "observed_over_model_p16_50_84": [
+              0.8925216115474127,
+              0.9615766162085155,
+              1.7159176935696407
+            ],
+            "observed_minus_model_p16_50_84": [
+              -62.53166474335482,
+              -23.350150607726505,
+              296.16309646573086
+            ],
+            "median_absolute_fractional_error": 0.11654913704554337,
+            "rmse": 163.83068506773304,
+            "pearson_r": 0.17172994901857822,
+            "log_pearson_r": 0.20651291248022163,
+            "rms_log_ratio": 0.29506065180460367
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102888970.13073778,
+            "median_model_over_observed": 0.6009282805694581,
+            "observed_over_model_p16_50_84": [
+              1.0403692899149877,
+              1.664092092740866,
+              3.022485411597259
+            ],
+            "observed_minus_model_p16_50_84": [
+              7205803.023225829,
+              67995922.45500097,
+              187570342.56468377
+            ],
+            "median_absolute_fractional_error": 0.39907171943054187,
+            "rmse": 275063596.15354645,
+            "pearson_r": -0.08414432696802226,
+            "log_pearson_r": -0.00923444950771106,
+            "rms_log_ratio": 0.858335569420408
+          }
+        }
+      },
+      "stereo_a": {
+        "samples": 240,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 5.029709076399326,
+            "median_model_over_observed": 1.2041650189935078,
+            "observed_over_model_p16_50_84": [
+              0.4318768250217547,
+              0.83045192438741,
+              1.465605658709321
+            ],
+            "observed_minus_model_p16_50_84": [
+              -3.6666971397435804,
+              -0.6903251354973745,
+              2.3704485869357805
+            ],
+            "median_absolute_fractional_error": 0.4644897432096471,
+            "rmse": 5.357633801397706,
+            "pearson_r": 0.35643574048813553,
+            "log_pearson_r": 0.40379635039442646,
+            "rms_log_ratio": 0.6291123589596127
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 583.4025038337527,
+            "median_model_over_observed": 1.1527586202431965,
+            "observed_over_model_p16_50_84": [
+              0.807362664845535,
+              0.8674880971250698,
+              1.04110786901145
+            ],
+            "observed_minus_model_p16_50_84": [
+              -113.76134085129027,
+              -75.94270348223938,
+              26.22491751053642
+            ],
+            "median_absolute_fractional_error": 0.15286531939909326,
+            "rmse": 82.3226613867923,
+            "pearson_r": 0.7792615411002902,
+            "log_pearson_r": 0.793294644672246,
+            "rms_log_ratio": 0.15713156333170733
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 318560392.74729997,
+            "median_model_over_observed": 1.3501217549009366,
+            "observed_over_model_p16_50_84": [
+              0.43918826456885385,
+              0.7407817570523958,
+              1.2269193430603849
+            ],
+            "observed_minus_model_p16_50_84": [
+              -196701859.41880128,
+              -70382157.24228665,
+              65535020.810432926
+            ],
+            "median_absolute_fractional_error": 0.46022488284018903,
+            "rmse": 219187132.5938851,
+            "pearson_r": 0.29334437959654563,
+            "log_pearson_r": 0.26608158879365357,
+            "rms_log_ratio": 0.5938217419712031
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.340177647202028,
+            "median_model_over_observed": 0.5627538115278946,
+            "observed_over_model_p16_50_84": [
+              0.6961602470064022,
+              1.7769766067724637,
+              3.763297763091084
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2475325060693072,
+              1.863545115019111,
+              5.676936324787179
+            ],
+            "median_absolute_fractional_error": 0.5528959978558938,
+            "rmse": 6.279764846017699,
+            "pearson_r": 0.20225833338357127,
+            "log_pearson_r": 0.0906471569248432,
+            "rms_log_ratio": 0.9067408187738614
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.0321433909446,
+            "median_model_over_observed": 1.0294990077964967,
+            "observed_over_model_p16_50_84": [
+              0.8259745937806161,
+              0.9713462731655572,
+              1.3738065028524757
+            ],
+            "observed_minus_model_p16_50_84": [
+              -103.95102105876008,
+              -12.135395096094612,
+              177.92046771713953
+            ],
+            "median_absolute_fractional_error": 0.14993453077011204,
+            "rmse": 121.32368711079272,
+            "pearson_r": 0.2727338018172064,
+            "log_pearson_r": 0.3190050247465689,
+            "rms_log_ratio": 0.22425107206494124
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149276113.54729968,
+            "median_model_over_observed": 0.605758959311012,
+            "observed_over_model_p16_50_84": [
+              0.8171817218828991,
+              1.650862173890134,
+              3.1837472548382375
+            ],
+            "observed_minus_model_p16_50_84": [
+              -35397980.282759875,
+              80200543.86089864,
+              244715416.42309496
+            ],
+            "median_absolute_fractional_error": 0.4963320735230084,
+            "rmse": 263424224.19137442,
+            "pearson_r": 0.08912202899123312,
+            "log_pearson_r": 0.02591984056191503,
+            "rms_log_ratio": 0.803207771059178
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.318069220220514,
+            "median_model_over_observed": 0.5648494721527783,
+            "observed_over_model_p16_50_84": [
+              0.6994084759831544,
+              1.770383839533355,
+              3.7727256536311087
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2210814197542301,
+              1.8888649353738587,
+              5.680665213675944
+            ],
+            "median_absolute_fractional_error": 0.548818910856965,
+            "rmse": 6.284218822561204,
+            "pearson_r": 0.20300793251062066,
+            "log_pearson_r": 0.09068410109475293,
+            "rms_log_ratio": 0.9075122680268042
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.86899901690003,
+            "median_model_over_observed": 1.0311679016012585,
+            "observed_over_model_p16_50_84": [
+              0.8253134236433555,
+              0.9697741752192119,
+              1.3718478986052767
+            ],
+            "observed_minus_model_p16_50_84": [
+              -104.62893483951106,
+              -12.820573350017668,
+              176.78952857631646
+            ],
+            "median_absolute_fractional_error": 0.14953844054211513,
+            "rmse": 121.15740054279169,
+            "pearson_r": 0.2735267409223191,
+            "log_pearson_r": 0.31974891571382075,
+            "rms_log_ratio": 0.22378989370748723
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149002607.80018884,
+            "median_model_over_observed": 0.6041069916918737,
+            "observed_over_model_p16_50_84": [
+              0.8203529173087415,
+              1.655386054068972,
+              3.1887117758575383
+            ],
+            "observed_minus_model_p16_50_84": [
+              -34395220.151266344,
+              80303071.33139843,
+              245079326.18551114
+            ],
+            "median_absolute_fractional_error": 0.49487169575196566,
+            "rmse": 263563253.7017751,
+            "pearson_r": 0.08920711930552536,
+            "log_pearson_r": 0.025100082272351058,
+            "rms_log_ratio": 0.8039257780967418
+          }
+        }
+      },
+      "solar_orbiter": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 13,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 5.224130352510995,
+            "median_model_over_observed": 0.7641336013268719,
+            "observed_over_model_p16_50_84": [
+              0.8683426525956449,
+              1.3086716750363554,
+              1.6546177470737695
+            ],
+            "observed_minus_model_p16_50_84": [
+              -0.7611697077934768,
+              1.399533592733369,
+              5.771276294402704
+            ],
+            "median_absolute_fractional_error": 0.2709844148380057,
+            "rmse": 7.468255224516841,
+            "pearson_r": 0.5844945268290305,
+            "log_pearson_r": 0.6496630624486309,
+            "rms_log_ratio": 0.5265310689195023
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 596.4149744028416,
+            "median_model_over_observed": 1.1426639447324218,
+            "observed_over_model_p16_50_84": [
+              0.7988883189769204,
+              0.8751479423236466,
+              1.1321764417377345
+            ],
+            "observed_minus_model_p16_50_84": [
+              -113.76810692409646,
+              -74.0856496011371,
+              87.26947899948539
+            ],
+            "median_absolute_fractional_error": 0.17012699725402824,
+            "rmse": 101.06312239565227,
+            "pearson_r": 0.6714653521193564,
+            "log_pearson_r": 0.7149954467658243,
+            "rms_log_ratio": 0.18560582024459943
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 333142608.4190115,
+            "median_model_over_observed": 0.8536937277963782,
+            "observed_over_model_p16_50_84": [
+              0.9402761286166296,
+              1.1713802824594708,
+              1.4569876132575952
+            ],
+            "observed_minus_model_p16_50_84": [
+              -21650658.00468996,
+              48429259.74599597,
+              193386526.7273778
+            ],
+            "median_absolute_fractional_error": 0.16600331124502676,
+            "rmse": 265902013.28306362,
+            "pearson_r": 0.597852531297188,
+            "log_pearson_r": 0.6777255223389219,
+            "rms_log_ratio": 0.4005083138232392
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1646221114253503,
+            "median_model_over_observed": 0.3276254822112876,
+            "observed_over_model_p16_50_84": [
+              1.7622618839704112,
+              3.0522656334622167,
+              4.334227900210715
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1713883760677786,
+              4.243951754385159,
+              9.812230692202501
+            ],
+            "median_absolute_fractional_error": 0.6723745177887124,
+            "rmse": 9.510011522895194,
+            "pearson_r": 0.4785159921128983,
+            "log_pearson_r": 0.5370066244530692,
+            "rms_log_ratio": 1.1867489774574402
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 600.7264064397489,
+            "median_model_over_observed": 1.0575786271742103,
+            "observed_over_model_p16_50_84": [
+              0.7974490026891284,
+              0.9455561736075766,
+              1.2067475230973426
+            ],
+            "observed_minus_model_p16_50_84": [
+              -127.8669325279678,
+              -27.631822235643938,
+              115.62853434405821
+            ],
+            "median_absolute_fractional_error": 0.16692743319692016,
+            "rmse": 118.89522194743519,
+            "pearson_r": 0.51166959574518,
+            "log_pearson_r": 0.5736071585932604,
+            "rms_log_ratio": 0.20555216613004723
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129009461.13893683,
+            "median_model_over_observed": 0.360481958791975,
+            "observed_over_model_p16_50_84": [
+              2.088509675303654,
+              2.7740639319402796,
+              3.7790935999526543
+            ],
+            "observed_minus_model_p16_50_84": [
+              159730874.90546635,
+              220752801.86101645,
+              459061365.5396487
+            ],
+            "median_absolute_fractional_error": 0.639518041208025,
+            "rmse": 409218400.457312,
+            "pearson_r": 0.3251732227046922,
+            "log_pearson_r": 0.4332661789157505,
+            "rms_log_ratio": 1.1374848466688596
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1671547034923573,
+            "median_model_over_observed": 0.3273012717678944,
+            "observed_over_model_p16_50_84": [
+              1.760732886134007,
+              3.0552890754092448,
+              4.233379472911318
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1722501677740147,
+              4.247105452674234,
+              9.747921092118055
+            ],
+            "median_absolute_fractional_error": 0.6726987282321055,
+            "rmse": 9.397178973905005,
+            "pearson_r": 0.529472588064357,
+            "log_pearson_r": 0.5690160195776265,
+            "rms_log_ratio": 1.1706277549123167
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 601.0958911750416,
+            "median_model_over_observed": 1.0582613325580164,
+            "observed_over_model_p16_50_84": [
+              0.7968404256073714,
+              0.9449461765581213,
+              1.204685491329503
+            ],
+            "observed_minus_model_p16_50_84": [
+              -128.37448513773506,
+              -27.77479216118246,
+              115.44451231276616
+            ],
+            "median_absolute_fractional_error": 0.1660391425670571,
+            "rmse": 118.9069740930922,
+            "pearson_r": 0.5109685304467607,
+            "log_pearson_r": 0.5734994378667143,
+            "rms_log_ratio": 0.20524139013559792
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129856644.90216929,
+            "median_model_over_observed": 0.3640766239891601,
+            "observed_over_model_p16_50_84": [
+              2.088423268608318,
+              2.746674557248624,
+              3.7004274703897355
+            ],
+            "observed_minus_model_p16_50_84": [
+              159223433.30094564,
+              220871817.02146614,
+              454363775.61260986
+            ],
+            "median_absolute_fractional_error": 0.6359233760108399,
+            "rmse": 404757415.7359058,
+            "pearson_r": 0.3984088889056343,
+            "log_pearson_r": 0.49017143886751735,
+            "rms_log_ratio": 1.1189763678651385
+          }
+        }
+      }
+    },
+    "wide_coarse": {
+      "wind": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:30:00.000",
+        "last_paired_utc": "2025-12-04T23:30:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 4.619826487838014,
+            "median_model_over_observed": 1.3250396617764928,
+            "observed_over_model_p16_50_84": [
+              0.5887910419550119,
+              0.7546943905507635,
+              1.225040722164304
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.9141785537310532,
+              -0.9784426160173809,
+              0.7456929455074846
+            ],
+            "median_absolute_fractional_error": 0.38124604063573453,
+            "rmse": 4.982502616640384,
+            "pearson_r": 0.35306315638410646,
+            "log_pearson_r": 0.45678093273211334,
+            "rms_log_ratio": 0.521118492318484
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 578.6591677266815,
+            "median_model_over_observed": 1.010516549108235,
+            "observed_over_model_p16_50_84": [
+              0.7908346592333588,
+              0.989592897694238,
+              1.249545548783591
+            ],
+            "observed_minus_model_p16_50_84": [
+              -111.68324294376201,
+              -6.068048835451577,
+              152.44069616842194
+            ],
+            "median_absolute_fractional_error": 0.09323921574346117,
+            "rmse": 100.77509558519907,
+            "pearson_r": 0.6230607902813555,
+            "log_pearson_r": 0.644767901908221,
+            "rms_log_ratio": 0.18088806951275463
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 257861491.8563474,
+            "median_model_over_observed": 1.2873662281112692,
+            "observed_over_model_p16_50_84": [
+              0.5714666541484887,
+              0.7767797369262418,
+              1.224946210280353
+            ],
+            "observed_minus_model_p16_50_84": [
+              -117865819.33125833,
+              -55431472.38286206,
+              56442130.48017168
+            ],
+            "median_absolute_fractional_error": 0.3883585383171768,
+            "rmse": 223095432.91819218,
+            "pearson_r": 0.27549771031494613,
+            "log_pearson_r": 0.3762295570926202,
+            "rms_log_ratio": 0.4795217064840989
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0395544444448777,
+            "median_model_over_observed": 0.5549857549848183,
+            "observed_over_model_p16_50_84": [
+              0.6662560123603086,
+              1.8018480492843554,
+              3.123931270343739
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.4967102026075316,
+              1.3053903133907188,
+              3.217089256570909
+            ],
+            "median_absolute_fractional_error": 0.5156192395701388,
+            "rmse": 5.946004641065048,
+            "pearson_r": -0.0530306555653191,
+            "log_pearson_r": 0.00902590207772014,
+            "rms_log_ratio": 0.8915513203367891
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.4013548015838,
+            "median_model_over_observed": 1.039291043947822,
+            "observed_over_model_p16_50_84": [
+              0.8937099562314398,
+              0.9621943783922431,
+              1.7248068711098032
+            ],
+            "observed_minus_model_p16_50_84": [
+              -61.716872228608516,
+              -22.879172627913476,
+              300.12460237691766
+            ],
+            "median_absolute_fractional_error": 0.11582050551178713,
+            "rmse": 164.52419043107164,
+            "pearson_r": 0.16950652253027026,
+            "log_pearson_r": 0.20220718560709558,
+            "rms_log_ratio": 0.2971897350983548
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102306945.13935821,
+            "median_model_over_observed": 0.5967791916594484,
+            "observed_over_model_p16_50_84": [
+              1.0562166152968886,
+              1.6756616416522936,
+              3.0380552641339085
+            ],
+            "observed_minus_model_p16_50_84": [
+              8645228.257545248,
+              71008490.67074208,
+              193285419.13762304
+            ],
+            "median_absolute_fractional_error": 0.40322080834055163,
+            "rmse": 276883301.04341936,
+            "pearson_r": -0.11715147829216822,
+            "log_pearson_r": -0.061098389878891234,
+            "rms_log_ratio": 0.8759658180969706
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 3.2,
+            "model_median": 2.0456877777776294,
+            "median_model_over_observed": 0.5559999999999998,
+            "observed_over_model_p16_50_84": [
+              0.6307537532001011,
+              1.7985611510791375,
+              3.0704974446706346
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.801600895319288,
+              1.27490168128543,
+              3.18158119038319
+            ],
+            "median_absolute_fractional_error": 0.5219030778447512,
+            "rmse": 5.935578999491685,
+            "pearson_r": -0.036354177213812726,
+            "log_pearson_r": 0.038716676609035314,
+            "rms_log_ratio": 0.8832762678645738
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 619.0,
+            "model_median": 521.107788271586,
+            "median_model_over_observed": 1.0399587335463578,
+            "observed_over_model_p16_50_84": [
+              0.8925216115474127,
+              0.9615766162085155,
+              1.7159176935696407
+            ],
+            "observed_minus_model_p16_50_84": [
+              -62.53166474335482,
+              -23.350150607726505,
+              296.16309646573086
+            ],
+            "median_absolute_fractional_error": 0.11654913704554337,
+            "rmse": 163.83068506773304,
+            "pearson_r": 0.17172994901857822,
+            "log_pearson_r": 0.20651291248022163,
+            "rms_log_ratio": 0.29506065180460367
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 200070000.0,
+            "model_median": 102888970.13073778,
+            "median_model_over_observed": 0.6009282805694581,
+            "observed_over_model_p16_50_84": [
+              1.0403692899149877,
+              1.664092092740866,
+              3.022485411597259
+            ],
+            "observed_minus_model_p16_50_84": [
+              7205803.023225829,
+              67995922.45500097,
+              187570342.56468377
+            ],
+            "median_absolute_fractional_error": 0.39907171943054187,
+            "rmse": 275063596.15354645,
+            "pearson_r": -0.08414432696802226,
+            "log_pearson_r": -0.00923444950771106,
+            "rms_log_ratio": 0.858335569420408
+          }
+        }
+      },
+      "stereo_a": {
+        "samples": 240,
+        "discarded_outside_model_coverage_or_missing": 24,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 4.6619011622046465,
+            "median_model_over_observed": 1.1518065493900318,
+            "observed_over_model_p16_50_84": [
+              0.47869167488315123,
+              0.868201401321502,
+              1.5579262348185574
+            ],
+            "observed_minus_model_p16_50_84": [
+              -3.1056348165013357,
+              -0.5517579579947882,
+              2.8792437451109785
+            ],
+            "median_absolute_fractional_error": 0.43267885967848757,
+            "rmse": 5.446148431059278,
+            "pearson_r": 0.3274281353523678,
+            "log_pearson_r": 0.40141683593689986,
+            "rms_log_ratio": 0.6145750281012389
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 591.6007170047562,
+            "median_model_over_observed": 1.1708792856924082,
+            "observed_over_model_p16_50_84": [
+              0.7908183312124254,
+              0.8540590852499605,
+              1.0345073348417158
+            ],
+            "observed_minus_model_p16_50_84": [
+              -120.4706910494962,
+              -84.36432281655402,
+              20.854518605943166
+            ],
+            "median_absolute_fractional_error": 0.17087928569240818,
+            "rmse": 87.61645676203365,
+            "pearson_r": 0.7705726198828271,
+            "log_pearson_r": 0.7788491581724964,
+            "rms_log_ratio": 0.16923272951896867
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 295942915.5438646,
+            "median_model_over_observed": 1.2913548587067858,
+            "observed_over_model_p16_50_84": [
+              0.4588968520752443,
+              0.7743838288010114,
+              1.2812724810006568
+            ],
+            "observed_minus_model_p16_50_84": [
+              -178619930.3284509,
+              -60879177.80482663,
+              79805788.20813954
+            ],
+            "median_absolute_fractional_error": 0.4354410907361404,
+            "rmse": 218090821.60374373,
+            "pearson_r": 0.2810832010554749,
+            "log_pearson_r": 0.27120664641069997,
+            "rms_log_ratio": 0.5711356312115649
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.340177647202028,
+            "median_model_over_observed": 0.5627538115278946,
+            "observed_over_model_p16_50_84": [
+              0.6961602470064022,
+              1.7769766067724637,
+              3.763297763091084
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2475325060693072,
+              1.863545115019111,
+              5.676936324787179
+            ],
+            "median_absolute_fractional_error": 0.5528959978558938,
+            "rmse": 6.279764846017699,
+            "pearson_r": 0.20225833338357127,
+            "log_pearson_r": 0.0906471569248432,
+            "rms_log_ratio": 0.9067408187738614
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.0321433909446,
+            "median_model_over_observed": 1.0294990077964967,
+            "observed_over_model_p16_50_84": [
+              0.8259745937806161,
+              0.9713462731655572,
+              1.3738065028524757
+            ],
+            "observed_minus_model_p16_50_84": [
+              -103.95102105876008,
+              -12.135395096094612,
+              177.92046771713953
+            ],
+            "median_absolute_fractional_error": 0.14993453077011204,
+            "rmse": 121.32368711079272,
+            "pearson_r": 0.2727338018172064,
+            "log_pearson_r": 0.3190050247465689,
+            "rms_log_ratio": 0.22425107206494124
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149276113.54729968,
+            "median_model_over_observed": 0.605758959311012,
+            "observed_over_model_p16_50_84": [
+              0.8171817218828991,
+              1.650862173890134,
+              3.1837472548382375
+            ],
+            "observed_minus_model_p16_50_84": [
+              -35397980.282759875,
+              80200543.86089864,
+              244715416.42309496
+            ],
+            "median_absolute_fractional_error": 0.4963320735230084,
+            "rmse": 263424224.19137442,
+            "pearson_r": 0.08912202899123312,
+            "log_pearson_r": 0.02591984056191503,
+            "rms_log_ratio": 0.803207771059178
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 240,
+            "observed_median": 4.15,
+            "model_median": 3.318069220220514,
+            "median_model_over_observed": 0.5648494721527783,
+            "observed_over_model_p16_50_84": [
+              0.6994084759831544,
+              1.770383839533355,
+              3.7727256536311087
+            ],
+            "observed_minus_model_p16_50_84": [
+              -1.2210814197542301,
+              1.8888649353738587,
+              5.680665213675944
+            ],
+            "median_absolute_fractional_error": 0.548818910856965,
+            "rmse": 6.284218822561204,
+            "pearson_r": 0.20300793251062066,
+            "log_pearson_r": 0.09068410109475293,
+            "rms_log_ratio": 0.9075122680268042
+          },
+          "speed_km_s": {
+            "samples": 240,
+            "observed_median": 501.5,
+            "model_median": 454.86899901690003,
+            "median_model_over_observed": 1.0311679016012585,
+            "observed_over_model_p16_50_84": [
+              0.8253134236433555,
+              0.9697741752192119,
+              1.3718478986052767
+            ],
+            "observed_minus_model_p16_50_84": [
+              -104.62893483951106,
+              -12.820573350017668,
+              176.78952857631646
+            ],
+            "median_absolute_fractional_error": 0.14953844054211513,
+            "rmse": 121.15740054279169,
+            "pearson_r": 0.2735267409223191,
+            "log_pearson_r": 0.31974891571382075,
+            "rms_log_ratio": 0.22378989370748723
+          },
+          "flux_cm2_s": {
+            "samples": 240,
+            "observed_median": 215751500.0,
+            "model_median": 149002607.80018884,
+            "median_model_over_observed": 0.6041069916918737,
+            "observed_over_model_p16_50_84": [
+              0.8203529173087415,
+              1.655386054068972,
+              3.1887117758575383
+            ],
+            "observed_minus_model_p16_50_84": [
+              -34395220.151266344,
+              80303071.33139843,
+              245079326.18551114
+            ],
+            "median_absolute_fractional_error": 0.49487169575196566,
+            "rmse": 263563253.7017751,
+            "pearson_r": 0.08920711930552536,
+            "log_pearson_r": 0.025100082272351058,
+            "rms_log_ratio": 0.8039257780967418
+          }
+        }
+      },
+      "solar_orbiter": {
+        "samples": 235,
+        "discarded_outside_model_coverage_or_missing": 13,
+        "first_paired_utc": "2025-11-25T00:00:00.000",
+        "last_paired_utc": "2025-12-04T23:00:00.000",
+        "inhouse": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 5.3705372372472695,
+            "median_model_over_observed": 0.8142848702703909,
+            "observed_over_model_p16_50_84": [
+              0.9053168137773246,
+              1.2280714483469903,
+              1.7125860728375184
+            ],
+            "observed_minus_model_p16_50_84": [
+              -0.7001666813190064,
+              1.1652962966764404,
+              6.1162854689160335
+            ],
+            "median_absolute_fractional_error": 0.23186681098154427,
+            "rmse": 7.661984228801794,
+            "pearson_r": 0.5232717723347322,
+            "log_pearson_r": 0.6226935153971904,
+            "rms_log_ratio": 0.5370739249194012
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 587.076331167704,
+            "median_model_over_observed": 1.13244530179414,
+            "observed_over_model_p16_50_84": [
+              0.7842297922360935,
+              0.8830448573681166,
+              1.1613522542147758
+            ],
+            "observed_minus_model_p16_50_84": [
+              -115.24411554309839,
+              -66.31946815746107,
+              95.74688083212094
+            ],
+            "median_absolute_fractional_error": 0.16093369165116134,
+            "rmse": 104.2370453589688,
+            "pearson_r": 0.6631992838496059,
+            "log_pearson_r": 0.6990487567169147,
+            "rms_log_ratio": 0.19382233548931932
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 323889092.4920554,
+            "median_model_over_observed": 0.8734851333828908,
+            "observed_over_model_p16_50_84": [
+              0.9566479621670988,
+              1.1448391755989413,
+              1.5059208595671756
+            ],
+            "observed_minus_model_p16_50_84": [
+              -16453539.865107508,
+              42481104.078214705,
+              211387923.8015521
+            ],
+            "median_absolute_fractional_error": 0.1515338550726526,
+            "rmse": 272714560.72489214,
+            "pearson_r": 0.5686669566577629,
+            "log_pearson_r": 0.6607403093406655,
+            "rms_log_ratio": 0.4113239777210059
+          }
+        },
+        "ccmc_ambient": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1646221114253503,
+            "median_model_over_observed": 0.3276254822112876,
+            "observed_over_model_p16_50_84": [
+              1.7622618839704112,
+              3.0522656334622167,
+              4.334227900210715
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1713883760677786,
+              4.243951754385159,
+              9.812230692202501
+            ],
+            "median_absolute_fractional_error": 0.6723745177887124,
+            "rmse": 9.510011522895194,
+            "pearson_r": 0.4785159921128983,
+            "log_pearson_r": 0.5370066244530692,
+            "rms_log_ratio": 1.1867489774574402
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 600.7264064397489,
+            "median_model_over_observed": 1.0575786271742103,
+            "observed_over_model_p16_50_84": [
+              0.7974490026891284,
+              0.9455561736075766,
+              1.2067475230973426
+            ],
+            "observed_minus_model_p16_50_84": [
+              -127.8669325279678,
+              -27.631822235643938,
+              115.62853434405821
+            ],
+            "median_absolute_fractional_error": 0.16692743319692016,
+            "rmse": 118.89522194743519,
+            "pearson_r": 0.51166959574518,
+            "log_pearson_r": 0.5736071585932604,
+            "rms_log_ratio": 0.20555216613004723
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129009461.13893683,
+            "median_model_over_observed": 0.360481958791975,
+            "observed_over_model_p16_50_84": [
+              2.088509675303654,
+              2.7740639319402796,
+              3.7790935999526543
+            ],
+            "observed_minus_model_p16_50_84": [
+              159730874.90546635,
+              220752801.86101645,
+              459061365.5396487
+            ],
+            "median_absolute_fractional_error": 0.639518041208025,
+            "rmse": 409218400.457312,
+            "pearson_r": 0.3251732227046922,
+            "log_pearson_r": 0.4332661789157505,
+            "rms_log_ratio": 1.1374848466688596
+          }
+        },
+        "ccmc_cme": {
+          "density_cm3": {
+            "samples": 235,
+            "observed_median": 6.4,
+            "model_median": 2.1671547034923573,
+            "median_model_over_observed": 0.3273012717678944,
+            "observed_over_model_p16_50_84": [
+              1.760732886134007,
+              3.0552890754092448,
+              4.233379472911318
+            ],
+            "observed_minus_model_p16_50_84": [
+              2.1722501677740147,
+              4.247105452674234,
+              9.747921092118055
+            ],
+            "median_absolute_fractional_error": 0.6726987282321055,
+            "rmse": 9.397178973905005,
+            "pearson_r": 0.529472588064357,
+            "log_pearson_r": 0.5690160195776265,
+            "rms_log_ratio": 1.1706277549123167
+          },
+          "speed_km_s": {
+            "samples": 235,
+            "observed_median": 551.4,
+            "model_median": 601.0958911750416,
+            "median_model_over_observed": 1.0582613325580164,
+            "observed_over_model_p16_50_84": [
+              0.7968404256073714,
+              0.9449461765581213,
+              1.204685491329503
+            ],
+            "observed_minus_model_p16_50_84": [
+              -128.37448513773506,
+              -27.77479216118246,
+              115.44451231276616
+            ],
+            "median_absolute_fractional_error": 0.1660391425670571,
+            "rmse": 118.9069740930922,
+            "pearson_r": 0.5109685304467607,
+            "log_pearson_r": 0.5734994378667143,
+            "rms_log_ratio": 0.20524139013559792
+          },
+          "flux_cm2_s": {
+            "samples": 235,
+            "observed_median": 346838000.0,
+            "model_median": 129856644.90216929,
+            "median_model_over_observed": 0.3640766239891601,
+            "observed_over_model_p16_50_84": [
+              2.088423268608318,
+              2.746674557248624,
+              3.7004274703897355
+            ],
+            "observed_minus_model_p16_50_84": [
+              159223433.30094564,
+              220871817.02146614,
+              454363775.61260986
+            ],
+            "median_absolute_fractional_error": 0.6359233760108399,
+            "rmse": 404757415.7359058,
+            "pearson_r": 0.3984088889056343,
+            "log_pearson_r": 0.49017143886751735,
+            "rms_log_ratio": 1.1189763678651385
+          }
+        }
+      }
+    }
+  },
+  "chart_reference_case": "ct156_w30_theta40_phi192",
+  "reference_case": "ct156_w30_theta40_phi192",
+  "reference_selection": {
+    "reference_case": "ct156_w30_theta40_phi192",
+    "source": "results/reference_selection.json",
+    "selection": {
+      "author": "Codex-root",
+      "selected_utc": "2026-10-17T06:16:58.716959+00:00",
+      "status": "Final conditional CT reference; all selected finite numerical and exposure criteria pass",
+      "reference_case": "ct156_w30_theta40_phi192",
+      "animation_case": "ct156_w30_theta40_phi192",
+      "time_convention": "observer_arrival",
+      "envelope_cases": [],
+      "comparison_plot_cases": [],
+      "spatial_comparisons": [
+        [
+          "ct96_w30_phi144",
+          "ct96_w30_phi192"
+        ],
+        [
+          "ct96_w30_theta32_phi192",
+          "ct96_w30_theta40_phi192"
+        ],
+        [
+          "ct128_w30_theta32_phi192",
+          "ct128_w30_theta40_phi192"
+        ],
+        [
+          "ct128_w30_theta40_phi192",
+          "ct156_w30_theta40_phi192"
+        ]
+      ],
+      "temporal_comparisons": [
+        [
+          "ct96_w30_half",
+          "ct96_w30"
+        ]
+      ],
+      "domain_comparisons": [
+        [
+          "ct96_w30",
+          "ct96_w60"
+        ]
+      ],
+      "initial_condition_comparisons": [
+        [
+          "ct96_w30_start6",
+          "ct96_w30"
+        ]
+      ],
+      "outer_extent_comparisons": [
+        [
+          "ct96_w30_outer285",
+          "ct96_w30"
+        ]
+      ],
+      "physics_comparisons": [
+        [
+          "ct96_w30_hotter",
+          "ct96_w30"
+        ],
+        [
+          "ct96_w30_density_high",
+          "ct96_w30"
+        ],
+        [
+          "ct96_w30_fast",
+          "ct96_w30"
+        ],
+        [
+          "ct96_w30_Bzero",
+          "ct96_w30"
+        ],
+        [
+          "ct96_w30_frozenBr26",
+          "ct96_w30"
+        ],
+        [
+          "ct96_w30_cme12",
+          "ct96_w30"
+        ],
+        [
+          "ct96_w30_cme24",
+          "ct96_w30"
+        ]
+      ],
+      "selection_rationale": "Finest completed physically/source-qualified nominal case. All four prospectively registered selected directional pairs pass original pointwise and separate PN exposure criteria, including latitude refinement at both radial baselines; baseline timestep/domain/spinup/moderate outer controls pass in their recorded scope. Earlier latitude/radial-exposure failures and unresolved physical controls remain explicit history. No empirical-accuracy or absolute-error guarantee.",
+      "accuracy_scope": "Conditional model estimate; recorded coarse controls do not establish all fine-grid interactions or empirical accuracy. Failed and unqualified physical responses are evidence, not uncertainty bounds.",
+      "required_case_names": [
+        "ct156_w30_theta40_phi192",
+        "ct96_w30_phi144",
+        "ct96_w30_phi192",
+        "ct96_w30_theta32_phi192",
+        "ct96_w30_theta40_phi192",
+        "ct128_w30_theta32_phi192",
+        "ct128_w30_theta40_phi192",
+        "ct96_w30_half",
+        "ct96_w30",
+        "ct96_w60",
+        "ct96_w30_start6",
+        "ct96_w30_outer285",
+        "ct96_w30_hotter",
+        "ct96_w30_density_high",
+        "ct96_w30_fast",
+        "ct96_w30_Bzero",
+        "ct96_w30_frozenBr26",
+        "ct96_w30_cme12",
+        "ct96_w30_cme24"
+      ],
+      "qualification_at_selection": {
+        "file": "validation/ct_selection_qualification.json",
+        "sha256": "9159036f66fbf212d5f9753ad83f4c7f437e42ef60deb7ed5357ce2197adda98",
+        "scope": "Immutable selection-time evidence. Product pipeline independently refreshes current audits before deriving final products."
+      }
+    },
+    "selection_sha256": "15cac3b538593085c0ed92ae83178bd585b4c123a1e96b27f6212ffed872738e"
+  },
+  "case_provenance": {
+    "ct156_w30_theta40_phi192": {
+      "case": "ct156_w30_theta40_phi192",
+      "files": {
+        "run.cfg": {
+          "path": "results/ct156_w30_theta40_phi192/run.cfg",
+          "bytes": 1137,
+          "sha256": "88cc0586367b9ad0046075747b5ebacc524884324867e5858b22b28f29689cf4"
+        },
+        "metadata.json": {
+          "path": "results/ct156_w30_theta40_phi192/metadata.json",
+          "bytes": 3074,
+          "sha256": "2971fab489da81deb245a8e57b9b69ea5b9f306dd062f02c239447069d729809"
+        },
+        "statistics.json": {
+          "path": "results/ct156_w30_theta40_phi192/statistics.json",
+          "bytes": 1283,
+          "sha256": "dac5501a3aab95496022b185798f353bfd3ed26fe2292c25205df76542fa630d"
+        },
+        "probe.csv": {
+          "path": "results/ct156_w30_theta40_phi192/probe.csv",
+          "bytes": 1986802,
+          "sha256": "92a22f35655454792047cd22d44f8a3c836c84d5ce6adb475c2b6806e4a5c062"
+        }
+      }
+    },
+    "wide_fine": {
+      "case": "wide_fine",
+      "files": {
+        "run.cfg": {
+          "path": "results/wide_fine/run.cfg",
+          "bytes": 644,
+          "sha256": "d7692cb0bdf0134f19c4526b4a31ec7c08448fe3f723c80b15f08ca42ad0553f"
+        },
+        "metadata.json": {
+          "path": "results/wide_fine/metadata.json",
+          "bytes": 313,
+          "sha256": "3b7b7b969550e0253036e8e8e2e552b1087c05fd32bcd8f4b2d8c44c4f2b7195"
+        },
+        "statistics.json": {
+          "path": "results/wide_fine/statistics.json",
+          "bytes": 290,
+          "sha256": "e667f5ea5d541a01227ad6e8a08057d0b37be9d80731a1dd71d5c3bcdc211758"
+        },
+        "probe.csv": {
+          "path": "results/wide_fine/probe.csv",
+          "bytes": 491443,
+          "sha256": "fba104c2f1825769ad523b59673450b86bb77addf6c6da066cc4613b740a814e"
+        }
+      }
+    },
+    "wide_medium": {
+      "case": "wide_medium",
+      "files": {
+        "run.cfg": {
+          "path": "results/wide_medium/run.cfg",
+          "bytes": 647,
+          "sha256": "c4f4c116f9ec2ec70473059dc6b37c25fd759c1e5e247de342a924697bf28b47"
+        },
+        "metadata.json": {
+          "path": "results/wide_medium/metadata.json",
+          "bytes": 313,
+          "sha256": "a225b9ccced63539c52174cd282b352d517810802604a19eed5ed917a726f5bb"
+        },
+        "statistics.json": {
+          "path": "results/wide_medium/statistics.json",
+          "bytes": 294,
+          "sha256": "e07786cac1de2baa95999643c11dbb21754a9b0caad611a736dee8d0b93ba85e"
+        },
+        "probe.csv": {
+          "path": "results/wide_medium/probe.csv",
+          "bytes": 491369,
+          "sha256": "5ba987f12e047de13f33bf238091d79fcf3c74d71a1448a5eb5a81e5b66b030d"
+        }
+      }
+    },
+    "fine": {
+      "case": "fine",
+      "files": {
+        "run.cfg": {
+          "path": "results/fine/run.cfg",
+          "bytes": 640,
+          "sha256": "35d9a4e00a0eb53d409430943d2bab9acac4a0bfe854a6b3b584fe90522eda4e"
+        },
+        "metadata.json": {
+          "path": "results/fine/metadata.json",
+          "bytes": 313,
+          "sha256": "1b1ff1425e14c17a76594f149d81d9c74e33d03e65a0ffeb52fe3b3cd927aac6"
+        },
+        "statistics.json": {
+          "path": "results/fine/statistics.json",
+          "bytes": 290,
+          "sha256": "465cd50dc5f01305702575c91cf49ba6b656842c5d76f5ff7ef72b77803b0770"
+        },
+        "probe.csv": {
+          "path": "results/fine/probe.csv",
+          "bytes": 491533,
+          "sha256": "133c999a2de612f4f214bac2dbe22da57902bbd1ff7046ddf6d8fb4deb128ec2"
+        }
+      }
+    },
+    "medium": {
+      "case": "medium",
+      "files": {
+        "run.cfg": {
+          "path": "results/medium/run.cfg",
+          "bytes": 644,
+          "sha256": "a48c94f3a9ba3f2e2d370570d4a44557a9b5ae8277e3de9df1abafa729c6b0f9"
+        },
+        "metadata.json": {
+          "path": "results/medium/metadata.json",
+          "bytes": 312,
+          "sha256": "64b232bc98b8ef85e098319edb4b2e457add1fd9da1b4f77b16570c190d7324b"
+        },
+        "statistics.json": {
+          "path": "results/medium/statistics.json",
+          "bytes": 294,
+          "sha256": "6cc9486da51fdf920a205321a53721ce2818774858ceb248ef3abc70412d9f91"
+        },
+        "probe.csv": {
+          "path": "results/medium/probe.csv",
+          "bytes": 491462,
+          "sha256": "1b9fff4e854c989da75a2da3917711f5bfa0fcc6230d761a63cd2b65b02d4e83"
+        }
+      }
+    },
+    "coarse": {
+      "case": "coarse",
+      "files": {
+        "run.cfg": {
+          "path": "results/coarse/run.cfg",
+          "bytes": 641,
+          "sha256": "ac0b17375b899587b876fcd46c3d73d33a952d89400a651e2646bec63fef8cc4"
+        },
+        "metadata.json": {
+          "path": "results/coarse/metadata.json",
+          "bytes": 312,
+          "sha256": "96e2322f98452442b6c093ddac0798e598d63f18e05a517544b02442c8fde45e"
+        },
+        "statistics.json": {
+          "path": "results/coarse/statistics.json",
+          "bytes": 292,
+          "sha256": "d087878e3e57bef1426b7b239e09c4bd291b7df110228c8e2322bd53a1ed5a62"
+        },
+        "probe.csv": {
+          "path": "results/coarse/probe.csv",
+          "bytes": 491229,
+          "sha256": "42ecb4cc155e0b9a43c03b436fa16ce0b3783dea351d39917fc772566a5648f3"
+        }
+      }
+    },
+    "wide_coarse": {
+      "case": "wide_coarse",
+      "files": {
+        "run.cfg": {
+          "path": "results/wide_coarse/run.cfg",
+          "bytes": 646,
+          "sha256": "249ff636770ea0596807822b7d30498a5a5f337ebb1d6639664970aa8ecae975"
+        },
+        "metadata.json": {
+          "path": "results/wide_coarse/metadata.json",
+          "bytes": 312,
+          "sha256": "4446219b3457d363eab0f74624fe07681ad9cc8030e772b1ec847cd4ef6b3b57"
+        },
+        "statistics.json": {
+          "path": "results/wide_coarse/statistics.json",
+          "bytes": 290,
+          "sha256": "efdac32fabe0e9de3c84bc13f903f4968753cb5a2230d591efc73be5fe355b4a"
+        },
+        "probe.csv": {
+          "path": "results/wide_coarse/probe.csv",
+          "bytes": 490713,
+          "sha256": "2607b02ac5bb5ebe7cbca961c33f3a6ba32d471d4a687b30663fed668ef38dfb"
+        }
+      }
+    }
+  },
+  "chart_case_priority": [
+    "wide_fine",
+    "wide_medium",
+    "fine",
+    "medium",
+    "coarse",
+    "wide_coarse"
+  ],
+  "excluded_export_cases": [
+    "interrupted_wide_medium",
+    "pilot",
+    "wide_movie"
+  ]
+}

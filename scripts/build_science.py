@@ -178,6 +178,19 @@ def arrival_time(t, tracks):
     return t + np.linalg.norm(at('comet') - at('earth'), axis=1) * 499.004783836 / 86400
 
 
+def enlil_native(body='3I-Atlas', ambient=False):
+    """High-precision native export: N = rho/mp; convert to proton density once.
+
+    The rounded .dat product in Argon's NPZ already contains proton density.
+    It must not receive this conversion a second time.
+    """
+    suffix = '_ambient' if ambient else ''
+    data = table(f'claude/ref/ccmc/timeseries/enlil_{body}{suffix}.csv')
+    density = data.n_cm3.to_numpy()/1.2
+    speed = np.sqrt(data.vr_kms.to_numpy()**2 + data.vlon_kms.to_numpy()**2 + data.vlat_kms.to_numpy()**2)
+    return {'timeMjd': mjd(data.utc), 'density': density, 'speed': speed, 'flux': density*speed*1e5}
+
+
 def comet_product(tracks):
     tgrid = np.arange(61009, 61016 + 1e-8, 1 / 48)
     series = {}
@@ -186,15 +199,9 @@ def comet_product(tracks):
         ta = m.get('arrivalMjd', arrival_time(m['timeMjd'], tracks))
         m['arrivalMjd'] = ta
         series[id] = {k: interp(ta, m[k], tgrid) for k in FIELDS}
-    e = np.load(source('argon/data/processed/ccmc_extracted.npz'))
-    te = e['3I-Atlas1_mjd']
-    ta = arrival_time(te, tracks)
-    # Native ASCII ENLIL N is rho/mp. Divide by 1.2 for x_alpha=.05 to
-    # compare proton number density (the native agents used different rules).
-    proton = e['3I-Atlas1_n_cm3'] / 1.2
-    series['enlil'] = {'density': interp(ta, proton, tgrid),
-        'speed': interp(ta, e['3I-Atlas1_vmag_kms'], tgrid),
-        'flux': interp(ta, proton * e['3I-Atlas1_vmag_kms'] * 1e5, tgrid)}
+    e = enlil_native()
+    ta = arrival_time(e['timeMjd'], tracks)
+    series['enlil'] = {field: interp(ta, e[field], tgrid) for field in ['density', 'speed', 'flux']}
     # Preserve Claude's transferred design spread as a separate nonprobabilistic
     # band. It is not pooled with other agents or treated as a confidence interval.
     cl = table('claude/figs/timeseries_3i_atlas.csv')

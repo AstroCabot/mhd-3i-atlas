@@ -1,0 +1,414 @@
+#!/usr/bin/env python3
+"""Prepare or explicitly run bounded, pinned Athena CT controls on 1/2/4 CPUs.
+
+Default is PREPARE ONLY. A run requires --run, --executable and --code-receipt.
+Alternatively --archived-pin explicitly verifies a prepared offline code archive.
+No production job is launched by importing this module or listing the catalogue.
+"""
+from __future__ import annotations
+import argparse,fcntl,functools,hashlib,json,math,os,re,resource,shutil,signal,subprocess,time
+from datetime import datetime,timezone
+from pathlib import Path
+import psutil
+ROOT=Path(__file__).resolve().parents[1]
+C=1320464.1871439987;D=5.985098254241002
+BASE=dict(nr=96,ntheta=16,nphi=96,latmax_deg=30,cfl=.25,start_day=9,end_day=34,rmax_au=2.3)
+CASES={
+ 'ct96_w60':dict(ntheta=32,latmax_deg=60),
+ 'ct96_w45':dict(ntheta=24,latmax_deg=45),
+ 'ct96_w30':{},'ct96_w30_half':dict(cfl=.125),'ct96_w30_start6':dict(start_day=6),
+ 'ct96_w30_outer':dict(nr=132,outer_same_dr=True),
+ 'ct96_w30_outer_half':dict(nr=132,outer_same_dr=True,cfl=.125),
+ 'ct96_w30_outer285':dict(nr=120,outer_same_dr=True),
+ 'ct96_w30_phi144':dict(nphi=144),'ct96_w30_phi192':dict(nphi=192),
+ 'ct96_w30_theta32_phi192':dict(ntheta=32,nphi=192),
+ 'ct128_w30_theta32_phi192':dict(nr=128,ntheta=32,nphi=192),
+ 'ct96_w30_theta40_phi192':dict(ntheta=40,nphi=192),
+ 'ct128_w30_theta40_phi192':dict(nr=128,ntheta=40,nphi=192),
+ 'ct156_w30_theta40_phi192':dict(nr=156,ntheta=40,nphi=192),
+ 'ct96_w30_cooler':dict(temperature_scale=.5),
+ 'ct96_w30_cooler_half':dict(temperature_scale=.5,cfl=.125),
+ 'ct96_w30_hotter':dict(temperature_scale=2),
+ 'ct96_w30_slow':dict(boundary_speed_offset_kms=-40),'ct96_w30_fast':dict(boundary_speed_offset_kms=40),
+ 'ct96_w30_density_low':dict(density_scale=.733456034),'ct96_w30_density_high':dict(density_scale=1.363408675),
+ 'ct96_w30_gamma53':dict(gamma=5/3),
+ 'ct96_w30_gamma53_half':dict(gamma=5/3,cfl=.125),
+ 'ct96_w30_Bzero':dict(magnetic_scale=0),
+ 'ct96_w30_frozenBr26':dict(boundary_map_csv='external_model/induction_audit/boundary_map_Br_frozen_day26.csv',required_capability='frozen_consumer_br'),
+ 'ct96_w30_cme12':dict(cme_boundary_csv='external_model/cme_nov23/cme_boundary_nominal.csv',required_capability='cone_boundary'),
+ 'ct96_w30_cme24':dict(cme_boundary_csv='external_model/cme_nov23/cme_boundary_long.csv',required_capability='cone_boundary'),
+}
+REQUIRED_BASE_CAPABILITIES={'native_ct','speed_thermo_closure'}
+MAX_CELLS=1_200_000;AGGREGATE_RSS=3*2**30
+
+def utc():return datetime.now(timezone.utc).isoformat()
+def sha(path):
+ h=hashlib.sha256()
+ with Path(path).open('rb') as f:
+  for z in iter(lambda:f.read(1024*1024),b''):h.update(z)
+ return h.hexdigest()
+def atomic(path,value):
+ path=Path(path);path.parent.mkdir(parents=True,exist_ok=True);tmp=path.with_name('.'+path.name+f'.{os.getpid()}.tmp');tmp.write_text(json.dumps(value,indent=2,allow_nan=False)+'\n');tmp.replace(path)
+def cfgtext(cfg):return ''.join(f'{k}={v}\n' for k,v in cfg.items())
+def readcfg(path):return dict(l.split('=',1) for l in Path(path).read_text().splitlines() if '=' in l)
+def native_input(cfg,out):
+ lat=math.radians(float(cfg['latmax_deg']))
+ sections={'job':{'problem_id':'X3I-CT'},'time':{'start_time':cfg['start_day'],'tlim':cfg['end_day'],'nlim':-1,'cfl_number':cfg['cfl'],'integrator':'rk2','xorder':2,'ncycle_out':250},
+ 'mesh':{'nx1':cfg['nr'],'x1min':cfg['rmin_au'],'x1max':cfg['rmax_au'],'x1rat':1,'ix1_bc':'user','ox1_bc':'outflow','nx2':cfg['ntheta'],'x2min':math.pi/2-lat,'x2max':math.pi/2+lat,'ix2_bc':'user','ox2_bc':'user','nx3':cfg['nphi'],'x3min':0,'x3max':2*math.pi,'ix3_bc':'periodic','ox3_bc':'periodic','num_threads':cfg['threads']},
+ 'meshblock':{'nx1':cfg['nr']//int(cfg.get('ct_radial_blocks',1)),'nx2':cfg['ntheta'],'nx3':cfg['nphi']},'hydro':{'gamma':cfg['gamma'],'dfloor':1e-20,'pfloor':1e-20},'problem':{'GM':.0002959122082855911,'config_file':str(out/'run.cfg'),'output_dir':str(out)}}
+ return ''.join(f'<{sec}>\n'+''.join(f'{k} = {v}\n' for k,v in z.items()) for sec,z in sections.items())
+def parse_native(text):
+ result={};sec=None
+ for line in text.splitlines():
+  line=line.split('#')[0].strip()
+  if line.startswith('<'):sec=line.strip('<>');result[sec]={}
+  elif '=' in line:k,v=line.split('=',1);result[sec][k.strip()]=v.strip()
+ return result
+
+def validate_config(cfg,native):
+ for ck,sec,nk in [('nr','mesh','nx1'),('ntheta','mesh','nx2'),('nphi','mesh','nx3'),('rmin_au','mesh','x1min'),('rmax_au','mesh','x1max'),('gamma','hydro','gamma'),('cfl','time','cfl_number'),('start_day','time','start_time'),('end_day','time','tlim'),('x1rat','mesh','x1rat')]:
+  if not math.isclose(float(cfg[ck]),float(native[sec][nk]),rel_tol=1e-12,abs_tol=1e-12):raise ValueError('Canonical/native mismatch: '+ck)
+ lat=math.radians(float(cfg['latmax_deg']));step=2*lat/int(cfg['ntheta']);full=math.pi/step
+ if not math.isclose(full,round(full),abs_tol=1e-9) or not math.isclose((math.pi/2-lat)/step,round((math.pi/2-lat)/step),abs_tol=1e-9):raise ValueError('Consumer wedge does not align its full-sphere auxiliary grid')
+ if not math.isclose(float(native['mesh']['x2min']),math.pi/2-lat,abs_tol=1e-12) or not math.isclose(float(native['mesh']['x2max']),math.pi/2+lat,abs_tol=1e-12):raise ValueError('Latitude bounds mismatch')
+ threads=int(cfg['threads']);blocks=int(cfg.get('ct_radial_blocks',1));nr=int(cfg['nr'])
+ if cfg['radial_grid']!='uniform' or float(cfg['x1rat'])!=1 or threads not in [1,2,4] or int(native['mesh']['num_threads'])!=threads:raise ValueError('Need matching qualified uniform-radial1/2/4-thread settings')
+ if blocks not in [1,2,4,8] or nr%blocks or nr//blocks<4 or int(native['meshblock']['nx1'])!=nr//blocks or threads>blocks:raise ValueError('Need aligned radial blocks with>=4cells/block and enough blocks per thread')
+ if int(native['meshblock']['nx2'])!=int(cfg['ntheta']) or int(native['meshblock']['nx3'])!=int(cfg['nphi']):raise ValueError('Angular block decomposition is unsupported')
+ if math.prod(int(cfg[k]) for k in ['nr','ntheta','nphi'])>MAX_CELLS:raise ValueError('Case exceeds initial1.2M-cell predicate')
+ if not(0<float(cfg['cfl'])<=.25) or native['time']['integrator']!='rk2':raise ValueError('Need qualified SSPRK2/CFL<=.25')
+ return dict(radial_meshblocks=blocks,openmp_threads=threads,full_sphere_theta_cells=round(full),angular_step_theta_rad=step,angular_step_phi_rad=2*math.pi/int(cfg['nphi']),cell_count=math.prod(int(cfg[k]) for k in ['nr','ntheta','nphi']))
+
+def materialize_pin(executable,receipt_path):
+ executable=Path(executable).resolve();receipt_path=Path(receipt_path).resolve();receipt=json.loads(receipt_path.read_text());files=receipt.get('files',{})
+ if not isinstance(files,dict) or not files:raise ValueError('Code receipt must contain nonempty files:path->SHA256 mapping')
+ normalized={}
+ combined=dict(receipt.get('parent_files',{}));combined.update(files)
+ for name,record in receipt.get('native_files',{}).items():
+  combined[str(Path(receipt['dependency'])/name)]=record['parallel_sha256']
+ for name,expected in combined.items():
+  path=Path(name);path=path if path.is_absolute() else ROOT/path
+  if isinstance(expected,dict):expected=expected.get('sha256')
+  if not isinstance(expected,str) or len(expected)!=64 or not path.is_file() or sha(path)!=expected:raise ValueError('Frozen code receipt mismatch: '+str(path))
+  normalized[path.resolve()]=expected
+ expected_binary=receipt.get('executable_sha256',normalized.get(executable))
+ if expected_binary is None or sha(executable)!=expected_binary:raise ValueError('Explicit executable is not hash-pinned by the code receipt')
+ digest=sha(receipt_path);pin=ROOT/'solver/athena_ct_pins'/digest
+ pin.mkdir(parents=True,exist_ok=True);tracked=[];external={}
+ for path,expected in normalized.items():
+  if path==executable:continue
+  try:relative=path.relative_to(ROOT);dest=pin/'own_source'/relative
+  except ValueError:external[str(path)]=expected;dest=pin/'external_source'/path.as_posix().lstrip('/')
+  dest.parent.mkdir(parents=True,exist_ok=True)
+  if dest.exists() and sha(dest)!=expected:raise ValueError('Existing frozen archive differs: '+str(dest))
+  if not dest.exists():shutil.copy2(path,dest)
+  tracked.append(dest)
+ binary=pin/'athena'
+ if binary.exists() and sha(binary)!=expected_binary:raise ValueError('Existing pinned binary differs')
+ if not binary.exists():shutil.copy2(executable,binary);binary.chmod(binary.stat().st_mode|0o111)
+ receipt_copy=pin/'code_receipt.json'
+ if not receipt_copy.exists():shutil.copy2(receipt_path,receipt_copy)
+ controller=pin/'run_ct_simulations.py';controller_digest=sha(__file__)
+ if controller.exists() and sha(controller)!=controller_digest:
+  controller=pin/('run_ct_simulations_'+controller_digest[:16]+'.py')
+ if not controller.exists():shutil.copy2(__file__,controller)
+ extras=receipt.get('extras',{});caps=set(extras.get('capabilities',receipt.get('capabilities',[])))
+ # This exact frozen base was independently gated here; later derivatives attest
+ # capabilities explicitly in their own receipts.
+ if any(Path(name).name=='x3i_ct.cpp' and h=='343a24c8d3467ac43d8d99752a93f8851ee6b55121cd93180c3fafd059fbcb6f' for name,h in files.items()):caps|=REQUIRED_BASE_CAPABILITIES
+ external_path=pin/'external_dependency_pins.json'
+ if external_path.exists():
+  if json.loads(external_path.read_text())['pins']!=external:raise ValueError('Existing external dependency pin differs')
+ else:atomic(external_path,dict(verified_utc=utc(),pins=external,note='Build/source provenance only; portable binary execution has no runtime dependency on these /tmp paths. Exact external source files are archived under external_source.'))
+ tracked.extend([binary,receipt_copy,controller,pin/'external_dependency_pins.json'])
+ runtime=dict(extras.get('runtime_config',{}));runtime.update(extras.get('required_runtime_config',{}))
+ runtime_env=dict(extras.get('runtime_env',{}))
+ if any(k not in {'OMP_DYNAMIC','OMP_WAIT_POLICY','GOMP_SPINCOUNT','OMP_PROC_BIND','OMP_PLACES'} for k in runtime_env):raise ValueError('Unqualified OpenMP/GOMP runtime environment key')
+ if str(runtime_env.get('OMP_DYNAMIC','FALSE')).upper() not in ['FALSE','0']:raise ValueError('Qualified native thread count requires OMP_DYNAMIC=FALSE')
+ return dict(runtime_env=runtime_env,binary=binary,receipt=receipt_copy,receipt_sha256=digest,tracked=tracked,capabilities=caps,runtime_config=runtime,extras=extras)
+
+def materialize_archived_pin(directory):
+ """Explicit offline mode: verify archived bytes, without reading originals."""
+ directory=Path(directory);directory=directory if directory.is_absolute() else ROOT/directory;directory=directory.resolve()
+ try:directory.relative_to(ROOT)
+ except ValueError:raise ValueError('Archived pin must be under codex')
+ def confined(path):
+  if not path.resolve().is_relative_to(directory):raise ValueError('Archived pin entry resolves outside its archive: '+str(path))
+  return path
+ receipt_copy=confined(directory/'code_receipt.json');digest=sha(receipt_copy)
+ if directory.name!=digest:raise ValueError('Archived pin directory must equal its code-receipt SHA256')
+ receipt=json.loads(receipt_copy.read_text());files=receipt.get('files',{});original_binary=receipt.get('executable');expected_binary=receipt.get('executable_sha256')
+ if not files or not original_binary or not expected_binary:raise ValueError('Archived mode needs a receipt that explicitly pins its executable path and SHA256')
+ original_binary=Path(original_binary).resolve();combined=dict(receipt.get('parent_files',{}));combined.update(files)
+ for name,record in receipt.get('native_files',{}).items():combined[str(Path(receipt['dependency'])/name)]=record['parallel_sha256']
+ tracked=[];external={}
+ for name,record in combined.items():
+  expected=record.get('sha256') if isinstance(record,dict) else record
+  original=Path(name);original=(original if original.is_absolute() else ROOT/original).resolve()
+  if not isinstance(expected,str) or len(expected)!=64:raise ValueError('Invalid archived source hash: '+name)
+  if original==original_binary:
+   if expected!=expected_binary:raise ValueError('Receipt binary hashes disagree')
+   continue
+  try:relative=original.relative_to(ROOT);archived=directory/'own_source'/relative
+  except ValueError:external[str(original)]=expected;archived=directory/'external_source'/original.as_posix().lstrip('/')
+  if not confined(archived).is_file() or sha(archived)!=expected:raise ValueError('Archived source missing or hash mismatch: '+str(archived))
+  tracked.append(archived)
+ binary=confined(directory/'athena')
+ if not binary.is_file() or sha(binary)!=expected_binary:raise ValueError('Archived executable missing or hash mismatch')
+ external_path=confined(directory/'external_dependency_pins.json')
+ if json.loads(external_path.read_text()).get('pins')!=external:raise ValueError('Archived external dependency receipt differs from code pins')
+ # Preserve old archived controllers; add the exact current orchestration version.
+ controller=confined(directory/('run_ct_simulations_'+sha(__file__)[:16]+'.py'))
+ if controller.exists() and sha(controller)!=sha(__file__):raise ValueError('Archived current controller hash mismatch')
+ if not controller.exists():shutil.copy2(__file__,controller)
+ tracked.extend([binary,receipt_copy,controller,external_path])
+ extras=receipt.get('extras',{});caps=set(extras.get('capabilities',receipt.get('capabilities',[])))
+ runtime=dict(extras.get('runtime_config',{}));runtime.update(extras.get('required_runtime_config',{}));runtime_env=dict(extras.get('runtime_env',{}))
+ if any(k not in {'OMP_DYNAMIC','OMP_WAIT_POLICY','GOMP_SPINCOUNT','OMP_PROC_BIND','OMP_PLACES'} for k in runtime_env):raise ValueError('Unqualified OpenMP/GOMP runtime environment key')
+ if str(runtime_env.get('OMP_DYNAMIC','FALSE')).upper() not in ['FALSE','0']:raise ValueError('Qualified native thread count requires OMP_DYNAMIC=FALSE')
+ return dict(runtime_env=runtime_env,binary=binary,receipt=receipt_copy,receipt_sha256=digest,tracked=tracked,capabilities=caps,runtime_config=runtime,extras=extras,source_verification_mode='explicit_archived_pin_no_originals_read')
+
+def apply_input_capability(pin,path):
+ path=Path(path).resolve();q=json.loads(path.read_text())
+ if not(q.get('qualified_input_capability') is True and q.get('capability')=='frozen_Carrington_Br_via_existing_generic_map_path' and all(q.get('gates',{}).values()) and q.get('map_validation',{}).get('passed') is True):raise ValueError('Input capability receipt is not the qualified frozen-Br control')
+ recorded=dict(q.get('sha256',{}));recorded.update(q['map_validation'].get('sha256',{}))
+ for name,expected in recorded.items():
+  if sha(ROOT/name)!=expected:raise ValueError('Input qualification file mismatch: '+name)
+ for basename in ['surface_driver.hpp','boundary_parser.hpp']:
+  expected=next((v for k,v in recorded.items() if Path(k).name==basename),None)
+  if expected is None or not any(x.name==basename and sha(x)==expected for x in pin['tracked']):raise ValueError('Current code does not preserve qualified frozen-input consumer: '+basename)
+ arc=pin['binary'].parent/'input_capabilities'/sha(path);arc.mkdir(parents=True,exist_ok=True);copy=arc/'qualification.json'
+ if copy.exists() and sha(copy)!=sha(path):raise ValueError('Existing input qualification archive differs')
+ if not copy.exists():shutil.copy2(path,copy)
+ pin['tracked'].append(copy);pin['capabilities'].add('frozen_consumer_br')
+ pin.setdefault('input_capability_receipts',[]).append(str(copy.relative_to(ROOT)))
+
+def select_movies(pin,names):
+ """Pin the existing exact basis; only explicitly named cases enable output."""
+ pin['movie_cases']=set(names)
+ if not names:return
+ matrix=ROOT/'inputs/ecliptic_to_solar_matrix.csv';coordinates=ROOT/'observations/coordinate_system.json'
+ rows=[[float(x) for x in line.split(',')] for line in matrix.read_text().splitlines() if line.strip()]
+ expected=json.loads(coordinates.read_text())['ecliptic_to_solar_equatorial_matrix']
+ if len(rows)!=3 or any(len(row)!=3 for row in rows) or any(not math.isfinite(x) for row in rows for x in row):raise ValueError('Movie basis needs finite3x3 CSV')
+ if rows!=expected:raise ValueError('Movie matrix CSV differs from the observation coordinate receipt')
+ for i in range(3):
+  for j in range(3):
+   if abs(sum(rows[i][k]*rows[j][k] for k in range(3))-(1 if i==j else 0))>1e-12:raise ValueError('Movie basis is not orthogonal')
+ determinant=sum(rows[0][i]*(rows[1][(i+1)%3]*rows[2][(i+2)%3]-rows[1][(i+2)%3]*rows[2][(i+1)%3]) for i in range(3))
+ if abs(determinant-1)>1e-12:raise ValueError('Movie basis must be a proper rotation')
+ pin['movie_basis']=dict(matrix_csv=matrix,coordinate_receipt=coordinates,matrix_sha256=sha(matrix),coordinate_receipt_sha256=sha(coordinates),ecliptic_to_solver_row_major=[x for row in rows for x in row])
+
+def settings(name,meta,pin,out):
+ spec=dict(BASE);spec.update(CASES[name]);required=REQUIRED_BASE_CAPABILITIES.copy()
+ if spec.get('required_capability'):required.add(spec.pop('required_capability'))
+ if spec.pop('outer_same_dr',False):spec['rmax_au']=meta['r0_au']+(2.3-meta['r0_au'])*spec['nr']/96
+ cfg=dict(ct_mode='real',rmin_au=meta['r0_au'],radial_grid='uniform',x1rat=1,gamma=1.5,thermal_pressure_factor=2,order=2,threads=1,radial_cell_centers='Athena_volume_weighted',source_surface_au=0,boundary_map_csv=str(ROOT/'inputs/boundary_map.csv'),probes_csv=str(ROOT/'inputs/probes_5min.csv'),map_rotation_rad_day=meta['rotation_rad_day'],map_epoch_day=0,map_longitude_offset_rad=meta['longitude_offset_rad'],boundary_speed_thermo_closure=1,boundary_n_v2_cm3_kms2=C,boundary_T_over_v2_K_per_kms2=D,density_scale=1,temperature_scale=1,magnetic_scale=1,output_dir=str(out))
+ cfg.update(spec)
+ selection=pin.get('execution_selection',dict(threads=1,radial_blocks=1));cfg['threads']=selection['threads']
+ if selection['radial_blocks']>1 or 'native_radial_meshblocks' in pin['capabilities']:cfg['ct_radial_blocks']=selection['radial_blocks']
+ if selection['radial_blocks']>1:required.add('native_radial_meshblocks')
+ if selection['threads']>1:required.add('native_openmp_radial')
+ if name in pin.get('movie_cases',set()):
+  required.add('ecliptic_export')
+  cfg.update(ecliptic_slice_pixels=512,ecliptic_extent_au=2.3,ecliptic_to_solar_matrix_csv=str(pin['movie_basis']['matrix_csv']),output_start_day=24,snapshot_days=.25)
+ if cfg.get('cme_boundary_csv'):cfg['cme_boundary_csv']=str(ROOT/cfg['cme_boundary_csv'])
+ if not Path(cfg['boundary_map_csv']).is_absolute():cfg['boundary_map_csv']=str(ROOT/cfg['boundary_map_csv'])
+ # Receipt-specified passive flags may not silently replace physical/grid fields.
+ for k,v in pin['runtime_config'].items():
+  if k in cfg and str(cfg[k])!=str(v):raise ValueError('Receipt runtime flag conflicts with explicit case setting: '+k)
+  cfg[k]=v
+ return cfg,required
+
+def archive_previous(out):
+ if not out.exists() or not any(out.iterdir()):return
+ arc=out/'previous_attempts'/datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ');arc.mkdir(parents=True)
+ for p in list(out.iterdir()):
+  if p.name!='previous_attempts':shutil.move(str(p),str(arc/p.name))
+
+def prepare(name,pin,args):
+ out=args.output_root/name;out.mkdir(parents=True,exist_ok=True)
+ if (out/'statistics.json').exists() and not args.force:
+  selection=json.loads((out/'code_selection.json').read_text()) if (out/'code_selection.json').exists() else {}
+  if selection.get('code_receipt_sha256')!=pin['receipt_sha256']:raise ValueError(f'{name}: completed case uses a different code receipt; --force required')
+  wanted,_=settings(name,json.loads((ROOT/'inputs/metadata.json').read_text()),pin,out)
+  if (out/'run.cfg').read_text()!=cfgtext(wanted) or (out/'athinput.ct').read_text()!=native_input(wanted,out):raise ValueError(f'{name}: completed case config differs from requested canonical settings; --force required')
+  for key,expected in json.loads((out/'input_code_provenance.json').read_text()).items():
+   if sha(ROOT/key)!=expected:raise ValueError(f'{name}: completed provenance file changed: {key}')
+  if not completion(out,wanted)['execution_complete']:raise ValueError(f'{name}: existing statistics are incomplete; --force required')
+  return dict(name=name,out=out,existing=True)
+ if args.force:archive_previous(out)
+ elif (out/'run.log').exists():raise ValueError(f'{name}: prior execution evidence exists; --force archives it before another attempt')
+ elif (out/'input_code_provenance.json').exists():
+  # A prepared/failed attempt is also kept reviewable, including exact configs.
+  old=json.loads((out/'code_selection.json').read_text()) if (out/'code_selection.json').exists() else {}
+  if old.get('code_receipt_sha256')!=pin['receipt_sha256']:raise ValueError(f'{name}: existing receipt uses another code pin; --force required')
+ meta=json.loads((ROOT/'inputs/metadata.json').read_text());cfg,required=settings(name,meta,pin,out);native=native_input(cfg,out);geometry=validate_config(cfg,parse_native(native));missing=sorted(required-pin['capabilities'])
+ if (out/'run.cfg').exists() and not args.force and (out/'run.cfg').read_text()!=cfgtext(cfg):raise ValueError(f'{name}: existing canonical config differs; --force required')
+ (out/'run.cfg').write_text(cfgtext(cfg));(out/'athinput.ct').write_text(native)
+ code_selection=dict(code_receipt_sha256=pin['receipt_sha256'],binary=str(pin['binary'].relative_to(ROOT)),binary_sha256=sha(pin['binary']),capabilities=sorted(pin['capabilities']),required_capabilities=sorted(required),missing_capabilities=missing,runtime_config=pin['runtime_config'],runtime_env=pin['runtime_env'],execution_selection=pin.get('execution_selection',dict(threads=1,radial_blocks=1)),input_capability_receipts=pin.get('input_capability_receipts',[]))
+ code_selection['source_verification_mode']=pin.get('source_verification_mode','live_originals_verified')
+ if name in pin.get('movie_cases',set()):code_selection['movie_selection']={k:(str(v.relative_to(ROOT)) if isinstance(v,Path) else v) for k,v in pin['movie_basis'].items()}
+ atomic(out/'code_selection.json',code_selection)
+ metadata=dict(origin_utc=meta['origin_utc'],shape=[cfg[k] for k in ['nr','ntheta','nphi']]+[8],fields=['n_cm3','vr_kms','vtheta_kms','vphi_kms','p_npa','Br_nt','Btheta_nt','Bphi_nt'],gamma=cfg['gamma'],coordinate_frame='inertial solar-pole basis inherited from frozen input map/probes; theta increases southward',radial_cell_centers='native spherical volume-weighted Athena centers; use stored float64 axes and native face files',physical_radial_bounds_au=[cfg['rmin_au'],cfg['rmax_au']],latitude_bound_rad=math.radians(cfg['latmax_deg']),gravity_gm_au3_day2=.0002959122082855911,scheme='pinned Athena++ native double HLLD PLM SSPRK2 staggered CT',magnetic_driver='exact fullsphere consumer-grid target area averages; interval-average minimal residual edge EMF around Parker base; active normal flux evolves only through CT',initialization='unretarded radial solenoidal face flux, Bt=0; run-start sensitivity required',requested_configuration=cfg,geometry=geometry,preparation_status='unrun_at_generation',completion_status_file='candidate_status.json',availability='supported' if not missing else 'prospective: missing code capability',missing_capabilities=missing,physics_control_note='FrozenBr/cone cases require explicit integrated capability before execution; density/T/gamma/B controls are scenario sensitivities, not measured event reconstructions.')
+ atomic(out/'metadata.json',metadata)
+ tracked=pin['tracked']+[ROOT/'inputs/metadata.json',Path(cfg['boundary_map_csv']),Path(cfg['probes_csv']),out/'run.cfg',out/'athinput.ct',out/'metadata.json',out/'code_selection.json']
+ if cfg.get('cme_boundary_csv'):tracked.append(Path(cfg['cme_boundary_csv']))
+ if name in pin.get('movie_cases',set()):tracked.extend([pin['movie_basis']['matrix_csv'],pin['movie_basis']['coordinate_receipt']])
+ # Metadata is immutable preparation data. Completion/scientific outcome uses
+ # separate candidate_status.json, so the runtime hash receipt stays valid.
+ atomic(out/'input_code_provenance.json',{str(p.relative_to(ROOT)):sha(p) for p in tracked})
+ atomic(out/'candidate_status.json',dict(status='unrun',execution_complete=False,scientific_gates=None,missing_capabilities=missing))
+ return dict(name=name,out=out,cfg=cfg,missing=missing,existing=False)
+
+def completion(out,cfg):
+ result=dict(execution_complete=False,endpoint_trace=False,statistics_readable=False)
+ try:
+  stats=json.loads((out/'statistics.json').read_text());result['statistics_readable']=True
+  import csv
+  with (out/'ct_trace.csv').open() as f:rows=list(csv.DictReader(f))
+  if not rows:raise ValueError('empty ct_trace')
+  days=[float(x['day']) for x in rows];result['endpoint_trace']=abs(days[-1]-float(cfg['end_day']))<=1e-10 and abs(days[0]-float(cfg['start_day']))<=1e-10 and all(b>a for a,b in zip(days,days[1:]))
+  if not result['endpoint_trace']:raise ValueError('ct_trace endpoints/order disagree')
+  if int(stats['steps'])<=0 or int(stats['stage_calls'])!=2*int(stats['steps']):raise ValueError('step/stage count mismatch')
+  if int(cfg.get('ecliptic_slice_pixels',0))>0:result['movie_outputs']=movie_completion(out,cfg,days)
+  result['execution_complete']=True
+  scale=max(abs(float(x['B_code_scale'])) for x in rows)
+  tol=1e-10*max(scale,1e-10)
+  tests=dict(no_floor_activation=stats.get('floor_activations')==0,strict_floor_policy=stats.get('strict_floor_abort') is True,positive_density=float(stats['minimum_density_cm3'])>0,positive_pressure=float(stats['minimum_pressure_code'])>0,all_prescribed_inner_MHD_characteristics_incoming=float(stats['minimum_inner_fast_Mach_actual_ghost_trace'])>1,stage_target_B_tracking=float(stats['max_stage_inner_target_B_error_code'])<=tol,end_target_B_tracking=float(stats['max_inner_target_B_error_code'])<=tol)
+  result.update(scientific_gates=tests,scientific_gates_passed=all(tests.values()),magnetic_tracking_absolute_tolerance_code=tol,statistics=stats,scope='These gates separate finite execution/positivity/inner-characteristic/CT-target validity from scientific convergence and observation validation. Work mismatch and thermal entropy require separate review.')
+ except (OSError,ValueError,KeyError,TypeError,SyntaxError) as e:result['completion_error']=str(e)
+ return result
+
+def movie_completion(out,cfg,accepted_days):
+ """Check output coverage/headers without materializing a plane or 3D state."""
+ import ast,bisect,csv,struct
+ def records(name):
+  with (out/name).open() as f:return list(csv.DictReader(f))
+ schedule=records('ecliptic_schedule.csv');planes=records('snapshots.csv');volume=records('volume_snapshots.csv')
+ start=float(cfg['output_start_day']);cadence=float(cfg['snapshot_days']);end=float(cfg['end_day']);count=max(0,math.floor((end-start)/cadence+1e-9)+1)
+ if count>4096 or len(schedule)!=count:raise ValueError('Movie requested-epoch coverage is incomplete or exceeds guard')
+ unique={}
+ for i,row in enumerate(schedule):
+  requested=float(row['requested_day']);actual=float(row['actual_day']);pos=bisect.bisect_left(accepted_days,actual-1e-10)
+  if abs(requested-(start+i*cadence))>1e-9 or actual+1e-10<requested or pos==len(accepted_days) or abs(accepted_days[pos]-actual)>1e-10:raise ValueError('Movie request/actual epoch is inconsistent with accepted trace')
+  unique[row['file']]=actual
+ if len(planes)!=len(unique) or [(x['file'],float(x['day'])) for x in planes]!=list(unique.items()):raise ValueError('Movie plane manifest disagrees with requested-to-actual schedule')
+ if len(volume)!=1 or abs(float(volume[0]['day'])-end)>1e-10 or volume[0]['file']!='snapshot_00000.npy' or not(out/volume[0]['file']).is_file():raise ValueError('Movie final3D volume manifest is missing or inconsistent')
+ pixels=int(cfg['ecliptic_slice_pixels'])
+ for row in planes:
+  if Path(row['file']).name!=row['file']:raise ValueError('Movie plane path must be a local filename')
+  path=out/row['file']
+  with path.open('rb') as f:
+   if f.read(8)!=b'\x93NUMPY\x01\x00':raise ValueError('Movie plane requires expected NPYv1 header')
+   raw_length=f.read(2)
+   if len(raw_length)!=2:raise ValueError('Truncated movie NPY header')
+   length=struct.unpack('<H',raw_length)[0];header=ast.literal_eval(f.read(length).decode('ascii'))
+  if header.get('shape')!=(pixels,pixels) or header.get('descr')!='<f4' or header.get('fortran_order') is not False or path.stat().st_size!=10+length+pixels*pixels*4:raise ValueError('Movie plane shape/type/length mismatch')
+ meta=json.loads((out/'ecliptic_slice_metadata.json').read_text());runtime=json.loads((out/'feature_runtime.json').read_text())
+ basis=[float(x) for x in Path(cfg['ecliptic_to_solar_matrix_csv']).read_text().replace(',',' ').split()]
+ if meta['pixels']!=pixels or meta['ecliptic_to_solver_matrix_row_major']!=basis or any(abs(a-b)>1e-12 for a,b in zip(meta['extent_au'],[-float(cfg['ecliptic_extent_au']),float(cfg['ecliptic_extent_au'])]*2)):raise ValueError('Movie output basis/extent differs from pinned config')
+ if runtime.get('timesteps_trimmed_for_output') is not False or runtime.get('ecliptic_frames')!=len(planes):raise ValueError('Movie runtime output receipt is inconsistent')
+ return dict(requested_epochs=count,actual_frames=len(planes),plane_shape=[pixels,pixels],basis_matches=True,actual_epochs_in_accepted_trace=True,timesteps_trimmed_for_output=False,final3D_preserved=True)
+
+def limits(cpu,as_bytes):
+ os.nice(15);resource.setrlimit(resource.RLIMIT_CPU,(cpu,cpu+1));resource.setrlimit(resource.RLIMIT_AS,(as_bytes,as_bytes));resource.setrlimit(resource.RLIMIT_CORE,(0,0))
+def terminate(proc):
+ if proc.poll() is not None:return
+ try:os.killpg(proc.pid,signal.SIGTERM)
+ except ProcessLookupError:return
+ try:proc.wait(timeout=2)
+ except subprocess.TimeoutExpired:
+  try:os.killpg(proc.pid,signal.SIGKILL)
+  except ProcessLookupError:pass
+  proc.wait()
+def time_usage(path):
+ text=path.read_text() if path.exists() else ''
+ result={}
+ for key,label,convert in [('user_seconds','User time (seconds)',float),('system_seconds','System time (seconds)',float),('maxrss_kb','Maximum resident set size (kbytes)',int)]:
+  match=re.search(r'^\s*'+re.escape(label)+r':\s*([0-9.]+)\s*$',text,re.MULTILINE)
+  result[key]=convert(match.group(1)) if match else None
+ result['gnu_time_resource_complete']=all(result[k] is not None for k in ['user_seconds','system_seconds','maxrss_kb'])
+ return result
+def process_rss(proc):
+ try:
+  p=psutil.Process(proc.pid);return sum(x.memory_info().rss for x in [p]+p.children(recursive=True) if x.is_running())
+ except psutil.Error:return 0
+
+def run_batch(prepared,pin,args):
+ pending=[x for x in prepared if not x['existing']];active={};finished=[];peak_aggregate=0
+ for x in pending:
+  if x['missing']:raise ValueError(x['name']+': unsupported prospective capabilities '+','.join(x['missing']))
+ progress=ROOT/'monitoring/ct_progress.json'
+ try:
+  while pending or active:
+   while pending and len(active)<args.parallel:
+    job=pending.pop(0);out=job['out'];
+    # Archive any old marker immediately before launch; do not trust file mtimes
+    # across Windows/WSL, and do not allow native exception-return0 to pass.
+    if (out/'statistics.json').exists():raise ValueError('Unexpected preexisting completion marker; use --force')
+    log=(out/'run.log').open('w');cmd=['/usr/bin/time','-v','-o',str(out/'resource_usage.txt'),str(pin['binary']),'-i',str(out/'athinput.ct')]
+    started=time.monotonic();started_utc=utc()
+    proc=subprocess.Popen(cmd,cwd=out,stdout=log,stderr=subprocess.STDOUT,start_new_session=True,preexec_fn=functools.partial(limits,args.cpu_limit,args.as_mib*2**20),env={**{k:v for k,v in os.environ.items() if not(k.startswith('OMP_') or k.startswith('GOMP_'))},'OMP_NUM_THREADS':str(job['cfg']['threads']),'OPENBLAS_NUM_THREADS':'1','MKL_NUM_THREADS':'1','OMP_DYNAMIC':'FALSE',**pin['runtime_env']})
+    job.update(command=cmd,proc=proc,log=log,start=started,started_utc=started_utc,peak_rss=0,termination_reason=None);active[job['name']]=job
+    atomic(out/'candidate_status.json',dict(status='running',execution_complete=False,started_utc=job['started_utc'],pid=proc.pid))
+   aggregate=0
+   for job in active.values():
+    resident=process_rss(job['proc']);aggregate+=resident;job['peak_rss']=max(job['peak_rss'],resident)
+    if resident>args.rss_mib*2**20:job['termination_reason']='per-job process-tree RSS guard exceeded';terminate(job['proc'])
+    if time.monotonic()-job['start']>args.wall_limit:job['termination_reason']='wall limit exceeded';terminate(job['proc'])
+   peak_aggregate=max(peak_aggregate,aggregate)
+   if aggregate>AGGREGATE_RSS:
+    for job in active.values():job['termination_reason']='aggregate process-tree RSS exceeded3GiB';terminate(job['proc'])
+   for name,job in list(active.items()):
+    proc=job['proc']
+    if proc.poll() is None:continue
+    job['log'].close();out=job['out'];check=completion(out,job['cfg']);complete=proc.returncode==0 and job['termination_reason'] is None and check['execution_complete']
+    status=dict(status='completed' if complete else 'failed',execution_complete=complete,native_returncode=proc.returncode,termination_reason=job['termination_reason'],started_utc=job['started_utc'],finished_utc=utc(),**{k:v for k,v in check.items() if k!='execution_complete'})
+    atomic(out/'candidate_status.json',status)
+    if not complete and (out/'statistics.json').exists():shutil.move(str(out/'statistics.json'),str(out/'incomplete_statistics.json'))
+    usage=dict(case=name,backend='Athena++ native double HLLD CT CPU',wall_seconds_including_inputs=time.monotonic()-job['start'],exit_code=proc.returncode if proc.returncode else (0 if complete else 86),native_returncode=proc.returncode,process_tree_RSS_cap_MiB=args.rss_mib,sampled_peak_process_tree_RSS_MiB=job['peak_rss']/2**20,address_space_cap_MiB=args.as_mib,CPU_time_cap_s=args.cpu_limit,wall_limit_s=args.wall_limit,core_dump_cap_bytes=0,threads=job['cfg']['threads'],radial_meshblocks=job['cfg'].get('ct_radial_blocks',1),runtime_env={**pin['runtime_env'],'OMP_NUM_THREADS':str(job['cfg']['threads']),'OMP_DYNAMIC':'FALSE'},command=job['command'],nice=15,concurrent_case_limit=args.parallel,termination_reason=job['termination_reason'],resource_usage_source='/usr/bin/time -v resource_usage.txt is authoritative per-process CPU/RSS; no RUSAGE_CHILDREN accumulation',scientific_gates_passed=check.get('scientific_gates_passed',False))
+    usage.update(time_usage(out/'resource_usage.txt'))
+    atomic(out/'runner_usage.json',usage);finished.append(dict(case=name,execution_complete=complete,scientific_gates_passed=check.get('scientific_gates_passed',False)));del active[name]
+   atomic(progress,dict(updated_utc=utc(),phase='Athena CT bounded batch',active=list(active),pending=[x['name'] for x in pending],finished=finished,parallel=args.parallel,aggregate_RSS_cap_bytes=AGGREGATE_RSS,peak_aggregate_RSS_bytes=peak_aggregate))
+   if active:time.sleep(.2)
+ except BaseException:
+  for job in active.values():
+   terminate(job['proc']);job['log'].close()
+   atomic(job['out']/'candidate_status.json',dict(status='interrupted',execution_complete=False,termination_reason='controller interrupted; child process group terminated',finished_utc=utc()))
+  raise
+ return finished
+
+def main():
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('cases',nargs='*',choices=sorted(CASES));p.add_argument('--list',action='store_true');p.add_argument('--run',action='store_true');p.add_argument('--prepare-only',action='store_true');p.add_argument('--executable',type=Path);p.add_argument('--code-receipt',type=Path);p.add_argument('--archived-pin',type=Path,help='Explicit offline mode: verify ROOT archived binary/source/receipt and do not read originals or /tmp');p.add_argument('--input-capability-receipt',type=Path,action='append',default=[]);p.add_argument('--movie-cases',nargs='+',choices=sorted(CASES),default=[],help='Only these selected cases export512x512 ecliptic flux planes, with a pinned basis, day24..34 every.25day at accepted epochs');p.add_argument('--output-root',type=Path,default=ROOT/'results');p.add_argument('--parallel',type=int,choices=[1,2,3,4],default=2);p.add_argument('--threads',type=int,choices=[1,2,4],default=1);p.add_argument('--radial-blocks',type=int,choices=[1,2,4,8],default=1);p.add_argument('--cpu-limit',type=int,default=None);p.add_argument('--wall-limit',type=float,default=3600);p.add_argument('--rss-mib',type=int,default=1024);p.add_argument('--as-mib',type=int,default=2048);p.add_argument('--force',action='store_true');args=p.parse_args()
+ if args.list:print(json.dumps({k:{**BASE,**v} for k,v in CASES.items()},indent=2));return
+ if not args.cases:p.error('cases are required')
+ if args.archived_pin:
+  if args.executable or args.code_receipt:p.error('--archived-pin is exclusive with --executable/--code-receipt')
+ elif not args.executable or not args.code_receipt:p.error('Either --archived-pin or both --executable and --code-receipt are required')
+ if args.run and args.prepare_only:p.error('--run and --prepare-only conflict')
+ if args.cpu_limit is None:args.cpu_limit=7200 if args.threads>1 else 2400
+ if args.parallel*args.threads>8:p.error('Total parallel jobs * native threads must remain<=8')
+ if args.threads>args.radial_blocks:p.error('Select at least as many radial blocks as native threads')
+ if not(1<=args.cpu_limit<=14400 and 1<=args.wall_limit<=7200 and 64<=args.rss_mib<=2048 and 128<=args.as_mib<=4096):p.error('Limits must remain finite: CPU<=14400s,wall<=7200s,RSS<=2048MiB,AS<=4096MiB')
+ args.output_root=args.output_root.resolve()
+ try:args.output_root.relative_to(ROOT)
+ except ValueError:p.error('Output root must be under codex for portable provenance')
+ if len(set(args.cases))!=len(args.cases):p.error('Cases must be unique')
+ if len(set(args.movie_cases))!=len(args.movie_cases) or not set(args.movie_cases)<=set(args.cases):p.error('--movie-cases must uniquely name cases selected in this invocation')
+ (ROOT/'monitoring').mkdir(exist_ok=True)
+ with (ROOT/'monitoring/ct_runner.lock').open('w') as lock:
+  fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+  pin=materialize_archived_pin(args.archived_pin) if args.archived_pin else materialize_pin(args.executable,args.code_receipt)
+  pin['execution_selection']=dict(threads=args.threads,radial_blocks=args.radial_blocks)
+  select_movies(pin,args.movie_cases)
+  for path in args.input_capability_receipt:apply_input_capability(pin,path)
+  prepared=[prepare(name,pin,args) for name in args.cases]
+  print(json.dumps([dict(case=x['name'],existing_completed=x['existing'],missing_capabilities=x.get('missing',[]),output=str(x['out'])) for x in prepared],indent=2))
+  if any(not x['existing'] and math.prod(int(x['cfg'][k]) for k in ['nr','ntheta','nphi'])>96*32*96 for x in prepared) and args.parallel>2:p.error('Fine cases require at most2parallel CPU jobs under the memory policy')
+  if not args.run:return
+  signal.signal(signal.SIGTERM,lambda signum,frame:(_ for _ in ()).throw(KeyboardInterrupt('SIGTERM')))
+  results=run_batch(prepared,pin,args)
+  if any(not x['execution_complete'] for x in results):raise SystemExit(2)
+  if any(not x['scientific_gates_passed'] for x in results):raise SystemExit(3)
+if __name__=='__main__':main()

@@ -28,7 +28,9 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Package the committed research data
-        run: python scripts/build_app.py
+        run: |
+          python scripts/build_writeups.py
+          python scripts/build_app.py
       - name: Check the standalone site
         run: python scripts/check_static_site.py dist
       - name: Upload the website

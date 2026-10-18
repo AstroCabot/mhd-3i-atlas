@@ -1,0 +1,186 @@
+#pragma once
+#include <cuda_runtime.h>
+#include <math.h>
+
+#ifndef NTR
+#define NTR 1
+#endif
+#define NV (10 + NTR)
+#define ETA_DE 1e-3f
+enum { RHO = 0, MX, MY, MZ, EN, BX, BY, BZ, PSI, ENT, SC };
+
+__host__ __device__ inline float sqr(float x) { return x * x; }
+
+__host__ __device__ inline float mc_lim(float a, float b)
+{
+    if (a * b <= 0.f) return 0.f;
+    float m = fminf(fminf(2.f * fabsf(a), 2.f * fabsf(b)), 0.5f * fabsf(a + b));
+    return copysignf(m, a);
+}
+
+__host__ __device__ inline float vl_lim(float a, float b)
+{
+    if (a * b <= 0.f) return 0.f;
+    return 2.f * a * b / (a + b);
+}
+
+__host__ __device__ inline float cfast(float d, float p, float bn, float b2, float gam)
+{
+    float a2 = gam * p / d;
+    float s = a2 + b2 / d;
+    float q = s * s - 4.f * a2 * bn * bn / d;
+    return sqrtf(0.5f * (s + sqrtf(fmaxf(q, 0.f))));
+}
+
+__host__ __device__ inline void phys_flux(float d, float u, float v, float w, float p, float bx, float by, float bz, float gam, float* f, float* U)
+{
+    float b2 = bx * bx + by * by + bz * bz;
+    float pt = p + 0.5f * b2;
+    float e = p / (gam - 1.f) + 0.5f * d * (u * u + v * v + w * w) + 0.5f * b2;
+    float vb = u * bx + v * by + w * bz;
+    f[0] = d * u;
+    f[1] = d * u * u + pt - bx * bx;
+    f[2] = d * u * v - bx * by;
+    f[3] = d * u * w - bx * bz;
+    f[4] = (e + pt) * u - bx * vb;
+    f[5] = by * u - bx * v;
+    f[6] = bz * u - bx * w;
+    U[0] = d;
+    U[1] = d * u;
+    U[2] = d * v;
+    U[3] = d * w;
+    U[4] = e;
+    U[5] = by;
+    U[6] = bz;
+}
+
+__host__ __device__ inline void hll7(const float* qL, const float* qR, float bx, float gam, float* F)
+{
+    float fL[7], fR[7], UL[7], UR[7];
+    phys_flux(qL[0], qL[1], qL[2], qL[3], qL[4], bx, qL[6], qL[7], gam, fL, UL);
+    phys_flux(qR[0], qR[1], qR[2], qR[3], qR[4], bx, qR[6], qR[7], gam, fR, UR);
+    float cL = cfast(qL[0], qL[4], bx, bx * bx + qL[6] * qL[6] + qL[7] * qL[7], gam);
+    float cR = cfast(qR[0], qR[4], bx, bx * bx + qR[6] * qR[6] + qR[7] * qR[7], gam);
+    float SL = fminf(qL[1] - cL, qR[1] - cR);
+    float SR = fmaxf(qL[1] + cL, qR[1] + cR);
+    if (SL >= 0.f) { for (int m = 0; m < 7; m++) F[m] = fL[m]; return; }
+    if (SR <= 0.f) { for (int m = 0; m < 7; m++) F[m] = fR[m]; return; }
+    float is = 1.f / (SR - SL);
+    for (int m = 0; m < 7; m++) F[m] = (SR * fL[m] - SL * fR[m] + SL * SR * (UR[m] - UL[m])) * is;
+}
+
+__host__ __device__ inline void hlld7(const float* qL, const float* qR, float bx, float gam, float* F)
+{
+    float dL = qL[0], uL = qL[1], vL = qL[2], wL = qL[3], pL = qL[4], byL = qL[6], bzL = qL[7];
+    float dR = qR[0], uR = qR[1], vR = qR[2], wR = qR[3], pR = qR[4], byR = qR[6], bzR = qR[7];
+    float fL[7], fR[7], UL[7], UR[7];
+    phys_flux(dL, uL, vL, wL, pL, bx, byL, bzL, gam, fL, UL);
+    phys_flux(dR, uR, vR, wR, pR, bx, byR, bzR, gam, fR, UR);
+    float b2L = bx * bx + byL * byL + bzL * bzL, b2R = bx * bx + byR * byR + bzR * bzR;
+    float ptL = pL + 0.5f * b2L, ptR = pR + 0.5f * b2R;
+    float cL = cfast(dL, pL, bx, b2L, gam), cR = cfast(dR, pR, bx, b2R, gam);
+    float SL = fminf(uL - cL, uR - cR);
+    float SR = fmaxf(uL + cL, uR + cR);
+    if (SL >= 0.f) { for (int m = 0; m < 7; m++) F[m] = fL[m]; return; }
+    if (SR <= 0.f) { for (int m = 0; m < 7; m++) F[m] = fR[m]; return; }
+    float sdL = SL - uL, sdR = SR - uR;
+    float den = sdR * dR - sdL * dL;
+    float SM = (sdR * dR * uR - sdL * dL * uL - ptR + ptL) / den;
+    float pts = (sdR * dR * ptL - sdL * dL * ptR + dL * dR * sdR * sdL * (uR - uL)) / den;
+    float dsL = dL * sdL / (SL - SM), dsR = dR * sdR / (SR - SM);
+    float bx2 = bx * bx;
+    float vsL, wsL, bysL, bzsL, vsR, wsR, bysR, bzsR;
+    float tL = dL * sdL * (SL - SM) - bx2;
+    if (fabsf(tL) < 1e-6f * pts) { vsL = vL; wsL = wL; bysL = byL; bzsL = bzL; }
+    else {
+        float a = (SM - uL) / tL, b = (dL * sdL * sdL - bx2) / tL;
+        vsL = vL - bx * byL * a; wsL = wL - bx * bzL * a; bysL = byL * b; bzsL = bzL * b;
+    }
+    float tR = dR * sdR * (SR - SM) - bx2;
+    if (fabsf(tR) < 1e-6f * pts) { vsR = vR; wsR = wR; bysR = byR; bzsR = bzR; }
+    else {
+        float a = (SM - uR) / tR, b = (dR * sdR * sdR - bx2) / tR;
+        vsR = vR - bx * byR * a; wsR = wR - bx * bzR * a; bysR = byR * b; bzsR = bzR * b;
+    }
+    float eL = UL[4], eR = UR[4];
+    float vbL = uL * bx + vL * byL + wL * bzL, vbR = uR * bx + vR * byR + wR * bzR;
+    float vbsL = SM * bx + vsL * bysL + wsL * bzsL, vbsR = SM * bx + vsR * bysR + wsR * bzsR;
+    float esL = (sdL * eL - ptL * uL + pts * SM + bx * (vbL - vbsL)) / (SL - SM);
+    float esR = (sdR * eR - ptR * uR + pts * SM + bx * (vbR - vbsR)) / (SR - SM);
+    float UsL[7] = {dsL, dsL * SM, dsL * vsL, dsL * wsL, esL, bysL, bzsL};
+    float UsR[7] = {dsR, dsR * SM, dsR * vsR, dsR * wsR, esR, bysR, bzsR};
+    float sqL = sqrtf(dsL), sqR = sqrtf(dsR);
+    float SLs = SM - fabsf(bx) / sqL, SRs = SM + fabsf(bx) / sqR;
+    if (SLs >= 0.f) { for (int m = 0; m < 7; m++) F[m] = fL[m] + SL * (UsL[m] - UL[m]); return; }
+    if (SRs <= 0.f) { for (int m = 0; m < 7; m++) F[m] = fR[m] + SR * (UsR[m] - UR[m]); return; }
+    float sg = bx >= 0.f ? 1.f : -1.f;
+    float isum = 1.f / (sqL + sqR);
+    float vss = (sqL * vsL + sqR * vsR + (bysR - bysL) * sg) * isum;
+    float wss = (sqL * wsL + sqR * wsR + (bzsR - bzsL) * sg) * isum;
+    float byss = (sqL * bysR + sqR * bysL + sqL * sqR * (vsR - vsL) * sg) * isum;
+    float bzss = (sqL * bzsR + sqR * bzsL + sqL * sqR * (wsR - wsL) * sg) * isum;
+    float vbss = SM * bx + vss * byss + wss * bzss;
+    if (SM >= 0.f) {
+        float essL = esL - sqL * (vbsL - vbss) * sg;
+        float UssL[7] = {dsL, dsL * SM, dsL * vss, dsL * wss, essL, byss, bzss};
+        for (int m = 0; m < 7; m++) F[m] = fL[m] + SL * (UsL[m] - UL[m]) + SLs * (UssL[m] - UsL[m]);
+    } else {
+        float essR = esR + sqR * (vbsR - vbss) * sg;
+        float UssR[7] = {dsR, dsR * SM, dsR * vss, dsR * wss, essR, byss, bzss};
+        for (int m = 0; m < 7; m++) F[m] = fR[m] + SR * (UsR[m] - UR[m]) + SRs * (UssR[m] - UsR[m]);
+    }
+}
+
+template <int SOLVER>
+__host__ __device__ inline void riemann_glm(const float* qL, const float* qR, float gam, float ch, float* f)
+{
+    float bxs = 0.5f * (qL[5] + qR[5]) - 0.5f * (qR[8] - qL[8]) / ch;
+    float pss = 0.5f * (qL[8] + qR[8]) - 0.5f * ch * (qR[5] - qL[5]);
+    float F7[7];
+    if (SOLVER == 0) hlld7(qL, qR, bxs, gam, F7);
+    else hll7(qL, qR, bxs, gam, F7);
+    f[0] = F7[0]; f[1] = F7[1]; f[2] = F7[2]; f[3] = F7[3]; f[4] = F7[4];
+    f[5] = pss;
+    f[6] = F7[5]; f[7] = F7[6];
+    f[8] = ch * ch * bxs;
+    const float* qu = F7[0] >= 0.f ? qL : qR;
+    for (int m = ENT; m < NV; m++) f[m] = F7[0] * qu[m];
+}
+
+__host__ __device__ inline void cons2prim(const float* U, float gam, float dmin, float pmin, float* q)
+{
+    float d = fmaxf(U[RHO], dmin);
+    float id = 1.f / d;
+    float vx = U[MX] * id, vy = U[MY] * id, vz = U[MZ] * id;
+    float b2 = U[BX] * U[BX] + U[BY] * U[BY] + U[BZ] * U[BZ];
+    float eth = U[EN] - 0.5f * d * (vx * vx + vy * vy + vz * vz) - 0.5f * b2;
+    float p = (gam - 1.f) * eth;
+    if (!(eth > ETA_DE * U[EN])) p = U[ENT] * powf(d, gam - 1.f);
+    p = fmaxf(p, pmin);
+    q[0] = d; q[1] = vx; q[2] = vy; q[3] = vz; q[4] = p;
+    q[5] = U[BX]; q[6] = U[BY]; q[7] = U[BZ]; q[8] = U[PSI]; q[ENT] = p * powf(d, -gam);
+    for (int m = SC; m < NV; m++) q[m] = U[m] * id;
+}
+
+__host__ __device__ inline void prim2cons(const float* q, float gam, float* U)
+{
+    U[RHO] = q[0];
+    U[MX] = q[0] * q[1]; U[MY] = q[0] * q[2]; U[MZ] = q[0] * q[3];
+    U[EN] = q[4] / (gam - 1.f) + 0.5f * q[0] * (q[1] * q[1] + q[2] * q[2] + q[3] * q[3]) + 0.5f * (q[5] * q[5] + q[6] * q[6] + q[7] * q[7]);
+    U[BX] = q[5]; U[BY] = q[6]; U[BZ] = q[7]; U[PSI] = q[8];
+    U[ENT] = q[4] * powf(q[0], 1.f - gam);
+    for (int m = SC; m < NV; m++) U[m] = q[0] * q[m];
+}
+
+template <int LIM>
+__host__ __device__ inline void plm_face(const float* q0, const float* q1, const float* q2, const float* q3, float* qL, float* qR)
+{
+    for (int m = 0; m < NV; m++) {
+        float sL = LIM == 0 ? mc_lim(q1[m] - q0[m], q2[m] - q1[m]) : vl_lim(q1[m] - q0[m], q2[m] - q1[m]);
+        float sR = LIM == 0 ? mc_lim(q2[m] - q1[m], q3[m] - q2[m]) : vl_lim(q2[m] - q1[m], q3[m] - q2[m]);
+        qL[m] = q1[m] + 0.5f * sL;
+        qR[m] = q2[m] - 0.5f * sR;
+    }
+    if (!(qL[0] > 0.f && qL[4] > 0.f)) for (int m = 0; m < NV; m++) qL[m] = q1[m];
+    if (!(qR[0] > 0.f && qR[4] > 0.f)) for (int m = 0; m < NV; m++) qR[m] = q2[m];
+}

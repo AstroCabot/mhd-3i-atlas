@@ -1,0 +1,35 @@
+#pragma once
+// Literal ConeBoundary from frozen reference_host_hlld_thermo.hpp.
+// Only namespace enclosure and PI -> XPI adaptation differ; see qualification.
+// Apply AFTER Boundary::sample (including thermo closure/scales), before radial hydro.
+#include "boundary_parser.hpp"
+
+namespace x3ict {
+struct ConeBoundary{
+ // start, end, inertial longitude, latitude, halfwidth, speed, n factor, T factor
+ std::vector<std::array<double,8>> values;
+ explicit ConeBoundary(const Config&c){
+  auto file=c.s("cme_boundary_csv");if(file.empty())return;Csv table(file);
+  std::array<int,8> columns;const char*names[]={"start_day","end_day","lon_rad","lat_rad","halfwidth_rad","speed_kms","density_factor","temperature_factor"};
+  for(int d=0;d<8;++d)columns[d]=table.col(names[d]);
+  for(const auto&row:table.rows){std::array<double,8> z;for(int d=0;d<8;++d)z[d]=row[columns[d]];
+   if(!(z[1]>z[0]&&z[4]>0&&z[4]<XPI/2&&z[5]>0&&z[6]>0&&z[7]>0))throw std::runtime_error("Invalid cone input");values.push_back(z);}
+ }
+ static double ramp(double x){x=std::clamp(x,0.,1.);double s=std::sin(.5*XPI*x);return s*s;}
+ void apply(double day,double lon,double lat,std::array<double,6>&b)const{
+  double best=0;const std::array<double,8>*selected=nullptr;
+  for(const auto&z:values){
+   if(day<=z[0]||day>=z[1])continue;
+   double cosine=std::sin(lat)*std::sin(z[3])+std::cos(lat)*std::cos(z[3])*std::cos(lon-z[2]);
+   double angle=std::acos(std::clamp(cosine,-1.,1.));if(angle>=z[4])continue;
+   double phase=(day-z[0])/(z[1]-z[0]);
+   double temporal=ramp(std::min(phase,1-phase)/.1);
+   double angular=ramp((1-angle/z[4])/.1),w=temporal*angular;
+   // Distinct ejecta cannot simply multiply density at their overlapping
+   // inflow pixels. Use the strongest envelope; later input wins equal w.
+   if(w>=best){best=w;selected=&z;}
+  }
+  if(selected){const auto&z=*selected;b[0]+=(z[5]-b[0])*best;b[1]*=1+(z[6]-1)*best;b[3]*=1+(z[7]-1)*best;}
+ }
+};
+} // namespace x3ict

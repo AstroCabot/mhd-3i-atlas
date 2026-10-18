@@ -1,0 +1,191 @@
+import json
+import time
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+import heliopy as H
+import inputs as I
+
+ROOT = Path(__file__).resolve().parents[2]
+RUNS = ROOT / "runs"
+RES = {"LE": (480, 30, 90), "L0": (128, 30, 90), "L1": (256, 60, 180), "L2": (512, 120, 360), "L1r": (512, 60, 180), "L1a": (256, 120, 360)}
+PROBE_BODIES = I.BODIES
+SC_INSITU = {"earth": "omni", "stereo_a": "stereo_a", "solar_orbiter": "solar_orbiter", "parker_solar_probe": "parker_solar_probe", "mars": "maven"}
+
+
+def boundary_fields(v_wsa, br_ss, rule):
+    v_wsa = np.clip(v_wsa, rule.get("vmin", 200.0), rule.get("vmax", 900.0))
+    vs, vf = rule.get("v_lo", 250.0), rule.get("v_hi", 700.0)
+    dlo, dhi = rule.get("dv_slow", 75.0), rule.get("dv_fast", 25.0)
+    w = np.clip((v_wsa - vs) / (vf - vs), 0, 1)
+    vr = v_wsa - (dlo + (dhi - dlo) * w)
+    vref = rule.get("v_ref", 700.0)
+    n = rule["n_ref"] * (vref / vr) ** rule.get("n_exp", 2.0)
+    T = rule["T_ref"] * (rule["n_ref"] / n) ** rule.get("T_exp", 1.0)
+    sgn = np.sign(br_ss)
+    if rule.get("b_mode", "const") == "const":
+        br = rule["b_ref"] * np.tanh(br_ss / rule.get("b_soft", 1.0)) if rule.get("b_soft") else rule["b_ref"] * sgn
+    else:
+        br = rule.get("b_scale", 4.0) * br_ss
+    return vr.astype(np.float32), n.astype(np.float32), T.astype(np.float32), br.astype(np.float32), v_wsa.astype(np.float32)
+
+
+def lon_shift(f, lon, d):
+    if not d:
+        return f
+    L = np.r_[lon - 360, lon, lon + 360]
+    q = (lon + d) % 360
+    return np.stack([np.interp(q, L, np.r_[row, row, row]) for row in f])
+
+
+def write_boundary(path, maps, rule):
+    t, data = [], []
+    lat, lon = maps[0]["lat"], maps[0]["lon"]
+    sh = rule.get("shift_deg", 0.0)
+    for m in maps:
+        vr, n, T, br, tag = boundary_fields(lon_shift(m["v"], lon, sh), lon_shift(m["br"], lon, sh), rule)
+        if "dv_corr" in m:
+            vr = np.clip(vr + m["dv_corr"], 150.0, 1000.0)
+            tag = tag + m["dv_corr"]
+        if "n_fac" in m:
+            n = n * m["n_fac"]
+            T = T / m["n_fac"]
+        if rule.get("fluxform", 0):
+            data.append(np.stack([vr, n * vr * vr, n * T, br, tag]))
+        else:
+            data.append(np.stack([vr, n, T, br, tag]))
+        t.append(m["t_s"])
+    o = np.argsort(t)
+    H.write_bnd(path, np.asarray(t)[o], lat, lon, np.stack(data)[o])
+
+
+def build(name, maps, rule, res="L1", t_start="2025-11-01T00:00", t_end="2025-12-10T00:00", cme=True, extra=None, rout=2.5, latmax=60.0, slice_dt=0.0, snaps=(), restart_in=None, restart_out=None):
+    wd = RUNS / name
+    wd.mkdir(parents=True, exist_ok=True)
+    write_boundary(wd / "bnd.bin", maps, rule)
+    tt, xyz = I.tracks(PROBE_BODIES)
+    H.write_tracks(wd / "tracks.bin", tt, xyz)
+    ph = I.carrington_phase()
+    e1, e2, e3, _ = I.ecliptic_basis()
+    nr, nt, npp = RES[res]
+    cfg = dict(nr=nr, nt=nt, np=npp, rin_au=0.1, rout_au=rout, latmax_deg=latmax, gamma=5 / 3, gravity=1, xalpha=0.05, cfl=0.8,
+               bnd_file=wd / "bnd.bin", track_file=wd / "tracks.bin", phi0_deg=ph["phi0_deg"], omega_deg_day=ph["omega_deg_day"],
+               t_start_s=I.tsec(t_start), t_end_s=I.tsec(t_end), probe_dt_s=1800, out_dir=wd, diag_dt_s=86400,
+               slice_dt_s=slice_dt, slice_nr=320, slice_np=360, slice_rmax_au=rout - 0.01, slice_e1=e1, slice_e2=e2, stop_file=RUNS / "STOP")
+    if rule.get("fluxform", 0):
+        cfg["bnd_fluxform"] = 1
+    if snaps:
+        cfg["snap_times_s"] = [I.tsec(s) for s in snaps]
+    if cme:
+        cm = I.ccmc_cmes() if cme == "ccmc" else I.donki_cmes("all" if cme == "donki_all" else "comet")
+        nf = rule["n_ref"] * (rule.get("v_ref", 700.0) / rule.get("v_cme_ref", 700.0)) ** 2
+        H.write_cmes(wd / "cme.txt", I.cme_rows(cm, rule.get("cme_dcld", 4.0) * nf, rule.get("cme_tcld", 1.0) * rule["T_ref"]))
+        cfg["cme_file"] = wd / "cme.txt"
+    if restart_in:
+        cfg["restart_in"] = restart_in
+    if restart_out:
+        cfg["restart_out"] = restart_out
+    cfg.update(extra or {})
+    H.write_cfg(wd / "cfg.txt", cfg)
+    (wd / "rule.json").write_text(json.dumps(rule, indent=1))
+    return wd
+
+
+def run(wd, mem="4G", trace=False):
+    t0 = time.time()
+    rc = H.run(wd / "cfg.txt", log=wd / "stdout.txt", mem=mem, trace=trace)
+    return rc, time.time() - t0
+
+
+def probes(wd):
+    t, v = H.read_probes(wd / "probes.bin")
+    utc = I.T_REF + pd.to_timedelta(t, unit="s")
+    out = {}
+    for b, name in enumerate(PROBE_BODIES):
+        df = pd.DataFrame(v[:, b, :], columns=H.FIELDS_PROBE[: v.shape[2]])
+        if "t_emit" in df:
+            df["t_emit"] = df.t_emit * 1.495978707e6
+            df["src_lon"] = np.degrees(np.arctan2(df.src_sin, df.src_cos)) % 360
+        df.insert(0, "utc", utc)
+        df.insert(1, "t", t)
+        df["v"] = np.sqrt(df.vr ** 2 + df.vt ** 2 + df.vp ** 2)
+        df["flux"] = df.n * df.v * 1e5
+        out[name] = df
+    c = out["3i_atlas"]
+    e = I.ephem("3i_atlas")
+    th, ph = np.arccos(e.z_hci_km / np.linalg.norm(e[["x_hci_km", "y_hci_km", "z_hci_km"]].to_numpy(), axis=1)), np.arctan2(e.y_hci_km, e.x_hci_km)
+    thc, phc = np.interp(c.t, e.t, th), np.interp(c.t, e.t, np.unwrap(ph))
+    st, ct, sp, cp = np.sin(thc), np.cos(thc), np.sin(phc), np.cos(phc)
+    vx = c.vr * st * cp + c.vt * ct * cp - c.vp * sp
+    vy = c.vr * st * sp + c.vt * ct * sp + c.vp * cp
+    vz = c.vr * ct - c.vt * st
+    dx = vx - np.interp(c.t, e.t, e.vx_hci)
+    dy = vy - np.interp(c.t, e.t, e.vy_hci)
+    dz = vz - np.interp(c.t, e.t, e.vz_hci)
+    c["v_rel"] = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
+    c["flux_rel"] = c.n * c.v_rel * 1e5
+    return out
+
+
+def insitu_hourly(name):
+    df = I.insitu(name)
+    df["flux"] = df.n * df.v * 1e5
+    return df
+
+
+def score(pr, t0="2025-11-15", t1="2025-12-10", bodies=("earth", "stereo_a", "solar_orbiter"), obs_override=None):
+    a, b = I.tsec(t0), I.tsec(t1)
+    out = {}
+    for bd in bodies:
+        if obs_override is not None and bd not in obs_override:
+            continue
+        obs = obs_override[bd] if obs_override else insitu_hourly(SC_INSITU[bd])
+        obs = obs[(obs.t >= a) & (obs.t <= b)].dropna(subset=["n", "v"])
+        m = pr[bd]
+        mm = {k: np.interp(obs.t, m.t, m[k]) for k in ("n", "v", "flux")}
+        ok = np.isfinite(mm["n"]) & np.isfinite(mm["v"])
+        if ok.sum() < 24:
+            continue
+        o = obs[ok]
+        mv, mn, mf = mm["v"][ok], mm["n"][ok], mm["flux"][ok]
+        out[bd] = {"n_hours": int(ok.sum()), "v_rmse": float(np.sqrt(np.mean((mv - o.v) ** 2))), "v_bias": float(np.mean(mv - o.v)), "v_corr": float(np.corrcoef(mv, o.v)[0, 1]),
+                   "n_med_ratio": float(np.median(mn / o.n)), "logn_corr": float(np.corrcoef(np.log(mn), np.log(o.n))[0, 1]),
+                   "flux_med_ratio": float(np.median(mf / o.flux)), "logflux_corr": float(np.corrcoef(np.log(mf), np.log(o.flux))[0, 1]),
+                   "obs_med_n": float(np.median(o.n)), "obs_med_v": float(np.median(o.v)), "mod_med_n": float(np.median(mn)), "mod_med_v": float(np.median(mv))}
+    return out
+
+
+def comet_stats(pr, window=I.OBS):
+    c = pr["3i_atlas"]
+    a, b = I.tsec(window[0]), I.tsec(window[1])
+    s = c[(c.t >= a) & (c.t <= b)]
+    out = {}
+    for k in ("n", "v", "flux", "v_rel", "flux_rel", "T", "tag"):
+        out[k] = {"median": float(np.median(s[k])), "min": float(s[k].min()), "max": float(s[k].max())}
+    g = pd.read_csv(ROOT / "data/xmm/pn_gti.csv")
+    ts, ws = [], []
+    for r in g.itertuples():
+        t0, t1 = I.tsec(r.start_utc), I.tsec(r.stop_utc)
+        k = max(1, int(np.ceil((t1 - t0) / 300)))
+        e = np.linspace(t0, t1, k + 1)
+        ts.extend((e[:-1] + e[1:]) / 2)
+        ws.extend(np.diff(e))
+    ts, ws = np.asarray(ts), np.asarray(ws)
+    for k in ("n", "v", "flux", "flux_rel"):
+        out[k]["gti_mean"] = float(np.sum(np.interp(ts, c.t, c[k]) * ws) / ws.sum())
+    return out
+
+
+def ccmc_evo(body, blk=1):
+    import scipy.io as sio
+    f = sio.netcdf_file(ROOT / f"data/wsa_ccmc/enlil_run/evo.{ {'3i_atlas': '3I-Atlas', 'earth': 'earth', 'stereo_a': 'stereoa'}[body] }.nc", "r", mmap=False)
+    t = f.variables["TIME"][:].astype(float) + I.tsec("2025-10-01T00:00")
+    D = f.variables["D"][:, blk].astype(float)
+    v1, v2, v3 = (f.variables[k][:, blk].astype(float) / 1e3 for k in ("V1", "V2", "V3"))
+    df = pd.DataFrame({"t": t, "n": D / 1.67262192e-27 / 1e6 / 1.2, "vr": v1, "v": np.sqrt(v1 ** 2 + v2 ** 2 + v3 ** 2), "T": f.variables["T"][:, blk].astype(float),
+                       "br": f.variables["B1"][:, blk].astype(float) * 1e9, "r": f.variables["X1"][:].astype(float) / 1.495978707e11})
+    df["flux"] = df.n * df.v * 1e5
+    df["utc"] = I.T_REF + pd.to_timedelta(df.t, unit="s")
+    return df.sort_values("t").drop_duplicates("t").reset_index(drop=True)

@@ -1,0 +1,2816 @@
+{
+  "author": "Codex-root",
+  "created_utc": "2026-10-17T06:19:29.206218+00:00",
+  "time_convention": "observer_arrival",
+  "case_root": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/results",
+  "decision": "Comparison audit only; no reference selection or uncertainty interval is inferred.",
+  "plan_sha256": "698fb8862465c6d5c764dfd94888f5ef643fd7f472a01bb938bd9378fcc99bc1",
+  "case_source_sha256": {
+    "ct128_w30_theta32_phi192": {
+      "probe.csv": "8b60dd20c655d6b1d8a8169a194c62de28465fdca3581a07536c090c385b693b",
+      "run.cfg": "043acb86c4281df64fa9229ace3467c7eb0b44f834c818e60a6f9273fa734f6a",
+      "statistics.json": "5c079e21e3a3f267165b90ecf064061caa08fdc37d6d61d080fc1f32a89bd5b8",
+      "ct_trace.csv": "f89de88a3a681a518962634ba7be6112f5dc9066a9cc6e6870df6dd4a4dc929b",
+      "candidate_status.json": "dcb94dce2f2daa2b65c0185708f58ada2e1757807db4036ec798c20f29126c89"
+    },
+    "ct128_w30_theta40_phi192": {
+      "probe.csv": "bf48254e6dc43db957ed9e26eb86d2bb088b2c43dd6f3164bf00937354efb95d",
+      "run.cfg": "63b51e3f41b7388928e0939a2b789f0e6c4a8e732ab4bbe5577f4fb9ce1561cc",
+      "statistics.json": "4461f73c9737f3961532ca2479fdd5ea7bdf0d891e8248343aead9f4d9122090",
+      "ct_trace.csv": "1692fb77a6279a6f78a6e63565a50784a3ccaef4c720b22b707521d22080ee12",
+      "candidate_status.json": "417c4184b8b6f23f3ef6f7d7a2de679cb705cd031de584d201c54305305932fe"
+    },
+    "ct156_w30_theta40_phi192": {
+      "probe.csv": "92a22f35655454792047cd22d44f8a3c836c84d5ce6adb475c2b6806e4a5c062",
+      "run.cfg": "88cc0586367b9ad0046075747b5ebacc524884324867e5858b22b28f29689cf4",
+      "statistics.json": "dac5501a3aab95496022b185798f353bfd3ed26fe2292c25205df76542fa630d",
+      "ct_trace.csv": "f3951af9820ae03444affc920b52ecac978bbaf36c13b133b64cb6656bc99bc5",
+      "candidate_status.json": "0a89199efd71e21f9c3a446cb2a3968a9f64eb0c1494e78899ae387d265ff353"
+    },
+    "ct96_w30": {
+      "probe.csv": "6f34b79614c90be230c0d7ae4c4c9bd031f639d16a17ca727fcb411e606605ab",
+      "run.cfg": "bffbe557118164da9ca96612aed04ab832d3fedff1e28983dd974ae19ca22764",
+      "statistics.json": "fccf5dba40f772fcc0b19090f2083f9034ade7a8d6a53da1bb75b30d3e808abf",
+      "ct_trace.csv": "29601d98c4f1b239fae472239b073f37e0ac40e4273733306bd8c93bf626cff3",
+      "candidate_status.json": "07d37e4b5c4229781c7a7d6613b314504e1435e91794b6bb2c32a9acf0217e6d"
+    },
+    "ct96_w30_Bzero": {
+      "probe.csv": "358eb9e48ee7f4722b1ebd4fe39c417207375498b3d267ea6f4b96c3ed414dc1",
+      "run.cfg": "937e31930ac12da442aac654e63da139277708bd7df07db6f6aa69b601e3c0d9",
+      "statistics.json": "cf0d1670b18e46e52d9d578bd78c75caedceb1dca1fca91edd0e930f0fdea6eb",
+      "ct_trace.csv": "8c91b3916f222b3946a2b78e1198af11f2f3eed2640ddbe0d12cabf007ff9c8f",
+      "candidate_status.json": "b08169a71e8dfd1cf5bf3d2e3afc63787e5bf864d788f0bbc28f172ed4150c51"
+    },
+    "ct96_w30_cme12": {
+      "probe.csv": "303372667a5f56a8c8a499af60c22d90d25ce88568a0257ec9654d4601fb41c8",
+      "run.cfg": "cf2a3aa8bd438b817c95bc50f3dacc7df4b058632b7a0692810c79aba9ba1cea",
+      "statistics.json": "4af2eefbeaeceb8d45ac2cd24c840ac26755abc441ab80d2ca0b3c01b2b4efed",
+      "ct_trace.csv": "b91f414adf7808158b924ce4a1eb745298622cd0aac2f7ab5d6b4072ec2ef661",
+      "candidate_status.json": "840701e41011c5783e3b25c09178658f1080ec0a9794f6e15a011e0111af5faf"
+    },
+    "ct96_w30_cme24": {
+      "probe.csv": "0e2d023727dc37ba2573ba6322ffdc06a824dcad892b95f9c418661f6830dc41",
+      "run.cfg": "04682e775b442b1de7268076df629b9b0e006b469f05dd5101c8e2fee11b489d",
+      "statistics.json": "813c3b9c953f08ce8001922345d4e4bf08788ecb345f03d70284c53391271acf",
+      "ct_trace.csv": "e48ab0c717fbf4c1d519895d992d0e34a45dd4e068947925165d1f6bca3c82ce",
+      "candidate_status.json": "cb180e1596310ee1c1f0fb80b966d6e2345f0f1a0f0b6636072027ebb655f18f"
+    },
+    "ct96_w30_density_high": {
+      "probe.csv": "6908c875fe68708bd324c24b523b4fb95bed70a960977fae35d8dca29921ccd1",
+      "run.cfg": "d0316256bc76cbc1b0c4d41e813b7447ba217ad6eec5f35563540dcd189e2548",
+      "statistics.json": "05107416557f5d8b7626a03938474ef5cf80ec73593bfd01e71c93209dfa6f70",
+      "ct_trace.csv": "d9c27a96ac3ba32d6b94c90c00bb61357952d5cbfa07346910865964f780635c",
+      "candidate_status.json": "7412d9aa6d4f8fddc7a41d344f5688dd98a6e2e9b9a8f5a000596bb39a3537a6"
+    },
+    "ct96_w30_density_low": {
+      "probe.csv": "02492ccf127ec53a93188e45b7d566929f6781f6ecd7f3405cdd08023f9fd1f1",
+      "run.cfg": "46e8d801aa3b5d377ebd284346717dccdf137346f7147d7f58d4817169112198",
+      "statistics.json": "0cfa6e422b68e9f02ec61d0974e197dd21072d03763651bd9796dc8a7c42253f",
+      "ct_trace.csv": "051cc5731f951cd67608c377d0e0b0b8516428d38afb2440838150cdc9f77c39",
+      "candidate_status.json": "c8bdddc1eb513832d5034ce461816d32e944c5fb0efea3dcbe648201db37ad10"
+    },
+    "ct96_w30_fast": {
+      "probe.csv": "09c8a9d4a3944a6b14e66309c8b84de07884431ba9c3855554a515e2422efa29",
+      "run.cfg": "9dcdd3b207b5677c6d0ea2ae85c3a9cf4a37e69cff18c1f4a9d2b08698466b71",
+      "statistics.json": "dbc6a777f76b957c26bd40374bcdce1d76cbad481846c30457f75f203e8b11c8",
+      "ct_trace.csv": "257524c95e478800acacda3bcb6840d18ed29b8dd5a19769ca5daaa4f0e40181",
+      "candidate_status.json": "16ebb68189671a6536493639011611322c9461ab1785ee3b7e94d179085fc29d"
+    },
+    "ct96_w30_frozenBr26": {
+      "probe.csv": "99cbe5af7faada98147f4dd90ddfe04773deb0d687e7b4e401bb5ebad4414db7",
+      "run.cfg": "fcac0a33632c2500b2af49f623623c460fe58db66cab8b59cd8ca136e1edc4c9",
+      "statistics.json": "3995c898e7d17ae15aa4782a552d0a01e1556827425d3f18b0fec87d51f6ca8e",
+      "ct_trace.csv": "15521bc08ad94fa417cf707119ccd3da25d538ce0efe709ff7b31ca28f97bceb",
+      "candidate_status.json": "84f5e57064fb229d844ce239074159ba977220445e6734ec59b4dc4083dd9c4b"
+    },
+    "ct96_w30_half": {
+      "probe.csv": "15fd6d51b2804471a7590af6ff1d4a9e9e7265f9d1017fd81ac64363bac28496",
+      "run.cfg": "55954a78f5258997bc1948f91e0f28a2cb4e3b50982155fb8d07bf60095b002a",
+      "statistics.json": "115f316c25ff85a9384f12e8acb098094b7085372277da4b5632e6990e0e7753",
+      "ct_trace.csv": "dcc502c787f8dc3b9b015011469b8d0b60cf4017031ec98020c95249cb26c5f9",
+      "candidate_status.json": "7a7d43e2b7bcbe97ad9bffacf78bb23606f171b72adc9b6266c6fc7ff323848c"
+    },
+    "ct96_w30_hotter": {
+      "probe.csv": "91cdc88b4e9572258862a79bcdb9c80d6c8b66ef9993b0d8129487d193fa316c",
+      "run.cfg": "5732f0dfef7cbadf0df19a91d26a5e676c1bb387437a6a40ab8ece35ef94551f",
+      "statistics.json": "8cbf720f25a6f566f2d6d75f9c5760a023a3fbd27f85a4e22a02c7bfc6b9e51d",
+      "ct_trace.csv": "d646642e2b7970ee491149e6c1958234fab8008dd7eb70c0b109e27feb4c473d",
+      "candidate_status.json": "fc9852e5b4f28a4bad8bb5d864771433bb64adef4253e4b39786a7ee81671b7c"
+    },
+    "ct96_w30_outer285": {
+      "probe.csv": "20c14b78facd8be6a2a107ceec7d95723454777067825ddba1a771bca15be879",
+      "run.cfg": "c9151457e69734c6f12e303d43eb040cbc7077011543cefb358eac75effa182d",
+      "statistics.json": "78d87b76375b6ce3ecf5f8cc98e4f1d69a25d1c9b788e608966e7cffed5c7e9b",
+      "ct_trace.csv": "2483a680bc9fef374815f69188e58195c35d8debc2f5783a890ef015b550586c",
+      "candidate_status.json": "c7b7774ade129922f725483b616d632efb3f70844d53fa25fe82977651881bdb"
+    },
+    "ct96_w30_phi144": {
+      "probe.csv": "a93235f2739728e9662294b884d105aebcfba223eaeab55d1f839fe4fedcb27e",
+      "run.cfg": "22e42d0f40b7a2b10338b70219e4854b8c8363d2ea15d7f9e1e35ae7492fd20b",
+      "statistics.json": "103b1107e0ca40d9976d1de2ca947f12cae918e601c4ced9881db0633a4d5df1",
+      "ct_trace.csv": "7af381e3e97c38f5bace6bd76f22772c380863e30e5b39bfe335f2c7236ce903",
+      "candidate_status.json": "d8ea0f942a6a61e3400635296c83d44c1ed4aec047f1e431f92f0d929a2b5e37"
+    },
+    "ct96_w30_phi192": {
+      "probe.csv": "4b0ec271ca445e895ac2c10602a0e1df734f13e8a08c217a5208a510b8fa76f4",
+      "run.cfg": "aad9a3dc4eb7bb3eb6b0dbd972234470c6c1a6c55c05e9485d47fa7683720f97",
+      "statistics.json": "591367c5e42361edff1e95eb4a9cf0959629114dbd9e0cbfef5ae3b41e6a408c",
+      "ct_trace.csv": "5ac0f3e0e1f1c3b2e54d8470a22f2c9febcb6c790f38262c986e941fabd00748",
+      "candidate_status.json": "e86906cb0d07c70d13519ac5b90aca1a97fabcccd0e99c7cfed06d306848fbd6"
+    },
+    "ct96_w30_slow": {
+      "probe.csv": "2f83a6ec5de2312de15313972991ae8d22bc70f581d31736edc354ef14a2ad0f",
+      "run.cfg": "cee10ee525b19354710513eb60c0e7c559d6fe617e06a0db59fd73819cac6327",
+      "statistics.json": "6d121cd728adcb02002bfaed5267541497ecef3ea1e8715f4f8b41ad7fc5921a",
+      "ct_trace.csv": "642653c08830aa2672e6799f6b13a7b659b7cf3570a4c2346eaf148f91961081",
+      "candidate_status.json": "2581c169590dc51189e4555725962e46cecd1bd807fd3c8b0800a8eefe51a66c"
+    },
+    "ct96_w30_start6": {
+      "probe.csv": "60ddf059cd88c22a4c60fa57c1b3ac7ed068a9e4af749fe507fccfc9dad43154",
+      "run.cfg": "1416ea6fa0d88798edc60d4da933ac979ecdfdb66d44aaa8b03cb8a702d4fb5b",
+      "statistics.json": "21435d6d5fe5058bdaa173b428bf1450aa23e483ac5edb61fac656dc97392851",
+      "ct_trace.csv": "e9078558ece5cafcbbfce535bc9a8488169435983c82d0336c8b2de5b38de800",
+      "candidate_status.json": "223e8ce9155dab04a582062b726436d1a6aa9d0b0a1fe5e89b3da3249ef31d0c"
+    },
+    "ct96_w30_theta32_phi192": {
+      "probe.csv": "856f5e44ee7551f6af61aea1c8b2fa0626709cf7c61e7a1a3f4e4f7755b0120d",
+      "run.cfg": "c54a0081a3954b9eccdce5d610ad499690bde2c206ce476915b3d9113487e274",
+      "statistics.json": "709823c979e54ea7d08af7c4f945fb3ec0b49a2af7f230f68a0e7e5cdccd6368",
+      "ct_trace.csv": "f6399afd222459c745e67fd241407adac5d414995a842da965e313a7949bbf82",
+      "candidate_status.json": "0b4928deeed45deb8fedf45dfc7dbd0dac63187268a391b216d99033ca2b7ce2"
+    },
+    "ct96_w30_theta40_phi192": {
+      "probe.csv": "6f71f44a9c17817ffcc38911a13033216545df7c2dbc5da37717a671c3837e4f",
+      "run.cfg": "708148b51b49b5fe019c7f65a92ec1e37739e460fecc8b36981fc420e00cebe0",
+      "statistics.json": "c4efc3c79a8c56d4ffc079f9363821390b0ccd12b14499e1f4a41902339c6e2f",
+      "ct_trace.csv": "115bd477b90791f56a837bcf0131365e2cca0bce38dc0ea116832b493c6cb7d6",
+      "candidate_status.json": "fbd1ab40b1974805a76b6c55634a525af8ffda49ade6f3407b7edb6d3b3d3ae4"
+    },
+    "ct96_w60": {
+      "probe.csv": "272c5f36f5fd0cb25e5173bc6e2e77eb6b71c716ea6a7526b459a35311681b93",
+      "run.cfg": "5cdfb780bb5ba355502861f22ccaf2ff3aeabd68aaf9a1f8cebd205be4138f43",
+      "statistics.json": "19fd43aae8e269cfcd7c51b99cd5557f38bd1723a51872b60e1fce3175784f94",
+      "ct_trace.csv": "cc03b86125e6c72dac8f224ea808facfaa3b52f095eb96ab1e5f64163940d3ea",
+      "candidate_status.json": "e38737b888d96eb4418a5c8d5fd8eb0f494cf4851fcd5e34fb3f0ab007b196c2"
+    }
+  },
+  "case_qualification": {
+    "ct128_w30_theta32_phi192": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct128_w30_theta40_phi192": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct156_w30_theta40_phi192": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_Bzero": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_cme12": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_cme24": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_density_high": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_density_low": {
+      "passed": false,
+      "reasons": [
+        "Applicable formulation gates are missing or failed"
+      ]
+    },
+    "ct96_w30_fast": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_frozenBr26": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_half": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_hotter": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_outer285": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_phi144": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_phi192": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_slow": {
+      "passed": false,
+      "reasons": [
+        "Applicable formulation gates are missing or failed"
+      ]
+    },
+    "ct96_w30_start6": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_theta32_phi192": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w30_theta40_phi192": {
+      "passed": true,
+      "reasons": []
+    },
+    "ct96_w60": {
+      "passed": true,
+      "reasons": []
+    }
+  },
+  "excluded_cases": {
+    "ct96_w30_cooler": "No completed statistics/probes or explicit incomplete controller marker",
+    "ct96_w30_cooler_half": "No completed statistics/probes or explicit incomplete controller marker",
+    "ct96_w30_gamma53": "No completed statistics/probes or explicit incomplete controller marker",
+    "ct96_w30_gamma53_half": "No completed statistics/probes or explicit incomplete controller marker",
+    "ct96_w30_outer": "No completed statistics/probes or explicit incomplete controller marker",
+    "ct96_w30_outer_half": "No completed statistics/probes or explicit incomplete controller marker"
+  },
+  "domain": {
+    "comparisons": [
+      {
+        "left": "ct96_w30",
+        "right": "ct96_w60",
+        "targets": {
+          "n": 0.03,
+          "v": 0.01,
+          "f_incident": 0.03
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.011896079347849753,
+            "median_relative_difference": 0.008831720504711482,
+            "rms_relative_difference": 0.008743426557624785
+          },
+          "v": {
+            "maximum_relative_difference": 0.001645538565016702,
+            "median_relative_difference": 0.0014063881703560988,
+            "rms_relative_difference": 0.0014325056789848316
+          },
+          "f": {
+            "maximum_relative_difference": 0.0135551922811592,
+            "median_relative_difference": 0.010253573274591865,
+            "rms_relative_difference": 0.010142938394680962
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.013759114791043192,
+            "median_relative_difference": 0.01040617090563023,
+            "rms_relative_difference": 0.010304753199193946
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": 0.00842034883115561,
+          "v": 0.0014435756270447797,
+          "f_incident": 0.010115623311833355
+        },
+        "experiment_identity": {
+          "passed": true,
+          "reasons": []
+        }
+      },
+      {
+        "left": "ct96_w45",
+        "right": "ct96_w60",
+        "targets": {
+          "n": 0.03,
+          "v": 0.01,
+          "f_incident": 0.03
+        },
+        "passed": null,
+        "qualified_pass": false,
+        "qualified_for_sensitivity": false,
+        "formulation_and_provenance_qualified": false,
+        "availability": "missing",
+        "missing_cases": [
+          "ct96_w45"
+        ],
+        "experiment_identity": {
+          "passed": false,
+          "reasons": [
+            "Both registered domain cases must complete"
+          ]
+        }
+      }
+    ],
+    "eligible_narrow_domain": 30,
+    "widest_reference": "ct96_w60",
+    "eligibility_interpretation": "First narrower domain that passes against completed60deg; null requires60deg or completion of missing comparisons."
+  },
+  "temporal": {
+    "comparisons": [
+      {
+        "left": "ct96_w30_half",
+        "right": "ct96_w30",
+        "targets": {
+          "n": 0.01,
+          "v": 0.01,
+          "f_incident": 0.01
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "cfl"
+          ],
+          "registered_values": {
+            "ct96_w30_half": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.125,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.001189573049693582,
+            "median_relative_difference": 0.0005163709804407723,
+            "rms_relative_difference": 0.0007127327717172059
+          },
+          "v": {
+            "maximum_relative_difference": 0.00011011744119171496,
+            "median_relative_difference": -8.33444173384823e-05,
+            "rms_relative_difference": 8.175572324815099e-05
+          },
+          "f": {
+            "maximum_relative_difference": 0.0011234178781136528,
+            "median_relative_difference": 0.0004681026046196024,
+            "rms_relative_difference": 0.0006871590922112201
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.0011152390352124897,
+            "median_relative_difference": 0.00045404292119677336,
+            "rms_relative_difference": 0.0006863801145384158
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": 0.00017110046628854292,
+          "v": -8.912166179131376e-05,
+          "f_incident": 8.152091856072907e-05
+        }
+      }
+    ]
+  },
+  "initial_condition": {
+    "comparisons": [
+      {
+        "left": "ct96_w30_start6",
+        "right": "ct96_w30",
+        "targets": {
+          "n": 0.01,
+          "v": 0.01,
+          "f_incident": 0.01
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "start_day"
+          ],
+          "registered_values": {
+            "ct96_w30_start6": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 6,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 2.7385219177222808e-05,
+            "median_relative_difference": -4.487923999429988e-06,
+            "rms_relative_difference": 9.115360428619808e-06
+          },
+          "v": {
+            "maximum_relative_difference": 4.451556265605561e-06,
+            "median_relative_difference": -7.615739172628366e-08,
+            "rms_relative_difference": 1.0508449102573284e-06
+          },
+          "f": {
+            "maximum_relative_difference": 2.7509344187492957e-05,
+            "median_relative_difference": -4.240335689131847e-06,
+            "rms_relative_difference": 9.01878368541004e-06
+          },
+          "f_incident": {
+            "maximum_relative_difference": 2.7446868103409017e-05,
+            "median_relative_difference": -4.276409619974331e-06,
+            "rms_relative_difference": 8.994074343929937e-06
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -6.2329864007892866e-06,
+          "v": 6.663026663744631e-08,
+          "f_incident": -6.108532654369725e-06
+        }
+      }
+    ]
+  },
+  "outer_extent": {
+    "comparisons": [
+      {
+        "left": "ct96_w30_outer285",
+        "right": "ct96_w30",
+        "targets": {
+          "n": 0.01,
+          "v": 0.01,
+          "f_incident": 0.01
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "nr",
+            "rmax_au"
+          ],
+          "registered_values": {
+            "ct96_w30_outer285": {
+              "nr": 120,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.850003738472328,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 3.4638958368304884e-14,
+            "median_relative_difference": -1.3766765505351941e-14,
+            "rms_relative_difference": 2.0325276860961194e-14
+          },
+          "v": {
+            "maximum_relative_difference": 4.773959005888173e-15,
+            "median_relative_difference": -9.992007221626409e-16,
+            "rms_relative_difference": 2.5185522069475144e-15
+          },
+          "f": {
+            "maximum_relative_difference": 3.519406988061746e-14,
+            "median_relative_difference": -1.2989609388114332e-14,
+            "rms_relative_difference": 2.1014540859328468e-14
+          },
+          "f_incident": {
+            "maximum_relative_difference": 3.497202527569243e-14,
+            "median_relative_difference": -1.27675647831893e-14,
+            "rms_relative_difference": 2.0954305887637792e-14
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -1.5765166949677223e-14,
+          "v": -1.4432899320127035e-15,
+          "f_incident": -1.687538997430238e-14
+        }
+      }
+    ],
+    "original_failed_attempt": {
+      "case": "ct96_w30_outer",
+      "CFL": 0.25,
+      "status": "Strict pre-floor internal-energy abort beforeday21.32; no endpoint/statistics, excluded from scientificcomparison",
+      "recorded_utc": "2026-10-17T02:54:43.529601+00:00",
+      "rmax_au": 3.1250056077084922,
+      "nr": 132
+    },
+    "half_step_failed_attempt": {
+      "case": "ct96_w30_outer_half",
+      "CFL": 0.125,
+      "status": "Strict recovered-pressure abort in penultimate active radial cell at3.090658695AU beforeday21.389879481; no endpoint/statistics, excluded from scientific comparison",
+      "recorded_utc": "2026-10-17T03:18:29.785649+00:00",
+      "diagnostic_scope": "Finite positive totalE, kinetic and magnetic energies leave negative internal energy. Failure is far beyond double-roundoff. Boundary proximity alone does not establish cause. HalvingCFL shifts failure by1.79h; no blind quarter-step retry.",
+      "rmax_au": 3.1250056077084922,
+      "nr": 132
+    }
+  },
+  "spatial": {
+    "comparisons": [
+      {
+        "left": "ct96_w30",
+        "right": "ct96_w30_phi144",
+        "targets": {
+          "n": 0.1,
+          "v": 0.05,
+          "f_incident": 0.1
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "nphi"
+          ],
+          "registered_values": {
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30_phi144": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 144,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.02112648776581172,
+            "median_relative_difference": 0.002296170639608075,
+            "rms_relative_difference": 0.011844943813272486
+          },
+          "v": {
+            "maximum_relative_difference": 0.005671300384901601,
+            "median_relative_difference": -0.0008063403725770968,
+            "rms_relative_difference": 0.003728486629782883
+          },
+          "f": {
+            "maximum_relative_difference": 0.020430625715469053,
+            "median_relative_difference": 0.001977691676525506,
+            "rms_relative_difference": 0.009764181318356177
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.02134308564601939,
+            "median_relative_difference": 0.0014784203735516144,
+            "rms_relative_difference": 0.010148022345332542
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -0.00562991954646852,
+          "v": 0.001621615767140483,
+          "f_incident": -0.0050952629352180034
+        },
+        "exposure_observables": {
+          "comparison": {
+            "PN_GTI_mean_relative_change": {
+              "n": -0.00562991954646852,
+              "v": 0.001621615767140483,
+              "f_incident": -0.0050952629352180034
+            },
+            "PN_frame_GTI_mean_relative_changes": {
+              "pn-s003-p01": {
+                "n": -0.016533281729799176,
+                "v": 0.005329652704926913,
+                "f_incident": -0.012093543731290346
+              },
+              "pn-s003-p02": {
+                "n": -0.01073954146952194,
+                "v": 0.00563014808626483,
+                "f_incident": -0.006023036042252405
+              },
+              "pn-s003-p03": {
+                "n": -0.015266876642740623,
+                "v": 0.003941664468007033,
+                "f_incident": -0.012278317184023169
+              },
+              "pn-s003-p04": {
+                "n": -0.01976252711607651,
+                "v": 0.0012361911341287612,
+                "f_incident": -0.01947672197288952
+              },
+              "pn-s003-p05": {
+                "n": -0.013312764817153044,
+                "v": -0.0026469866973405365,
+                "f_incident": -0.0167807105991995
+              },
+              "pn-s003-p08": {
+                "n": 0.011199839858737182,
+                "v": -0.004847805742895006,
+                "f_incident": 0.006098798764666125
+              },
+              "pn-s003-p10": {
+                "n": 0.012634625349176698,
+                "v": -0.0032028090698914546,
+                "f_incident": 0.009380781479687794
+              },
+              "pn-s003-p11": {
+                "n": 0.011005352229220833,
+                "v": -0.0018084192284836265,
+                "f_incident": 0.009181303213286807
+              }
+            },
+            "maximum_absolute_frame_GTI_mean_relative_change": {
+              "n": 0.01976252711607651,
+              "v": 0.00563014808626483,
+              "f_incident": 0.01947672197288952
+            },
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": {
+              "n": 0.014078132869117025,
+              "v": 0.003974822547430943,
+              "f_incident": 0.011207417772612405
+            },
+            "definition": "Exact trapezoidal integration of native piecewise-linear curves, with exact GTI endpoints and every difference sign crossing; no fitted shift or extrapolation."
+          },
+          "passed_each": {
+            "PN_GTI_mean_relative_change": true,
+            "maximum_absolute_frame_GTI_mean_relative_change": true,
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": true
+          },
+          "passed": true,
+          "qualified_pass": true,
+          "does_not_replace_original_pointwise_targets": true
+        }
+      },
+      {
+        "left": "ct96_w30_phi144",
+        "right": "ct96_w30_phi192",
+        "targets": {
+          "n": 0.1,
+          "v": 0.05,
+          "f_incident": 0.1
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "nphi"
+          ],
+          "registered_values": {
+            "ct96_w30_phi144": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 144,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30_phi192": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.02097947066785677,
+            "median_relative_difference": -0.00315944320222028,
+            "rms_relative_difference": 0.009036212054897956
+          },
+          "v": {
+            "maximum_relative_difference": 0.0027601543059401212,
+            "median_relative_difference": 7.912339987847794e-05,
+            "rms_relative_difference": 0.0009288770856235057
+          },
+          "f": {
+            "maximum_relative_difference": 0.020122051073623304,
+            "median_relative_difference": -0.002021646369758656,
+            "rms_relative_difference": 0.008591148060093132
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.020041692929352095,
+            "median_relative_difference": -0.002401004796119932,
+            "rms_relative_difference": 0.008541951060640178
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -0.00831017080682317,
+          "v": 0.0003651848700181315,
+          "f_incident": -0.007771858822919198
+        },
+        "exposure_observables": {
+          "comparison": {
+            "PN_GTI_mean_relative_change": {
+              "n": -0.00831017080682317,
+              "v": 0.0003651848700181315,
+              "f_incident": -0.007771858822919198
+            },
+            "PN_frame_GTI_mean_relative_changes": {
+              "pn-s003-p01": {
+                "n": -0.020262114431618183,
+                "v": 0.0014892333770810673,
+                "f_incident": -0.018724251668096104
+              },
+              "pn-s003-p02": {
+                "n": -0.02044908787533306,
+                "v": 0.0005990880280499766,
+                "f_incident": -0.019776640681903657
+              },
+              "pn-s003-p03": {
+                "n": -0.011903773391144123,
+                "v": 4.6434276790519036e-05,
+                "f_incident": -0.011734039660236562
+              },
+              "pn-s003-p04": {
+                "n": -0.0064336103467895756,
+                "v": 0.0001409586212135494,
+                "f_incident": -0.006148530355903792
+              },
+              "pn-s003-p05": {
+                "n": -0.0035496446444123197,
+                "v": 0.00011300870869024315,
+                "f_incident": -0.00326508010612625
+              },
+              "pn-s003-p08": {
+                "n": 0.0009773277660778401,
+                "v": -0.0006730131239561787,
+                "f_incident": 0.00039634373089536545
+              },
+              "pn-s003-p10": {
+                "n": 0.003263559048832798,
+                "v": -0.00033639305133026376,
+                "f_incident": 0.0029610321661310834
+              },
+              "pn-s003-p11": {
+                "n": 0.0022375289428084866,
+                "v": -0.00017687519414022468,
+                "f_incident": 0.0020212051957835264
+              }
+            },
+            "maximum_absolute_frame_GTI_mean_relative_change": {
+              "n": 0.02044908787533306,
+              "v": 0.0014892333770810673,
+              "f_incident": 0.019776640681903657
+            },
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": {
+              "n": 0.00987609533704257,
+              "v": 0.0005940619180904017,
+              "f_incident": 0.009109508734664313
+            },
+            "definition": "Exact trapezoidal integration of native piecewise-linear curves, with exact GTI endpoints and every difference sign crossing; no fitted shift or extrapolation."
+          },
+          "passed_each": {
+            "PN_GTI_mean_relative_change": true,
+            "maximum_absolute_frame_GTI_mean_relative_change": true,
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": true
+          },
+          "passed": true,
+          "qualified_pass": true,
+          "does_not_replace_original_pointwise_targets": true
+        }
+      },
+      {
+        "left": "ct96_w30_phi192",
+        "right": "ct96_w30_theta32_phi192",
+        "targets": {
+          "n": 0.1,
+          "v": 0.05,
+          "f_incident": 0.1
+        },
+        "passed": false,
+        "qualified_pass": false,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "ntheta"
+          ],
+          "registered_values": {
+            "ct96_w30_phi192": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30_theta32_phi192": {
+              "nr": 96,
+              "ntheta": 32,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.15374840514322496,
+            "median_relative_difference": 0.03218005546301961,
+            "rms_relative_difference": 0.08342033213326304
+          },
+          "v": {
+            "maximum_relative_difference": 0.0207469831867082,
+            "median_relative_difference": -0.01347077386084261,
+            "rms_relative_difference": 0.01423269731621677
+          },
+          "f": {
+            "maximum_relative_difference": 0.13000865603047584,
+            "median_relative_difference": 0.01827579135220514,
+            "rms_relative_difference": 0.06980738018398328
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.128564546595751,
+            "median_relative_difference": 0.017265177746497606,
+            "rms_relative_difference": 0.06898771247527473
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": 0.01876286853460174,
+          "v": -0.009363451244949528,
+          "f_incident": 0.008291515562552698
+        },
+        "exposure_observables": {
+          "comparison": {
+            "PN_GTI_mean_relative_change": {
+              "n": 0.01876286853460174,
+              "v": -0.009363451244949528,
+              "f_incident": 0.008291515562552698
+            },
+            "PN_frame_GTI_mean_relative_changes": {
+              "pn-s003-p01": {
+                "n": -0.004814366133271242,
+                "v": -0.006975402449168722,
+                "f_incident": -0.012759539188465618
+              },
+              "pn-s003-p02": {
+                "n": -0.01345113809240106,
+                "v": -0.006256864490219782,
+                "f_incident": -0.020440993259992934
+              },
+              "pn-s003-p03": {
+                "n": -0.02210589465653101,
+                "v": -0.005460376816763035,
+                "f_incident": -0.028012700816614333
+              },
+              "pn-s003-p04": {
+                "n": -0.022325750347199746,
+                "v": -0.005596525519389051,
+                "f_incident": -0.028257950053724334
+              },
+              "pn-s003-p05": {
+                "n": -0.017088783169379562,
+                "v": -0.007292225777058459,
+                "f_incident": -0.024731875220273203
+              },
+              "pn-s003-p08": {
+                "n": 0.045909890324459246,
+                "v": -0.014305669998472381,
+                "f_incident": 0.02985528354561251
+              },
+              "pn-s003-p10": {
+                "n": 0.09239168485471971,
+                "v": -0.018138429285511126,
+                "f_incident": 0.07123721911705538
+              },
+              "pn-s003-p11": {
+                "n": 0.1159674648392306,
+                "v": -0.01947260335148815,
+                "f_incident": 0.09285499343024117
+              }
+            },
+            "maximum_absolute_frame_GTI_mean_relative_change": {
+              "n": 0.1159674648392306,
+              "v": 0.01947260335148815,
+              "f_incident": 0.09285499343024117
+            },
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": {
+              "n": 0.03770039467865638,
+              "v": 0.009363451244949639,
+              "f_incident": 0.03610220107642446
+            },
+            "definition": "Exact trapezoidal integration of native piecewise-linear curves, with exact GTI endpoints and every difference sign crossing; no fitted shift or extrapolation."
+          },
+          "passed_each": {
+            "PN_GTI_mean_relative_change": true,
+            "maximum_absolute_frame_GTI_mean_relative_change": false,
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": true
+          },
+          "passed": false,
+          "qualified_pass": false,
+          "does_not_replace_original_pointwise_targets": true
+        }
+      },
+      {
+        "left": "ct96_w30_theta32_phi192",
+        "right": "ct128_w30_theta32_phi192",
+        "targets": {
+          "n": 0.1,
+          "v": 0.05,
+          "f_incident": 0.1
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "nr"
+          ],
+          "registered_values": {
+            "ct96_w30_theta32_phi192": {
+              "nr": 96,
+              "ntheta": 32,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct128_w30_theta32_phi192": {
+              "nr": 128,
+              "ntheta": 32,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.07936115244250841,
+            "median_relative_difference": -0.001037185109732719,
+            "rms_relative_difference": 0.02921921401281268
+          },
+          "v": {
+            "maximum_relative_difference": 0.009329723853060523,
+            "median_relative_difference": 0.001215657336462339,
+            "rms_relative_difference": 0.005274514641097682
+          },
+          "f": {
+            "maximum_relative_difference": 0.07177001534694194,
+            "median_relative_difference": -0.0012836378593870101,
+            "rms_relative_difference": 0.025596567177001782
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.07154967253910982,
+            "median_relative_difference": -0.0013979521549809526,
+            "rms_relative_difference": 0.0254849288913098
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -0.03129841829442925,
+          "v": 0.005696005493720735,
+          "f_incident": -0.025456965538012133
+        },
+        "exposure_observables": {
+          "comparison": {
+            "PN_GTI_mean_relative_change": {
+              "n": -0.03129841829442925,
+              "v": 0.005696005493720735,
+              "f_incident": -0.025456965538012133
+            },
+            "PN_frame_GTI_mean_relative_changes": {
+              "pn-s003-p01": {
+                "n": -0.07211406000416343,
+                "v": 0.008393250576438138,
+                "f_incident": -0.06407741126354838
+              },
+              "pn-s003-p02": {
+                "n": -0.06107408032994943,
+                "v": 0.00869538693752836,
+                "f_incident": -0.05262198246324756
+              },
+              "pn-s003-p03": {
+                "n": -0.037596382891792346,
+                "v": 0.009292063399489292,
+                "f_incident": -0.028242548245060672
+              },
+              "pn-s003-p04": {
+                "n": -0.019317013832647167,
+                "v": 0.008939298411670737,
+                "f_incident": -0.010013873825046815
+              },
+              "pn-s003-p05": {
+                "n": 0.0027560962475785544,
+                "v": 0.006355738152967971,
+                "f_incident": 0.009638087151764951
+              },
+              "pn-s003-p08": {
+                "n": -0.0025351400939988,
+                "v": -0.0019520302204356632,
+                "f_incident": -0.004694537450592451
+              },
+              "pn-s003-p10": {
+                "n": -0.0016358006978156592,
+                "v": -0.0018129805149683653,
+                "f_incident": -0.0038100359181119092
+              },
+              "pn-s003-p11": {
+                "n": 0.00039277037528018255,
+                "v": -0.0003705146528975023,
+                "f_incident": -0.0002069293364065361
+              }
+            },
+            "maximum_absolute_frame_GTI_mean_relative_change": {
+              "n": 0.07211406000416343,
+              "v": 0.009292063399489292,
+              "f_incident": 0.06407741126354838
+            },
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": {
+              "n": 0.031906571569108845,
+              "v": 0.00650836814063466,
+              "f_incident": 0.02713615890775793
+            },
+            "definition": "Exact trapezoidal integration of native piecewise-linear curves, with exact GTI endpoints and every difference sign crossing; no fitted shift or extrapolation."
+          },
+          "passed_each": {
+            "PN_GTI_mean_relative_change": false,
+            "maximum_absolute_frame_GTI_mean_relative_change": false,
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": true
+          },
+          "passed": false,
+          "qualified_pass": false,
+          "does_not_replace_original_pointwise_targets": true
+        }
+      },
+      {
+        "left": "ct96_w30_theta32_phi192",
+        "right": "ct96_w30_theta40_phi192",
+        "targets": {
+          "n": 0.1,
+          "v": 0.05,
+          "f_incident": 0.1
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "ntheta"
+          ],
+          "registered_values": {
+            "ct96_w30_theta32_phi192": {
+              "nr": 96,
+              "ntheta": 32,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30_theta40_phi192": {
+              "nr": 96,
+              "ntheta": 40,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.014429467395924656,
+            "median_relative_difference": -0.008853007669231139,
+            "rms_relative_difference": 0.008859754981846135
+          },
+          "v": {
+            "maximum_relative_difference": 0.0019861452556821924,
+            "median_relative_difference": -0.0005760257248547118,
+            "rms_relative_difference": 0.0013309692992042928
+          },
+          "f": {
+            "maximum_relative_difference": 0.01631188006286266,
+            "median_relative_difference": -0.009295897114671603,
+            "rms_relative_difference": 0.00973783869361019
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.016440013266183717,
+            "median_relative_difference": -0.009297824228425289,
+            "rms_relative_difference": 0.009781185821434736
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -0.008842177946814966,
+          "v": -0.0006734746500599575,
+          "f_incident": -0.009450241500813972
+        },
+        "exposure_observables": {
+          "comparison": {
+            "PN_GTI_mean_relative_change": {
+              "n": -0.008842177946814966,
+              "v": -0.0006734746500599575,
+              "f_incident": -0.009450241500813972
+            },
+            "PN_frame_GTI_mean_relative_changes": {
+              "pn-s003-p01": {
+                "n": -0.009442222466753858,
+                "v": 7.356070023267769e-05,
+                "f_incident": -0.009369490284725335
+              },
+              "pn-s003-p02": {
+                "n": -0.009770048809429221,
+                "v": -0.00031526200832532325,
+                "f_incident": -0.010118174528306212
+              },
+              "pn-s003-p03": {
+                "n": -0.012432323148878321,
+                "v": -0.0011392868353912178,
+                "f_incident": -0.013652899505261495
+              },
+              "pn-s003-p04": {
+                "n": -0.013864193115256995,
+                "v": -0.0016024525306731485,
+                "f_incident": -0.015567937020741773
+              },
+              "pn-s003-p05": {
+                "n": -0.014182718599714872,
+                "v": -0.001973135454896413,
+                "f_incident": -0.016248621234402627
+              },
+              "pn-s003-p08": {
+                "n": -0.007115032622174278,
+                "v": -0.0012799978770128284,
+                "f_incident": -0.008378190940428576
+              },
+              "pn-s003-p10": {
+                "n": -0.0023326867888193714,
+                "v": -0.0003442492098236771,
+                "f_incident": -0.0025787559680807703
+              },
+              "pn-s003-p11": {
+                "n": -0.001318430051534869,
+                "v": 0.00035819789621505116,
+                "f_incident": -0.0008185154798295846
+              }
+            },
+            "maximum_absolute_frame_GTI_mean_relative_change": {
+              "n": 0.014182718599714872,
+              "v": 0.001973135454896413,
+              "f_incident": 0.016248621234402627
+            },
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": {
+              "n": 0.008842177946814652,
+              "v": 0.0007781485238150664,
+              "f_incident": 0.009450241500814154
+            },
+            "definition": "Exact trapezoidal integration of native piecewise-linear curves, with exact GTI endpoints and every difference sign crossing; no fitted shift or extrapolation."
+          },
+          "passed_each": {
+            "PN_GTI_mean_relative_change": true,
+            "maximum_absolute_frame_GTI_mean_relative_change": true,
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": true
+          },
+          "passed": true,
+          "qualified_pass": true,
+          "does_not_replace_original_pointwise_targets": true
+        }
+      },
+      {
+        "left": "ct96_w30_theta40_phi192",
+        "right": "ct128_w30_theta40_phi192",
+        "targets": {
+          "n": 0.1,
+          "v": 0.05,
+          "f_incident": 0.1
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "nr"
+          ],
+          "registered_values": {
+            "ct96_w30_theta40_phi192": {
+              "nr": 96,
+              "ntheta": 40,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct128_w30_theta40_phi192": {
+              "nr": 128,
+              "ntheta": 40,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.0820431214174604,
+            "median_relative_difference": -0.0009272242438346234,
+            "rms_relative_difference": 0.030388636241114767
+          },
+          "v": {
+            "maximum_relative_difference": 0.009739670920015264,
+            "median_relative_difference": 0.0016361130574096272,
+            "rms_relative_difference": 0.005537094393944319
+          },
+          "f": {
+            "maximum_relative_difference": 0.0738288749957885,
+            "median_relative_difference": -0.0009662506217318345,
+            "rms_relative_difference": 0.02635167862196929
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.07353886030275658,
+            "median_relative_difference": -0.0010260688199948964,
+            "rms_relative_difference": 0.026200591218501133
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -0.03218084419821765,
+          "v": 0.006016556158468411,
+          "f_incident": -0.02594375568673346
+        },
+        "exposure_observables": {
+          "comparison": {
+            "PN_GTI_mean_relative_change": {
+              "n": -0.03218084419821765,
+              "v": 0.006016556158468411,
+              "f_incident": -0.02594375568673346
+            },
+            "PN_frame_GTI_mean_relative_changes": {
+              "pn-s003-p01": {
+                "n": -0.07502743533360645,
+                "v": 0.009121316043790406,
+                "f_incident": -0.0662777561718364
+              },
+              "pn-s003-p02": {
+                "n": -0.06350930781679365,
+                "v": 0.00938371478551292,
+                "f_incident": -0.054382447971998205
+              },
+              "pn-s003-p03": {
+                "n": -0.039094364968779494,
+                "v": 0.009717813903415307,
+                "f_incident": -0.0293221559549367
+              },
+              "pn-s003-p04": {
+                "n": -0.021406212694092264,
+                "v": 0.009118647752291764,
+                "f_incident": -0.01193960684011397
+              },
+              "pn-s003-p05": {
+                "n": -0.0015845909359527566,
+                "v": 0.006205519465535936,
+                "f_incident": 0.0051142091289970715
+              },
+              "pn-s003-p08": {
+                "n": -0.0025608370373741973,
+                "v": -0.0021352155206316725,
+                "f_incident": -0.004913422559688518
+              },
+              "pn-s003-p10": {
+                "n": 0.0024088974522122886,
+                "v": -0.0018621183962015397,
+                "f_incident": 0.0001823073074780357
+              },
+              "pn-s003-p11": {
+                "n": 0.005317481967667348,
+                "v": -0.00028251679433277666,
+                "f_incident": 0.004831901058510946
+              }
+            },
+            "maximum_absolute_frame_GTI_mean_relative_change": {
+              "n": 0.07502743533360645,
+              "v": 0.009717813903415307,
+              "f_incident": 0.0662777561718364
+            },
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": {
+              "n": 0.03377878212035712,
+              "v": 0.006867474654945191,
+              "f_incident": 0.02803109199985923
+            },
+            "definition": "Exact trapezoidal integration of native piecewise-linear curves, with exact GTI endpoints and every difference sign crossing; no fitted shift or extrapolation."
+          },
+          "passed_each": {
+            "PN_GTI_mean_relative_change": false,
+            "maximum_absolute_frame_GTI_mean_relative_change": false,
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": true
+          },
+          "passed": false,
+          "qualified_pass": false,
+          "does_not_replace_original_pointwise_targets": true
+        }
+      },
+      {
+        "left": "ct128_w30_theta32_phi192",
+        "right": "ct128_w30_theta40_phi192",
+        "targets": {
+          "n": 0.1,
+          "v": 0.05,
+          "f_incident": 0.1
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "ntheta"
+          ],
+          "registered_values": {
+            "ct128_w30_theta32_phi192": {
+              "nr": 128,
+              "ntheta": 32,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct128_w30_theta40_phi192": {
+              "nr": 128,
+              "ntheta": 40,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.018565961069415327,
+            "median_relative_difference": -0.010199019130588849,
+            "rms_relative_difference": 0.01105085831063414
+          },
+          "v": {
+            "maximum_relative_difference": 0.002491661853854188,
+            "median_relative_difference": -0.0003084089805345247,
+            "rms_relative_difference": 0.001548114026573921
+          },
+          "f": {
+            "maximum_relative_difference": 0.020708274124064396,
+            "median_relative_difference": -0.011628906846987364,
+            "rms_relative_difference": 0.011797407569362414
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.02082670119845842,
+            "median_relative_difference": -0.011573998547471542,
+            "rms_relative_difference": 0.011841073386487088
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -0.009745060065973088,
+          "v": -0.00035495416250597156,
+          "f_incident": -0.009945027105147997
+        },
+        "exposure_observables": {
+          "comparison": {
+            "PN_GTI_mean_relative_change": {
+              "n": -0.009745060065973088,
+              "v": -0.00035495416250597156,
+              "f_incident": -0.009945027105147997
+            },
+            "PN_frame_GTI_mean_relative_changes": {
+              "pn-s003-p01": {
+                "n": -0.012552374767872077,
+                "v": 0.0007956193057834238,
+                "f_incident": -0.011698452983434637
+              },
+              "pn-s003-p02": {
+                "n": -0.012338340029127481,
+                "v": 0.00036691702538060866,
+                "f_incident": -0.01195762275195511
+              },
+              "pn-s003-p03": {
+                "n": -0.013969473107000807,
+                "v": -0.0007179365965421791,
+                "f_incident": -0.014748716092399472
+              },
+              "pn-s003-p04": {
+                "n": -0.015965008398109548,
+                "v": -0.0014249770947395435,
+                "f_incident": -0.017482866204744152
+              },
+              "pn-s003-p05": {
+                "n": -0.018450081774759042,
+                "v": -0.0021221108916431586,
+                "f_incident": -0.02065650887146664
+              },
+              "pn-s003-p08": {
+                "n": -0.007140611577193701,
+                "v": -0.001463306524432939,
+                "f_incident": -0.008596265949584181
+              },
+              "pn-s003-p10": {
+                "n": 0.0017091880489492617,
+                "v": -0.0003934593924822538,
+                "f_incident": 0.001418521750271129
+              },
+              "pn-s003-p11": {
+                "n": 0.003597857680916139,
+                "v": 0.000446259903691848,
+                "f_incident": 0.004217232598417553
+              }
+            },
+            "maximum_absolute_frame_GTI_mean_relative_change": {
+              "n": 0.018450081774759042,
+              "v": 0.0021221108916431586,
+              "f_incident": 0.02065650887146664
+            },
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": {
+              "n": 0.010844018400647628,
+              "v": 0.0009140479360732333,
+              "f_incident": 0.011177366749941452
+            },
+            "definition": "Exact trapezoidal integration of native piecewise-linear curves, with exact GTI endpoints and every difference sign crossing; no fitted shift or extrapolation."
+          },
+          "passed_each": {
+            "PN_GTI_mean_relative_change": true,
+            "maximum_absolute_frame_GTI_mean_relative_change": true,
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": true
+          },
+          "passed": true,
+          "qualified_pass": true,
+          "does_not_replace_original_pointwise_targets": true
+        }
+      },
+      {
+        "left": "ct128_w30_theta40_phi192",
+        "right": "ct156_w30_theta40_phi192",
+        "targets": {
+          "n": 0.1,
+          "v": 0.05,
+          "f_incident": 0.1
+        },
+        "passed": true,
+        "qualified_pass": true,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "nr"
+          ],
+          "registered_values": {
+            "ct128_w30_theta40_phi192": {
+              "nr": 128,
+              "ntheta": 40,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct156_w30_theta40_phi192": {
+              "nr": 156,
+              "ntheta": 40,
+              "nphi": 192,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.038039855048571214,
+            "median_relative_difference": -0.0019545783132972616,
+            "rms_relative_difference": 0.014367578808971469
+          },
+          "v": {
+            "maximum_relative_difference": 0.0044682543548100195,
+            "median_relative_difference": 0.0006483869693143518,
+            "rms_relative_difference": 0.0024642772902531748
+          },
+          "f": {
+            "maximum_relative_difference": 0.03461893946238981,
+            "median_relative_difference": -0.0019509843661124071,
+            "rms_relative_difference": 0.01322571221733406
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.03465143993767095,
+            "median_relative_difference": -0.0020349664710568316,
+            "rms_relative_difference": 0.013273237032306078
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -0.014602183054495343,
+          "v": 0.0026946361135975483,
+          "f_incident": -0.011772787440320509
+        },
+        "exposure_observables": {
+          "comparison": {
+            "PN_GTI_mean_relative_change": {
+              "n": -0.014602183054495343,
+              "v": 0.0026946361135975483,
+              "f_incident": -0.011772787440320509
+            },
+            "PN_frame_GTI_mean_relative_changes": {
+              "pn-s003-p01": {
+                "n": -0.03536397345973252,
+                "v": 0.003657129486369204,
+                "f_incident": -0.031864670251086635
+              },
+              "pn-s003-p02": {
+                "n": -0.029310784120870736,
+                "v": 0.0038338634611723155,
+                "f_incident": -0.025595513413308013
+              },
+              "pn-s003-p03": {
+                "n": -0.014303027764379306,
+                "v": 0.004281255703043829,
+                "f_incident": -0.009983040158784595
+              },
+              "pn-s003-p04": {
+                "n": -0.003401232553645661,
+                "v": 0.004395781291920642,
+                "f_incident": 0.0012251039683832676
+              },
+              "pn-s003-p05": {
+                "n": 0.010601283737742495,
+                "v": 0.0033838429063663966,
+                "f_incident": 0.014324700523483447
+              },
+              "pn-s003-p08": {
+                "n": -0.00610845345552069,
+                "v": -0.00024711021030576763,
+                "f_incident": -0.006354786853284389
+              },
+              "pn-s003-p10": {
+                "n": -0.003353455449776055,
+                "v": -0.0006541975729458249,
+                "f_incident": -0.00415665472426896
+              },
+              "pn-s003-p11": {
+                "n": -0.0019529539521321304,
+                "v": -0.0002057079060923117,
+                "f_incident": -0.002283552587062254
+              }
+            },
+            "maximum_absolute_frame_GTI_mean_relative_change": {
+              "n": 0.03536397345973252,
+              "v": 0.004395781291920642,
+              "f_incident": 0.031864670251086635
+            },
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": {
+              "n": 0.01642577039366461,
+              "v": 0.0029064197710217407,
+              "f_incident": 0.014580540786999212
+            },
+            "definition": "Exact trapezoidal integration of native piecewise-linear curves, with exact GTI endpoints and every difference sign crossing; no fitted shift or extrapolation."
+          },
+          "passed_each": {
+            "PN_GTI_mean_relative_change": true,
+            "maximum_absolute_frame_GTI_mean_relative_change": true,
+            "PN_GTI_integrated_absolute_curve_difference_over_fine_integral": true
+          },
+          "passed": true,
+          "qualified_pass": true,
+          "does_not_replace_original_pointwise_targets": true
+        }
+      }
+    ],
+    "qualification": "These coordinate comparisons apply to30deg only if domain eligibility passes; missing/failed tests remain explicit."
+  },
+  "physics": {
+    "comparisons": [
+      {
+        "left": "ct96_w30_cooler_half",
+        "right": "ct96_w30_half",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": false,
+        "formulation_and_provenance_qualified": false,
+        "experiment_identity": {
+          "passed": false,
+          "reasons": [
+            "Both registered cases must complete"
+          ]
+        },
+        "availability": "missing",
+        "missing_cases": [
+          "ct96_w30_cooler_half"
+        ]
+      },
+      {
+        "left": "ct96_w30_hotter",
+        "right": "ct96_w30",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "temperature_scale"
+          ],
+          "registered_values": {
+            "ct96_w30_hotter": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 2,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.7444519590066714,
+            "median_relative_difference": -0.06450617980449436,
+            "rms_relative_difference": 0.492640799329207
+          },
+          "v": {
+            "maximum_relative_difference": 0.4896286389225988,
+            "median_relative_difference": 0.3121740530756696,
+            "rms_relative_difference": 0.34714155129488544
+          },
+          "f": {
+            "maximum_relative_difference": 0.9252195809933019,
+            "median_relative_difference": 0.227530717673178,
+            "rms_relative_difference": 0.6075321356564708
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.9513866400222548,
+            "median_relative_difference": 0.24752406906110225,
+            "rms_relative_difference": 0.6195976610008417
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": 0.21804064223901642,
+          "v": 0.2629994425698017,
+          "f_incident": 0.5371056068390732
+        }
+      },
+      {
+        "left": "ct96_w30_density_low",
+        "right": "ct96_w30",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": false,
+        "formulation_and_provenance_qualified": false,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "density_scale"
+          ],
+          "registered_values": {
+            "ct96_w30_density_low": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 0.733456034,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.31768066161178765,
+            "median_relative_difference": -0.29123367083732654,
+            "rms_relative_difference": 0.28647737128262046
+          },
+          "v": {
+            "maximum_relative_difference": 0.006834986017258515,
+            "median_relative_difference": 0.0039910634293356395,
+            "rms_relative_difference": 0.004457815399344994
+          },
+          "f": {
+            "maximum_relative_difference": 0.3134238453283682,
+            "median_relative_difference": -0.28847348621283,
+            "rms_relative_difference": 0.28348970468287604
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.31303598221851814,
+            "median_relative_difference": -0.28833071797480536,
+            "rms_relative_difference": 0.2832346322681675
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -0.27541002962332894,
+          "v": 0.0028373004221715625,
+          "f_incident": -0.2732509015709391
+        }
+      },
+      {
+        "left": "ct96_w30_density_high",
+        "right": "ct96_w30",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "density_scale"
+          ],
+          "registered_values": {
+            "ct96_w30_density_high": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1.363408675,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.44049215716202395,
+            "median_relative_difference": 0.40172274346196946,
+            "rms_relative_difference": 0.3929627321137327
+          },
+          "v": {
+            "maximum_relative_difference": 0.005343244472035602,
+            "median_relative_difference": -0.003389328628163102,
+            "rms_relative_difference": 0.0035668738541446954
+          },
+          "f": {
+            "maximum_relative_difference": 0.4334203589847374,
+            "median_relative_difference": 0.3970379983034089,
+            "rms_relative_difference": 0.38817838672604366
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.43277672301500547,
+            "median_relative_difference": 0.39674445044364925,
+            "rms_relative_difference": 0.38775703960972885
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": 0.3761879432350286,
+          "v": -0.0022849035669118,
+          "f_incident": 0.37282086887002275
+        }
+      },
+      {
+        "left": "ct96_w30_slow",
+        "right": "ct96_w30",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": false,
+        "formulation_and_provenance_qualified": false,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "boundary_speed_offset_kms"
+          ],
+          "registered_values": {
+            "ct96_w30_slow": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": -40,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.7228235939223167,
+            "median_relative_difference": 0.06545131785890734,
+            "rms_relative_difference": 0.3610549894121585
+          },
+          "v": {
+            "maximum_relative_difference": 0.1620716411786305,
+            "median_relative_difference": -0.14077688540469768,
+            "rms_relative_difference": 0.1415118570958939
+          },
+          "f": {
+            "maximum_relative_difference": 0.5124743138725862,
+            "median_relative_difference": -0.10705895011938149,
+            "rms_relative_difference": 0.2754586901052196
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.4959400177833464,
+            "median_relative_difference": -0.12229887216018098,
+            "rms_relative_difference": 0.2713246250330757
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": 0.3520761427206984,
+          "v": -0.13902955399659078,
+          "f_incident": 0.14378404097451258
+        }
+      },
+      {
+        "left": "ct96_w30_fast",
+        "right": "ct96_w30",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "boundary_speed_offset_kms"
+          ],
+          "registered_values": {
+            "ct96_w30_fast": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 40,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.5982986944323998,
+            "median_relative_difference": 0.05908755050289849,
+            "rms_relative_difference": 0.3105953450779103
+          },
+          "v": {
+            "maximum_relative_difference": 0.28810365025336626,
+            "median_relative_difference": 0.13922373870099713,
+            "rms_relative_difference": 0.1799568734264979
+          },
+          "f": {
+            "maximum_relative_difference": 0.5282938550493206,
+            "median_relative_difference": 0.1928968227421184,
+            "rms_relative_difference": 0.3482103488454552
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.5415755921173819,
+            "median_relative_difference": 0.20023774842096764,
+            "rms_relative_difference": 0.35334473493129437
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": 0.14004659143787945,
+          "v": 0.1416418377373243,
+          "f_incident": 0.3094456942014612
+        }
+      },
+      {
+        "left": "ct96_w30_gamma53_half",
+        "right": "ct96_w30_half",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": false,
+        "formulation_and_provenance_qualified": false,
+        "experiment_identity": {
+          "passed": false,
+          "reasons": [
+            "Both registered cases must complete"
+          ]
+        },
+        "availability": "missing",
+        "missing_cases": [
+          "ct96_w30_gamma53_half"
+        ]
+      },
+      {
+        "left": "ct96_w30_Bzero",
+        "right": "ct96_w30",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "magnetic_scale"
+          ],
+          "registered_values": {
+            "ct96_w30_Bzero": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 0,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.26395210091851085,
+            "median_relative_difference": 0.14763955095166348,
+            "rms_relative_difference": 0.16181036406042756
+          },
+          "v": {
+            "maximum_relative_difference": 0.024662355805246783,
+            "median_relative_difference": -0.01842537519336218,
+            "rms_relative_difference": 0.01756733505354271
+          },
+          "f": {
+            "maximum_relative_difference": 0.23335715497738385,
+            "median_relative_difference": 0.12649386163863707,
+            "rms_relative_difference": 0.14354659885484078
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.23065407363147994,
+            "median_relative_difference": 0.12449984838921702,
+            "rms_relative_difference": 0.14214090330705037
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": 0.05920873251792491,
+          "v": -0.011904957686210693,
+          "f_incident": 0.04496073414110291
+        }
+      },
+      {
+        "left": "ct96_w30_frozenBr26",
+        "right": "ct96_w30",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "boundary_map_csv"
+          ],
+          "registered_values": {
+            "ct96_w30_frozenBr26": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/external_model/induction_audit/boundary_map_Br_frozen_day26.csv",
+              "cme_boundary_csv": ""
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.07299946145773695,
+            "median_relative_difference": -0.009562454093726358,
+            "rms_relative_difference": 0.03177574101177932
+          },
+          "v": {
+            "maximum_relative_difference": 0.006037974291240644,
+            "median_relative_difference": -0.0038520652497218144,
+            "rms_relative_difference": 0.004486641750726153
+          },
+          "f": {
+            "maximum_relative_difference": 0.06652071572284579,
+            "median_relative_difference": -0.013164749837729306,
+            "rms_relative_difference": 0.029744633368410142
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.06565991219643963,
+            "median_relative_difference": -0.013563738449564378,
+            "rms_relative_difference": 0.029505340978449115
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": 0.02520177034659521,
+          "v": -0.005136904325587999,
+          "f_incident": 0.018967120990475816
+        }
+      },
+      {
+        "left": "ct96_w30_cme12",
+        "right": "ct96_w30",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "cme_boundary_csv"
+          ],
+          "registered_values": {
+            "ct96_w30_cme12": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/external_model/cme_nov23/cme_boundary_nominal.csv"
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.004411412002963577,
+            "median_relative_difference": 2.675640776184096e-05,
+            "rms_relative_difference": 0.0011350427759434924
+          },
+          "v": {
+            "maximum_relative_difference": 0.0006450047282453575,
+            "median_relative_difference": -5.261308323567526e-06,
+            "rms_relative_difference": 0.00013310986365927486
+          },
+          "f": {
+            "maximum_relative_difference": 0.003769253260055616,
+            "median_relative_difference": 2.2629503243054572e-05,
+            "rms_relative_difference": 0.0010145924015301357
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.0036841939342618923,
+            "median_relative_difference": 2.213996860600531e-05,
+            "rms_relative_difference": 0.0009971769302562614
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -0.0005728916849850885,
+          "v": 6.50264632635622e-05,
+          "f_incident": -0.0004919777363175948
+        }
+      },
+      {
+        "left": "ct96_w30_cme24",
+        "right": "ct96_w30",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "cme_boundary_csv"
+          ],
+          "registered_values": {
+            "ct96_w30_cme24": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/external_model/cme_nov23/cme_boundary_long.csv"
+            },
+            "ct96_w30": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": ""
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.02486281943361346,
+            "median_relative_difference": -0.0005573341973201806,
+            "rms_relative_difference": 0.009298287508658692
+          },
+          "v": {
+            "maximum_relative_difference": 0.0027930743943520575,
+            "median_relative_difference": 0.00022677112579527758,
+            "rms_relative_difference": 0.0009208759668315401
+          },
+          "f": {
+            "maximum_relative_difference": 0.022139190001557507,
+            "median_relative_difference": -0.00042352374155163464,
+            "rms_relative_difference": 0.008408882814208858
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.021807902940464308,
+            "median_relative_difference": -0.0004108153539338355,
+            "rms_relative_difference": 0.008300028619813066
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": -0.009761540611366026,
+          "v": 0.001138893030830923,
+          "f_incident": -0.008531414044684937
+        }
+      },
+      {
+        "left": "ct96_w30_cme12",
+        "right": "ct96_w30_cme24",
+        "targets": null,
+        "passed": null,
+        "qualified_pass": null,
+        "qualified_for_sensitivity": true,
+        "formulation_and_provenance_qualified": true,
+        "experiment_identity": {
+          "passed": true,
+          "reasons": [],
+          "allowed_parameter_differences": [
+            "cme_boundary_csv"
+          ],
+          "registered_values": {
+            "ct96_w30_cme12": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/external_model/cme_nov23/cme_boundary_nominal.csv"
+            },
+            "ct96_w30_cme24": {
+              "nr": 96,
+              "ntheta": 16,
+              "nphi": 96,
+              "latmax_deg": 30,
+              "cfl": 0.25,
+              "start_day": 9,
+              "end_day": 34,
+              "rmax_au": 2.3,
+              "gamma": 1.5,
+              "density_scale": 1,
+              "temperature_scale": 1,
+              "magnetic_scale": 1,
+              "boundary_speed_offset_kms": 0,
+              "boundary_map_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/inputs/boundary_map.csv",
+              "cme_boundary_csv": "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/external_model/cme_nov23/cme_boundary_long.csv"
+            }
+          },
+          "native_axis_absolute_tolerance": 2e-13,
+          "scope": "Output-only flags and qualified decomposition may differ; all other physical/numerical settings are compared."
+        },
+        "availability": "complete",
+        "comparison": {
+          "n": {
+            "maximum_relative_difference": 0.020972851654339708,
+            "median_relative_difference": 0.0006511371519295484,
+            "rms_relative_difference": 0.00874546550574794
+          },
+          "v": {
+            "maximum_relative_difference": 0.00214208665870963,
+            "median_relative_difference": -0.0002493355876509451,
+            "rms_relative_difference": 0.0008548940960846923
+          },
+          "f": {
+            "maximum_relative_difference": 0.018785840023112454,
+            "median_relative_difference": 0.00047387892959949163,
+            "rms_relative_difference": 0.007885708919263277
+          },
+          "f_incident": {
+            "maximum_relative_difference": 0.01852776061131811,
+            "median_relative_difference": 0.0004595390783761477,
+            "rms_relative_difference": 0.007786707213983696
+          }
+        },
+        "PN_GTI_mean_relative_change": {
+          "n": 0.009279228492149239,
+          "v": -0.0010726449397209237,
+          "f_incident": 0.008108614253895974
+        }
+      }
+    ],
+    "retained_failed_attempts": [
+      {
+        "case": "ct96_w30_cooler",
+        "temperature_scale": 0.5,
+        "CFL": 0.25,
+        "status": "Strict pre-floor recovered-pressure abort beforeday24.054764045, noXMMendpoint; excludedfromscientificcomparison",
+        "active_cell_r_au": 2.151081345768996,
+        "active_cell_solar_latitude_deg": 24.367,
+        "p_code": -2.952086474870743e-08,
+        "recorded_utc": "2026-10-17T03:53:25.575737+00:00",
+        "evidence_sha256": {
+          "results/ct96_w30_cooler/run.cfg": "014091c25115019e7954603d02837e491119165d7783bac88acb777d2ae17b54",
+          "results/ct96_w30_cooler/run.log": "fbe7671e4036d8a72286422816da6388ecccdcc5dbb34b73f085ea86ecbff6fe",
+          "results/ct96_w30_cooler/candidate_status.json": "4f62ad7227f570813ce587dfe7da5dbf454f8c81d31a3392cce28523e95a3d5e",
+          "results/ct96_w30_cooler/runner_usage.json": "3eaa6f09a554cc9c23030823ce7cfc55d1bf896e5c90c5e41412f52678d514e9"
+        }
+      },
+      {
+        "case": "ct96_w30_gamma53",
+        "gamma": 1.6666666666666667,
+        "CFL": 0.25,
+        "status": "Strict pre-floor recovered-pressure abort beforeday18.612931953; noXMMendpoint/qualifiedfluxestimate",
+        "active_cell_r_au": 1.9448342592275703,
+        "active_cell_theta_rad": 1.276380309991879,
+        "p_code": -1.5080440845099502e-07,
+        "recorded_utc": "2026-10-17T04:01:50.427614+00:00",
+        "evidence_sha256": {
+          "results/ct96_w30_gamma53/run.cfg": "f6175e033269345d9ba3403a73b00cc1f497edcdb588659db518353062c3aea8",
+          "results/ct96_w30_gamma53/run.log": "088ec433a037cb66b33e60513619bcd0ea38237a3f92b4dbf120d9266740d8cb",
+          "results/ct96_w30_gamma53/candidate_status.json": "61b29beaf282a2ef48286b1957bd9808e90cbfdf4f4920a3235990774405a1fa",
+          "results/ct96_w30_gamma53/runner_usage.json": "57187e974468c5ebfed8ffbf17c5a396f54f27929cd73743c737a45d4c55d228"
+        }
+      },
+      {
+        "case": "ct96_w30_cooler_half",
+        "temperature_scale": 0.5,
+        "CFL": 0.125,
+        "status": "Strict pre-floor recovered-pressure abort; no XMM endpoint or qualified flux estimate. Single registered half-CFL retry failed; no further retry cascade.",
+        "active_cell_r_au": 2.1969141417035445,
+        "active_cell_theta_rad": 1.1455340757762071,
+        "p_code": -1.4000545304527785e-10,
+        "mesh_base_day": 24.218821601664178,
+        "stage": null,
+        "recorded_utc": "2026-10-17T04:10:14.452555+00:00",
+        "evidence_sha256": {
+          "results/ct96_w30_cooler_half/run.cfg": "a4d9e11ae27437e818ec109be35a859010492a06c13a5c9e7c5748185abe6003",
+          "results/ct96_w30_cooler_half/run.log": "4b2a312c313a4cde327dc8b9115a8a670cfb5a7790896c238acaa1b786d5c242",
+          "results/ct96_w30_cooler_half/candidate_status.json": "781e89ce761a885da8e411ef2f5e45fd7423f3ac06d810484d7d7ac836c7f896",
+          "results/ct96_w30_cooler_half/runner_usage.json": "37c152943925d34b79e04d666e85d2a26133543a1f714aa3168f7f050610ea0d"
+        }
+      },
+      {
+        "case": "ct96_w30_gamma53_half",
+        "gamma": 1.6666666666666667,
+        "CFL": 0.125,
+        "status": "Strict pre-floor recovered-pressure abort; no XMM endpoint or qualified flux estimate. Single registered half-CFL retry failed; no further retry cascade.",
+        "active_cell_r_au": 1.9677505575034298,
+        "active_cell_theta_rad": 1.276380309991879,
+        "p_code": -1.5989844759270024e-07,
+        "mesh_base_day": 18.679760988218995,
+        "stage": null,
+        "recorded_utc": "2026-10-17T04:10:14.452555+00:00",
+        "evidence_sha256": {
+          "results/ct96_w30_gamma53_half/run.cfg": "c34c2df613ea60be57453f818d018b3041d367c0ccc6b89a21a4ec285e2e822b",
+          "results/ct96_w30_gamma53_half/run.log": "1144770ba71f09ec66b6e57e8241e3c9183e6f4e703c818bdb09d31d5d400b3c",
+          "results/ct96_w30_gamma53_half/candidate_status.json": "1afbbd8d5528b2d8b869861acd86cc1461089124b3a2e5b591fd92f0ab2cf814",
+          "results/ct96_w30_gamma53_half/runner_usage.json": "d76f6762f4d6b8ee5129f7585d34d1656eb22cbb6456674b097008384f6eedec"
+        }
+      }
+    ],
+    "interpretation": "Conditional physical/input sensitivities, with no pass flag and no confidence-interval interpretation."
+  },
+  "input_sha256": {
+    "scripts/audit_ct_convergence.py": "a33312cdd47a393e80152bc14ecfc89e9f944f68f1541a506645990343f93c08",
+    "scripts/postprocess.py": "5ed4fd9b0d220699d0c53b28c652bfbe00fb8bd7419a68d68731f719b71027f9",
+    "scripts/observer_clock.py": "c837471922ebc3f654301d6d8fdaec18ea6c3925e7b354ab6550bee0ffd74e6b",
+    "scripts/run_records.py": "e2dec69d3ee2d32656c8024e45bc2b449ead5fe2264b5d74ffd80a5a74e08328",
+    "observations/light_travel_time_audit.py": "ab1983c79e7eb0f3a259e73240e63df145e6127ba24bb021c2d3eae4280c0d3b",
+    "observations/xmm_gtis.tsv": "5e4c4aeecc74490e55c70336e32c1320c04f944e8b4ea43311edb4328bdd041c",
+    "observations/ephemeris_comet.tsv": "37983059778110ad96121efe2940711fe3da6ca4f17942c89f8a868a12cc56ce",
+    "observations/ephemeris_wind.tsv": "7c6293466dbff6f49a4e485c34e65295915a89e3a6ee33a52d8b127b01e340a6",
+    "observations/coordinate_system.json": "ea46d45654042ca59c9f3e8ea11d8a885caa328cfb34fb96368b21b19c190d50",
+    "validation/ct_campaign_summary.json": "0c12635987d9533936f304cb0069d4af6e497e48708b43716317451a9afca4a7"
+  }
+}

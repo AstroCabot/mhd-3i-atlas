@@ -26,7 +26,7 @@ for name in ('data','assets'):
     shutil.copytree(ROOT/'public'/name,DIST/name,dirs_exist_ok=True,copy_function=copy_changed)
 if (ROOT/'docs').exists():
     shutil.copytree(ROOT/'docs',DIST/'docs',dirs_exist_ok=True,copy_function=copy_changed)
-for name in ('science.json','models.json','transcripts.json','equations.json','animation-v2.json','physics-comparison.json'):
+for name in ('science.json','models.json','transcripts.json','equations.json','animation-v2.json','physics-comparison.json','nasa-comparison.json','solver-code.json','model-writeups.json'):
     with (DIST/'data'/name).open() as f:json.load(f)
 models=json.loads((DIST/'data/models.json').read_text())
 math=json.loads((DIST/'data/equations.json').read_text())['equations']
@@ -54,7 +54,7 @@ for model in manifest['models'].values():
                 raise SystemExit(f'Display-frame checksum differs: {path}')
 # Source or data changes produce new requests on an ordinary browser reload.
 version_hash=hashlib.sha256()
-version_files=[ROOT/'src'/name for name in ('app.js','styles.css','solar-player.js','site-paths.js','theme.js')]
+version_files=sorted(path for path in (ROOT/'src').iterdir() if path.suffix in ('.js','.css'))
 version_files.extend(sorted((ROOT/'public/data').rglob('*.json')))
 for path in version_files:
     version_hash.update(path.relative_to(ROOT).as_posix().encode()+b'\0')

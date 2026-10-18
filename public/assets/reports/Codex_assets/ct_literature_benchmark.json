@@ -1,0 +1,317 @@
+{
+  "schema": "native_CT_literature_linkage_v1",
+  "author": "Codex-solver",
+  "created_utc": "2026-10-17T03:27:02.239867+00:00",
+  "status": "qualified_with_scope_limits",
+  "analysis_only": true,
+  "new_forward_runs": 0,
+  "network_requests": 0,
+  "reproduce_command": "python solver/tests/ct_literature_linkage/build_receipt.py",
+  "all_linkage_integrity_gates_passed": true,
+  "gates": {
+    "published_primary_PDF_matches_archived_retrieval_SHA256": true,
+    "same_native_upstream_commit": true,
+    "same_pinned_reference_source_archive": true,
+    "baseline_production_pin_has_all_three_identical_native_kernels": true,
+    "all_reviewed_archived_production_kernels_match": true,
+    "reference_build_selects_MHD_HLLD": true,
+    "reference_build_log_contains_native_HLLD_and_CT_objects": true,
+    "frozen_reference_CSV_matches_existing_prelinkage_benchmark_SHA256": true,
+    "frozen_CSV_exactly_matches_native_final_table": true,
+    "actual_grid_time_and_gamma_match_published_problem": true,
+    "native_initial_original_left_matches_published": true,
+    "native_initial_original_right_matches_published": true,
+    "final_density_pressure_positive_all_fields_finite": true,
+    "normal_B_exactly_constant": true,
+    "independent_published_wave_positions_reproduced": true,
+    "production_PLM_RK2_scope_confirmed": true
+  },
+  "native_kernel_identity": {
+    "upstream": "https://github.com/PrincetonUniversity/athena",
+    "commit": "e47fabb7dd5efb22e1e2c7ff193148d723e3e952",
+    "reference_archive_sha256": "a2f0e539d50337add74c9c4385a6752e094cef7fd01b457c24fcbcfa967375d9",
+    "reference_kernel_sha256": {
+      "src/hydro/rsolvers/mhd/hlld.cpp": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+      "src/field/ct.cpp": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+      "src/field/calculate_corner_e.cpp": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8"
+    },
+    "production_archived_pin_comparisons": {
+      "07e7ca8cdd1f0db52a080a71c127ee336413a4e586b643d416a7bc99edc38716": {
+        "kernels": {
+          "src/hydro/rsolvers/mhd/hlld.cpp": [
+            {
+              "path": "solver/athena_ct_pins/07e7ca8cdd1f0db52a080a71c127ee336413a4e586b643d416a7bc99edc38716/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/hydro/rsolvers/mhd/hlld.cpp",
+              "sha256": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+              "receipt_sha256": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+              "matches_reference": true
+            }
+          ],
+          "src/field/ct.cpp": [
+            {
+              "path": "solver/athena_ct_pins/07e7ca8cdd1f0db52a080a71c127ee336413a4e586b643d416a7bc99edc38716/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/ct.cpp",
+              "sha256": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+              "receipt_sha256": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+              "matches_reference": true
+            }
+          ],
+          "src/field/calculate_corner_e.cpp": [
+            {
+              "path": "solver/athena_ct_pins/07e7ca8cdd1f0db52a080a71c127ee336413a4e586b643d416a7bc99edc38716/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/calculate_corner_e.cpp",
+              "sha256": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+              "receipt_sha256": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+              "matches_reference": true
+            }
+          ]
+        },
+        "all_three_kernel_sources_match": true
+      },
+      "2a92aff603f7819a119b3272cb0d764ce8ec548db522cf70f53376e93ebd7a4c": {
+        "kernels": {
+          "src/hydro/rsolvers/mhd/hlld.cpp": [
+            {
+              "path": "solver/athena_ct_pins/2a92aff603f7819a119b3272cb0d764ce8ec548db522cf70f53376e93ebd7a4c/external_source/tmp/x3i-codex-athena-ct-parallel/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/hydro/rsolvers/mhd/hlld.cpp",
+              "sha256": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+              "receipt_sha256": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+              "matches_reference": true
+            }
+          ],
+          "src/field/ct.cpp": [
+            {
+              "path": "solver/athena_ct_pins/2a92aff603f7819a119b3272cb0d764ce8ec548db522cf70f53376e93ebd7a4c/external_source/tmp/x3i-codex-athena-ct-parallel/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/ct.cpp",
+              "sha256": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+              "receipt_sha256": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+              "matches_reference": true
+            }
+          ],
+          "src/field/calculate_corner_e.cpp": [
+            {
+              "path": "solver/athena_ct_pins/2a92aff603f7819a119b3272cb0d764ce8ec548db522cf70f53376e93ebd7a4c/external_source/tmp/x3i-codex-athena-ct-parallel/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/calculate_corner_e.cpp",
+              "sha256": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+              "receipt_sha256": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+              "matches_reference": true
+            }
+          ]
+        },
+        "all_three_kernel_sources_match": true
+      },
+      "3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f": {
+        "kernels": {
+          "src/hydro/rsolvers/mhd/hlld.cpp": [
+            {
+              "path": "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/hydro/rsolvers/mhd/hlld.cpp",
+              "sha256": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+              "receipt_sha256": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+              "matches_reference": true
+            },
+            {
+              "path": "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-diagnostic/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/hydro/rsolvers/mhd/hlld.cpp",
+              "sha256": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+              "receipt_sha256": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+              "matches_reference": true
+            }
+          ],
+          "src/field/ct.cpp": [
+            {
+              "path": "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/ct.cpp",
+              "sha256": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+              "receipt_sha256": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+              "matches_reference": true
+            },
+            {
+              "path": "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-diagnostic/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/ct.cpp",
+              "sha256": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+              "receipt_sha256": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+              "matches_reference": true
+            }
+          ],
+          "src/field/calculate_corner_e.cpp": [
+            {
+              "path": "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/calculate_corner_e.cpp",
+              "sha256": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+              "receipt_sha256": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+              "matches_reference": true
+            },
+            {
+              "path": "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-diagnostic/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/calculate_corner_e.cpp",
+              "sha256": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+              "receipt_sha256": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+              "matches_reference": true
+            }
+          ]
+        },
+        "all_three_kernel_sources_match": true
+      }
+    },
+    "interpretation": "The native HLLD, CT update and corner-electric-field source files are byte-identical. The benchmark and wind are different executables, configurations, geometries and problem generators."
+  },
+  "numerical_setup": {
+    "benchmark": {
+      "cells": 8192,
+      "gamma": 2.0,
+      "geometry": "one-dimensional Cartesian",
+      "time": 0.1,
+      "initial_discontinuity": 0.5,
+      "flux": "native HLLD",
+      "magnetic_update": "native CT, degenerate 1D case",
+      "reconstruction": "characteristic PPM, xorder=3c",
+      "integrator": "SSPRK3"
+    },
+    "wind": {
+      "geometry": "three-dimensional spherical polar",
+      "flux": "native HLLD",
+      "magnetic_update": "native CT",
+      "reconstruction": "PLM, xorder=2",
+      "integrator": "SSPRK2",
+      "gamma": 1.5
+    }
+  },
+  "primary_sources": [
+    {
+      "citation": "Dao,T.A.; Nazarov,M.(2022), Monolithic parabolic regularization of the MHD equations and entropy principles, CMAME398,115269, Table1; arXiv2206.09568v2 section4.5.2.",
+      "doi": "10.1016/j.cma.2022.115269",
+      "url": "https://arxiv.org/html/2206.09568v2#S4.T1",
+      "archived_PDF": "external_model/literature_benchmark/Dao_Nazarov_2022_arxiv.pdf",
+      "scope": "Table 1 states and section 4.5.2 branch caution"
+    },
+    {
+      "citation": "Stone et al. (2020), The Athena++ Adaptive Mesh Refinement Framework: Design and Magnetohydrodynamic Solvers",
+      "url": "https://doi.org/10.3847/1538-4365/ab929b",
+      "scope": "Native numerical-method reference, not a separate solar-wind accuracy datum"
+    },
+    {
+      "citation": "Official Athena++ shock-tube setup",
+      "url": "https://github.com/PrincetonUniversity/athena/wiki/1D-Shock-Tube",
+      "scope": "Standard Brio-Wu initial conditions"
+    }
+  ],
+  "published_plateau_comparison": {
+    "left_after_fast": {
+      "x": 0.43,
+      "published_state": {
+        "rho": 0.6799272943,
+        "vx": 0.6288155014,
+        "vy": -0.2295748706,
+        "p": 0.4623011255,
+        "Bx": 0.75,
+        "By": 0.5900487481
+      },
+      "native_Athena8192": {
+        "rho": 0.6764724286256003,
+        "vx": 0.6363344782429643,
+        "vy": -0.23319658812019417,
+        "p": 0.45761498279739554,
+        "Bx": 0.75,
+        "By": 0.5852149180453463
+      },
+      "signed_relative_error": {
+        "rho": -0.005081228100949464,
+        "vx": 0.011957365596465097,
+        "vy": 0.015775757645985822,
+        "p": -0.010136559147538748,
+        "Bx": 0.0,
+        "By": -0.008192255419944394
+      },
+      "maximum_absolute_relative_error": 0.015775757645985822,
+      "sampling_basis": "Figure2 left zoom independently identifies x=.43 in the exact-reference plateau; analytic fast-rarefaction tail x=.4150939334 is to its left. No numerical solution was used to choose this x."
+    },
+    "right_before_fast": {
+      "x": 0.7367576005439098,
+      "published_state": {
+        "rho": 0.1168051318,
+        "vx": -0.2455906431,
+        "vy": -0.1711653489,
+        "p": 0.0873180084,
+        "Bx": 0.75,
+        "By": -0.9001418247
+      },
+      "native_Athena8192": {
+        "rho": 0.11699927415022518,
+        "vx": -0.2396745285725216,
+        "vy": -0.16682345185130967,
+        "p": 0.08760861330384964,
+        "Bx": 0.75,
+        "By": -0.9025527843530678
+      },
+      "signed_relative_error": {
+        "rho": 0.0016621046287383923,
+        "vx": -0.024089331958259796,
+        "vy": -0.025366682430723597,
+        "p": 0.0033281210734721345,
+        "Bx": 0.0,
+        "By": 0.002678421985192525
+      },
+      "maximum_absolute_relative_error": 0.025366682430723597,
+      "sampling_basis": "Midpoint between slow-shock x from Rankine-Hugoniot mass jump and right-fast-rarefaction edge from vx+cf; both derived from Table1 states."
+    }
+  },
+  "published_wave_positions_recomputed": {
+    "left_fast_rarefaction_tail": 0.4150939334149467,
+    "right_slow_shock": 0.641987211925986,
+    "right_fast_rarefaction_inner_edge": 0.8315279891618337
+  },
+  "diagnostics": {
+    "maximum_absolute_relative_error_across_two_plateaus_and_six_fields": 0.025366682430723597,
+    "maximum_normal_B_error": 0.0,
+    "initial_primitive_state_maximum_absolute_error": {
+      "original_left": 0.0,
+      "original_right": 2.7755575615628914e-17
+    },
+    "initial_primitive_state_absolute_roundoff_tolerance": 7.105427357601002e-15,
+    "minimum_density": 0.11684680335802818,
+    "minimum_pressure": 0.08738033018981983
+  },
+  "accuracy_gate": {
+    "registered_threshold": null,
+    "passed": null,
+    "reason": "No retrospective acceptance threshold is introduced. Quantitative errors are measurements against one published branch, not an exact unique full-profile convergence claim."
+  },
+  "limitations": [
+    "Section4.5.2 says the default exact reference does not capture the intermediate shock. Published states therefore do not establish a unique full Brio-Wu compound-wave branch.",
+    "Table1 supplies extracted end states for isolated waves. Its intermediate-shock entry spans a compound structure, not a single Rankine-Hugoniot discontinuity.",
+    "Two published plateau samples are a partial literature replication, not a reconstruction of every published numerical curve or a unique exact full Brio-Wu solution.",
+    "The 1D benchmark does not exercise production PLM/SSPRK2, 3D CT, spherical geometry, gravity, rotating map boundaries, thermodynamic closure, or spacecraft skill; those require their separate recorded gates.",
+    "Identical native kernel source does not mean identical executables or prove solar-wind accuracy or campaign convergence.",
+    "The reference run predates this receipt. Its original input, output, build/run logs and resource receipt are hashed here; this analysis launches no replacement run."
+  ],
+  "source_inputs_sha256": {
+    "solver/tests/athena_reference/provenance.json": "91a97c10e9cc1a88a0ec14516ec1e2e937d8dc9b3e198ddc0d781b8409007f04",
+    "solver/tests/athena_reference/comparison.json": "8771527ae6a3bd016d8e2f343985cd365a85360b8e2b53e3ef98e4b430299c3f",
+    "external_model/literature_benchmark/published_states.json": "7f164b54b694d28dbce4dbca6050501056ff8d241152ff3aadb5334a3c1b9776",
+    "external_model/literature_benchmark/source.json": "c080311097cd393e71aad24cf4a7cc4e03784a42c22530c67d85e5afdfdc60a4",
+    "solver/tests/ct_literature_linkage/reference_native_manifest.json": "d6a74e9a27bb876e6ff8e3cc6c3f394b838cf6ac37d118e8016e4c5020c265cb",
+    "solver/athena_ct/provenance.json": "0f21d5bb56a78d730017a3d494560ef699544452315a7c420de2cdd4018e8a52",
+    "solver/tests/athena_reference/athinput.bw": "ed64bb662694a476a6d4322efc3a7185f9aa0ebd84b7d2746a701a0915bc1b1a",
+    "results/ct96_w30/athinput.ct": "ed715c0f102345fbac308ed5e15996f136a31701447a92f51fcc3954d2fab5ca",
+    "results/ct96_w30/code_selection.json": "f732c7ef012e9c70c553765550f6d8c77e54181ac3e69bf1c80131f821adc812",
+    "solver/tests/athena_reference/run.log": "aa0aa6a6900eb3b98aac3d9b32bed0770204fddb13a1d838d071239427b8eda7",
+    "solver/tests/athena_reference/build.log": "2b55a60d0c36307de6808de6e72290379394631d36a4204dc3c3c1432f36a504",
+    "solver/tests/athena_reference/usage.json": "ccde55cdb6257e952c26b10e99c690584a9dac8026c6626de5c05e6e91acdd8c",
+    "external_model/literature_benchmark/paper_extracted.txt": "f1753835513e0219a2a1e98a956b4e7691edaaee0b847a650a6072ac7f67f26f",
+    "external_model/literature_benchmark/paper_page_16.png": "cffd3a11fcbc35a037756b151c3cee159a0bba5e37b6626b8216093b1da16b5f",
+    "external_model/literature_benchmark/paper_page_15.png": "7de377ae7d03194600020b319c3e135b3986fa2063bdbf339f7b0e79ff7b0c61",
+    "external_model/literature_benchmark/Dao_Nazarov_2022_arxiv.pdf": "655d5b909353643fdfa1d66789f8f8500744ad370b9577a14ee8a3c1f065a6fc",
+    "solver/tests/ct_literature_linkage/build_receipt.py": "2f772c0aa8f6adeeb6ae2659003aef12a92e123bc81e141f20179a9e41cf2c8d",
+    "solver/tests/ct_literature_linkage/reference_native/src/hydro/rsolvers/mhd/hlld.cpp": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+    "solver/tests/ct_literature_linkage/reference_native/src/field/ct.cpp": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+    "solver/tests/ct_literature_linkage/reference_native/src/field/calculate_corner_e.cpp": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+    "solver/tests/ct_literature_linkage/reference_native/LICENSE": "31194975612df51ccb646ed5d43d3eeb5f7996e8a1725b409fb3e34f93059d32",
+    "solver/athena_ct_pins/07e7ca8cdd1f0db52a080a71c127ee336413a4e586b643d416a7bc99edc38716/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/hydro/rsolvers/mhd/hlld.cpp": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+    "solver/athena_ct_pins/07e7ca8cdd1f0db52a080a71c127ee336413a4e586b643d416a7bc99edc38716/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/ct.cpp": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+    "solver/athena_ct_pins/07e7ca8cdd1f0db52a080a71c127ee336413a4e586b643d416a7bc99edc38716/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/calculate_corner_e.cpp": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+    "solver/athena_ct_pins/07e7ca8cdd1f0db52a080a71c127ee336413a4e586b643d416a7bc99edc38716/external_dependency_pins.json": "e7f652ec10047335ec3c6a1cc776b6e55eb20884b356a61ebc87c190623ab36a",
+    "solver/athena_ct_pins/2a92aff603f7819a119b3272cb0d764ce8ec548db522cf70f53376e93ebd7a4c/external_source/tmp/x3i-codex-athena-ct-parallel/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/hydro/rsolvers/mhd/hlld.cpp": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+    "solver/athena_ct_pins/2a92aff603f7819a119b3272cb0d764ce8ec548db522cf70f53376e93ebd7a4c/external_source/tmp/x3i-codex-athena-ct-parallel/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/ct.cpp": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+    "solver/athena_ct_pins/2a92aff603f7819a119b3272cb0d764ce8ec548db522cf70f53376e93ebd7a4c/external_source/tmp/x3i-codex-athena-ct-parallel/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/calculate_corner_e.cpp": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+    "solver/athena_ct_pins/2a92aff603f7819a119b3272cb0d764ce8ec548db522cf70f53376e93ebd7a4c/external_dependency_pins.json": "40b5e73a1a9cfcbb97fec85659dba2c02d6c4ccbcec1a7dd827a05c85ecb1115",
+    "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/hydro/rsolvers/mhd/hlld.cpp": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+    "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-diagnostic/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/hydro/rsolvers/mhd/hlld.cpp": "20e34d265ad7acbe3d8b6da7d6d11728360b0cdbcab58d8c5a226aed935b4ff5",
+    "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/ct.cpp": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+    "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-diagnostic/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/ct.cpp": "8be7915e7bdbc29c125394791ea37cc244ef01725861c9c5c26f1bd843cf9779",
+    "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-features/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/calculate_corner_e.cpp": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+    "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_source/tmp/x3i-codex-athena-ct-diagnostic/athena-e47fabb7dd5efb22e1e2c7ff193148d723e3e952/src/field/calculate_corner_e.cpp": "a5db88bd69d6bc7b128fa0c945309c083a16a5c5c6ce8a885d93dd08430234c8",
+    "solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/external_dependency_pins.json": "705320ac7ad5f1b3ad77c16e8d5bc766cc0060e6577b27d67be8046e82db2cff",
+    "solver/tests/athena_reference/output/Brio-Wu.block0.out1.00001.tab": "faf29e7001d69fd16cf0d0d8d097071b48bb672b8bb6b1ab9b9652ae635a2be0",
+    "solver/tests/athena_reference/output/Brio-Wu.block0.out1.00000.tab": "e08b2cf5adff2dd047e605592a125783d96e31f4d9ebebd2b5959e337da8ac25",
+    "solver/tests/athena_reference/reference.csv": "66e09b8776af4240b65982b1c6f9c790655e2d924ae1883c7a943843d31522fe"
+  }
+}

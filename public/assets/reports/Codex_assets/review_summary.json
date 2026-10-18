@@ -1,0 +1,24 @@
+{
+  "author": "Codex",
+  "created_utc": "2026-10-18T01:34:34.825639+00:00",
+  "report": "Codex_report.md",
+  "report_sha256": "512a4aaadf904554d696048137a69b3a0e28db3b5a730d168e6271f616914a97",
+  "whitespace_word_count": 1424,
+  "section_headings": 0,
+  "local_links_resolve": true,
+  "all_asset_hashes_match": true,
+  "original_source_files_unchanged": true,
+  "reviewers": {
+    "Codex_assets/reviews/external_model.txt": "9fb81946072b7c96dad4b515056de7e88c4b3f2320ad87c26d8648957d2c3324",
+    "Codex_assets/reviews/observations.txt": "bc8de73185eef47105cae7e37fdf88569036f5267bc5c1f8dab6be7a7d0bc8c1",
+    "Codex_assets/reviews/solver.txt": "3acf404dbd458376ffd7800ed92a1ed316e27586ab3f9f995eac6432db167116"
+  },
+  "style_comparison_source": "https://www.feynmanlectures.caltech.edu/I_01.html#Ch1-S2",
+  "review_outcome": "All three reviewers found no blocking issue. Corrections implemented for geometric-mean calibration, prepared-map interpolation, time-averaged EMF, failed-scenario scope, coarse-mesh sensitivity and causal prose.",
+  "post_review_root_precision_edits": [
+    "An early GPU version, rather than claiming the first implementation was GPU-based.",
+    "Specify median absolute fractional flux error for the matched-spacecraft comparison."
+  ],
+  "math_validation": "Vendored KaTeX compiled 2 display and 22 inline expressions with throwOnError=true and strict=error.",
+  "figure_validation": "Rendered from the copied eight-frame JSON; visually inspected after separating date/time ticks. No original scientific output regenerated."
+}

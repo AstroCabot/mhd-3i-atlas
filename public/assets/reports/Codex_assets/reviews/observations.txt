@@ -1,0 +1,30 @@
+Codex observations review — 18 October 2026
+Reviewed current Codex_report.md SHA256 546e13e6760d936c00485119952d2e083a60147483bcc36d1caa8326d224cdff.
+Initial full review used SHA256 4a16429bd79de008080254ae84a61f0788e805ff43daeeb47ee4947f6158436d; the current follow-up re-read only the changed paragraphs.
+Scope: read-only review of the current scientific products and draft; only this review file written. Initial draft length: 1377 whitespace words / 1465 regex words; no section headings.
+
+The draft is scientifically candid. The quoted eight-frame correlation (0.282), observed/model dynamic ranges (7.87/1.45), PN means, CCMC comparison and selected native metrics match the frozen products. The early PN decrease is explicitly missed; the text does not claim an X-ray fit, reconstructed charge states or a calibrated confidence interval. The separation between implementation tests, finite numerical changes, boundary assumptions and empirical accuracy is maintained. No blocking error in the light-curve discussion.
+
+Initial precision advice — all three now addressed in the current draft:
+
+1. Replace “Geometrically balanced STEREO-A and Solar Orbiter measurements … fixed the scalar normalizations” with “I gave STEREO-A and Solar Orbiter equal weight, taking the geometric mean of their separate median normalizations over 10–24 November.” prepare_inputs.py uses the geometric mean of instrument medians; “geometrically balanced” can sound like spatial weighting.
+
+2. The demonstrative code currently interpolates raw maps and then subtracts50. Production first prepares the maps with max(vWSA−50,200), then interpolates the prepared speeds and reapplies n/T closure. Use `v = interpolate(prepared_speed_maps, position, time)` with a comment that preparation includes the −50km/s correction and200km/s minimum. The actual map minimum is236.078km/s, so this is an implementation-description correction, not a changed numerical result.
+
+3. Replace “I excluded these responses from physical uncertainty estimates” with “I retained those runs as failures or unqualified diagnostics, without assigning them a qualified comet-flux response.” No probabilistic physical uncertainty estimate was produced. Qualified coarse sensitivity scenarios remain useful, while cooler/gamma failures and low-density/slow boundary-work failures leave specific responses unresolved.
+
+Direct comparison with the requested Feynman source:
+https://www.feynmanlectures.caltech.edu/I_01.html#Ch1-S2 (official Caltech text, read18October2026; gas/piston discussion).
+Feynman fixes temperature while doubling density, follows the changed collision rate to pressure, then states the dilute-gas approximation. His moving-piston example likewise follows a mechanical change through collisions to temperature. The draft's closure and CT paragraphs already use this causal structure. Strengthen it once with: “Doubling the imposed speed divides density by four and multiplies temperature by four; both nv² and nT stay fixed.” Then explain why independent interpolation breaks those constraints. This teaches the boundary assumption through a controlled change, without imitating his voice.
+
+Small prose edits, optional:
+- Replace “The post-calibration spacecraft comparison remains sobering” with “The later spacecraft comparison exposes a timing error.” The numerical evidence supplies the judgment.
+- Replace “Refinement then changed the scientific decision” with the concrete first failure: “Refining latitude from16to32cells failed the density and flux targets.”
+- Delete “I tested different possible mistakes separately”; the following named tests are sufficient.
+- Make the CT cancellation unambiguous: “Each cell edge appears in two of that cell's faces with opposite orientation.”
+
+Do not strengthen the PN conclusion during revision. The frame incident flux rises1.06749e8→1.54464e8cm^-2s^-1, whereas PN rates start4.28869, fall to0.54502, then recover3.53481ct/s. Its unweighted eight-frame Pearson coefficient is0.281720603. Each series is divided by its own GTI-weighted mean only for display. Poor agreement does not isolate a cause or falsify SWCX when the wind, neutral distribution and ionic populations are not independently fixed. The manuscript light-curve band is200–1000eV, pattern0; the350–1100eV general soft-band setting is separate.
+
+The peer references are appropriately attributed as suggestions and distinct calculations. Claude's own reported PN anticorrelation and Argon's assimilated result must not be substituted for this model's metrics. The draft does not make that substitution.
+
+Follow-up confirmation (2026-10-18T01:33:43.589716+00:00): no blocker in the changed paragraphs. Equal instrument weighting/geometric medians, prepared-speed interpolation and exact max(vWSA−50,200), and failed/unqualified responses are now described correctly. The within-cell CT cancellation is explicit. The doubling-speed example gives a concrete controlled change and its algebraic consequences, strengthening the explanation requested in the Feynman comparison. All requested advice is addressed. The draft and original scientific products were not edited or regenerated by this reviewer.

@@ -1,0 +1,126 @@
+{
+  "reference_case": "ct156_w30_theta40_phi192",
+  "time_convention": "observer_arrival",
+  "frame_count": 8,
+  "lightcurve_dynamic_range": 7.868863207909715,
+  "model_frame_incident_flux_dynamic_range": 1.4469922755603886,
+  "frame_pearson_r": 0.28172060302811786,
+  "rows": [
+    {
+      "frame": "pn-s003-p01",
+      "midpoint_utc": "2025-12-03T13:53:25.177",
+      "gti_s": 5780.998,
+      "pn_rate_ct_s": 4.28868696,
+      "pn_error_ct_s": 0.03659342,
+      "n": 2.467851191086662,
+      "v": 470.65130068751245,
+      "f": 116149654.03124903,
+      "v_rel": 432.5572072772147,
+      "f_incident": 106748595.83358976
+    },
+    {
+      "frame": "pn-s003-p02",
+      "midpoint_utc": "2025-12-03T15:35:48.373",
+      "gti_s": 1987.002,
+      "pn_rate_ct_s": 2.64692389,
+      "pn_error_ct_s": 0.05289429,
+      "n": 2.459496254828992,
+      "v": 472.24650151206674,
+      "f": 116148784.73305841,
+      "v_rel": 434.1657432693491,
+      "f_incident": 106782837.46769185
+    },
+    {
+      "frame": "pn-s003-p03",
+      "midpoint_utc": "2025-12-03T18:17:19.661",
+      "gti_s": 4147.923,
+      "pn_rate_ct_s": 0.63703585,
+      "pn_error_ct_s": 0.022053,
+      "n": 2.4596334717170274,
+      "v": 477.461261101459,
+      "f": 117438187.66659918,
+      "v_rel": 439.2214720974962,
+      "f_incident": 108032590.64656506
+    },
+    {
+      "frame": "pn-s003-p04",
+      "midpoint_utc": "2025-12-03T19:54:29.399",
+      "gti_s": 1861.0,
+      "pn_rate_ct_s": 0.54501989,
+      "pn_error_ct_s": 0.03140897,
+      "n": 2.4785062406938514,
+      "v": 482.6049205218007,
+      "f": 119616317.2796436,
+      "v_rel": 444.0993901986611,
+      "f_incident": 110072575.5783172
+    },
+    {
+      "frame": "pn-s003-p05",
+      "midpoint_utc": "2025-12-03T22:17:03.044",
+      "gti_s": 1828.002,
+      "pn_rate_ct_s": 0.67162011,
+      "pn_error_ct_s": 0.03428204,
+      "n": 2.5537362779920496,
+      "v": 492.3608889170031,
+      "f": 125738158.73229755,
+      "v_rel": 453.38305613526546,
+      "f_incident": 115784146.6037493
+    },
+    {
+      "frame": "pn-s003-p08",
+      "midpoint_utc": "2025-12-04T04:00:19.431",
+      "gti_s": 2097.359,
+      "pn_rate_ct_s": 1.15378115,
+      "pn_error_ct_s": 0.03486167,
+      "n": 3.020185272438032,
+      "v": 508.5904204778392,
+      "f": 153603988.46051836,
+      "v_rel": 468.9344241066343,
+      "f_incident": 141627128.9715817
+    },
+    {
+      "frame": "pn-s003-p10",
+      "midpoint_utc": "2025-12-04T07:36:14.821",
+      "gti_s": 1980.0,
+      "pn_rate_ct_s": 3.02391557,
+      "pn_error_ct_s": 0.05350057,
+      "n": 3.2144605290556525,
+      "v": 508.4553285986932,
+      "f": 163439782.11912736,
+      "v_rel": 468.67250587643196,
+      "f_incident": 150651697.6979266
+    },
+    {
+      "frame": "pn-s003-p11",
+      "midpoint_utc": "2025-12-04T09:25:11.574",
+      "gti_s": 1680.0,
+      "pn_rate_ct_s": 3.5348058,
+      "pn_error_ct_s": 0.06214281,
+      "n": 3.3087525591714084,
+      "v": 506.67984499907755,
+      "f": 167646983.24839327,
+      "v_rel": 466.83835446303755,
+      "f_incident": 154464393.59812227
+    }
+  ],
+  "interpretation": "An exploratory eight-frame trend check, not a fitted SWCX light-curve prediction; coma column, charge states, backgrounds and viewing geometry are not independently fixed.",
+  "heavyion_prior_check": {
+    "assumed_fraction_range": [
+      0.0003,
+      0.001
+    ],
+    "comet_incident_flux_PN_mean_cm2_s": [
+      35793.001166728805,
+      119310.00388909604
+    ],
+    "prior_is_contemporaneous": false,
+    "original_heavyion_prior": {
+      "distribution": "zero-truncated normal",
+      "location": 100000.0,
+      "scale": 38000.0,
+      "lower": 0,
+      "contemporaneous": false,
+      "units": "cm^-2 s^-1"
+    }
+  }
+}
