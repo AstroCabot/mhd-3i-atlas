@@ -1,11 +1,11 @@
 {
   "passed": true,
-  "browser": "firefox",
+  "browser": "chromium",
   "results": [
     "planet distance guides; eleven routes; persistent heading preference without remounting playback",
     "four-model NASA metrics, spacecraft and quantity controls",
     "three source catalogues, method scrolling, search, line permalinks and raw downloads",
     "three supplied reports, rendered math, original figures and working evidence links",
-    "responsive NASA/source/report views at 1024, 768 and 390px; escaped report HTML"
+    "all reports use one centered column, no body headings, spaced paragraphs and centered multiline equations at 1600, 1280, 1024, 768, 390 and 320px; escaped report HTML"
   ]
 }

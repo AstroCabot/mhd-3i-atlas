@@ -1,4 +1,5 @@
 import {siteUrl} from './site-paths.js';
+import {renderReportMath} from './report-math.js';
 
 const IDS=['argon','codex','claude'];
 const ORDER=[...IDS,'enlil'];
@@ -6,6 +7,7 @@ const NAMES={argon:'Argon',codex:'Codex',claude:'Claude',enlil:'NASA WSA–ENLIL
 const COLORS={argon:'var(--argon)',codex:'var(--codex)',claude:'var(--claude)',enlil:'var(--comparator)'};
 const escape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const number=(value,digits=2)=>Number.isFinite(value)?value.toLocaleString('en-GB',{minimumFractionDigits:digits,maximumFractionDigits:digits}):'—';
+const epochLabel=value=>new Date((value-40587)*86400000).toLocaleDateString('en-GB',{timeZone:'UTC',day:'numeric',month:'short',year:'numeric'});
 const cache=new Map();
 const load=(ctx,path)=>{
   if(!cache.has(path))cache.set(path,ctx.fetchJson(path).catch(error=>{cache.delete(path);throw error;}));
@@ -15,7 +17,7 @@ const modelLabel=id=>`<span class="agent-cell"><i class="color-dot" style="backg
 const external=(url,label)=>`<a class="accent" href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)}</a>`;
 const downloadLink=(url,label)=>`<a class="button" href="${siteUrl(url)}" download>${escape(label)}</a>`;
 const section=title=>`<div class="section-heading"><h2>${escape(title)}</h2></div>`;
-const figure=(id,title,subtitle)=>`<section class="panel"><div class="panel-head"><div><h2 class="panel-title">${escape(title)}</h2><div class="panel-sub">${escape(subtitle)}</div></div><button class="button icon ghost" data-chart-export="${id}" aria-label="Download chart as SVG">↓</button></div><div id="${id}" class="chart large"></div></section>`;
+const figure=(ctx,id,title,subtitle)=>`<section class="panel"><div class="panel-head"><div><h2 class="panel-title">${escape(title)}</h2><div class="panel-sub">${escape(subtitle)}</div></div>${ctx.exportButton(id)}</div><div id="${id}" class="chart large"></div></section>`;
 const chartLegend=(observed=false)=>`<div class="legend reference-legend">${ORDER.map(id=>`<span><i class="legend-line" style="background:${COLORS[id]}"></i>${NAMES[id]}</span>`).join('')}${observed?'<span><i class="legend-line" style="background:var(--observed)"></i>Observed</span>':''}</div>`;
 function pending(ctx,title,body){
   const key=ctx.state.renderKey;
@@ -43,12 +45,12 @@ export async function nasaPage(ctx){
       <div class="prose reference-intro"><p>${external(data.run.url,data.run.id)} uses time-dependent GONGZ/WSA input and a 64-entry cone catalogue across its full simulation interval. It is a separate reconstruction of the wind, rather than a measurement at the comet.</p><p>${escape(data.densityConvention)}</p></div>
       ${section('Spacecraft plasma on matched samples')}
       <div class="toolbar"><div class="segmented" aria-label="Reference comparison spacecraft">${data.spacecraft.map(row=>`<button data-reference-craft="${row.id}" class="${row.id===craft.id?'active':''}">${escape(row.label.split(' / ')[0])}</button>`).join('')}</div><label class="field-select">Quantity <select id="reference-quantity"><option value="flux" ${quantity==='flux'?'selected':''}>Proton flux</option><option value="density" ${quantity==='density'?'selected':''}>Proton density</option><option value="speed" ${quantity==='speed'?'selected':''}>Speed</option></select></label></div>
-      ${figure('reference-spacecraft',`${craft.label} · ${titles[quantity]}`,'Common sampling · geometric UTC')}${chartLegend(true)}
-      <section class="panel"><div class="table-scroll" tabindex="0" role="region" aria-label="Four-model spacecraft residuals"><table class="comparison-table" id="reference-metrics"><caption class="sr-only">Recomputed spacecraft residuals on the same finite timestamps for every model.</caption><thead><tr><th scope="col">Model</th><th scope="col">Speed RMSE / km s⁻¹</th><th scope="col">Speed bias / km s⁻¹</th><th scope="col">Speed r</th><th scope="col">Speed samples</th><th scope="col">Median n ratio</th><th scope="col">Median flux ratio</th></tr></thead><tbody>${ORDER.map(id=>{const m=craft.metrics[id];return `<tr><th scope="row">${modelLabel(id)}</th><td>${number(m.speedRmse,1)}</td><td>${number(m.speedBias,1)}</td><td>${number(m.speedR,3)}</td><td>${m.speedN}</td><td>${number(m.densityMedianRatio,3)}</td><td>${number(m.fluxMedianRatio,3)}</td></tr>`;}).join('')}</tbody></table></div><p class="figure-caption">Ratios are model/observed. Each quantity uses one shared positive finite mask across all four models, so these metrics can differ from the three-model table in Observations. ${escape(data.comparisonPolicy)}</p></section>
-      <p class="footnote">${escape(craft.qualification)} ${escape(data.earthProxy)}</p>
-      ${section('Wind at 3I/ATLAS')}${figure('reference-comet',`${titles[quantity]} at the comet`,`${units[quantity]} · ${data.comet.clock}`)}${chartLegend()}
+      ${figure(ctx,'reference-spacecraft',`${craft.label} · ${titles[quantity]}`,`${epochLabel(craft.timeMjd[0])}–${epochLabel(craft.timeMjd.at(-1))} · geometric UTC`)}${chartLegend(true)}
+      <section class="panel"><div class="table-scroll" tabindex="0" role="region" aria-label="Four-model spacecraft residuals"><table class="comparison-table" id="reference-metrics"><caption class="sr-only">Recomputed spacecraft residuals on the same finite timestamps for every model.</caption><thead><tr><th scope="col">Model</th><th scope="col">Speed RMSE / km s⁻¹</th><th scope="col">Speed bias / km s⁻¹</th><th scope="col">Speed r</th><th scope="col">Speed samples</th><th scope="col">Median nₚ ratio</th><th scope="col">Median flux ratio</th></tr></thead><tbody>${ORDER.map(id=>{const m=craft.metrics[id];return `<tr><th scope="row">${modelLabel(id)}</th><td>${number(m.speedRmse,1)}</td><td>${number(m.speedBias,1)}</td><td>${number(m.speedR,3)}</td><td>${m.speedN}</td><td>${number(m.densityMedianRatio,3)}</td><td>${number(m.fluxMedianRatio,3)}</td></tr>`;}).join('')}</tbody></table></div><p class="figure-caption">Ratios are model/observed. ${escape(data.comparisonPolicy)} Results can differ from the three-model table in Observations.</p></section>
+      ${craft.id==='wind'?`<p class="footnote">${escape(data.earthProxy)}</p>`:''}
+      ${section('Wind at 3I/ATLAS')}${figure(ctx,'reference-comet',`${titles[quantity]} at the comet`,`${units[quantity]} · ${data.comet.clock}`)}${chartLegend()}
       <section class="panel"><div class="table-scroll" tabindex="0" role="region" aria-label="Common PN exposure-weighted plasma conditions"><table class="comparison-table" id="reference-comet-means"><thead><tr><th scope="col">Model</th><th scope="col">nₚ / cm⁻³</th><th scope="col">|v| / km s⁻¹</th><th scope="col">nₚ|v| / 10⁸ cm⁻² s⁻¹</th><th scope="col">Flux / ENLIL</th></tr></thead><tbody>${ORDER.map(id=>`<tr><th scope="row">${modelLabel(id)}</th><td>${number(means[id].gtiMeans.density,3)}</td><td>${number(means[id].gtiMeans.speed,1)}</td><td>${number(means[id].gtiMeans.flux/1e8,4)}</td><td>${number(means[id].fluxRatioToEnlil,2)}</td></tr>`).join('')}</tbody></table></div><p class="figure-caption">${escape(data.comet.convention)} <a href="#xray">Comet-relative X-ray comparison.</a></p></section>
-      <div class="record-guide"><h2>What the CME control shows</h2><p>Over these same PN exposures, the archived CME run changes the comet’s mean heliocentric proton flux by ${number(100*data.comet.cmeRelativeFluxChange,3)}% relative to its ambient block. This is a result for this catalogue, geometry and time interval. It does not establish that CMEs were unimportant in the actual solar wind.</p></div>
+      <div class="record-guide"><h2>CME and ambient comparison</h2><p>Over these same PN exposures, the archived CME run changes the comet’s mean heliocentric proton flux by ${number(100*data.comet.cmeRelativeFluxChange,3)}% relative to its ambient block. This is a result for this catalogue, geometry and time interval. It does not establish that CMEs were unimportant in the actual solar wind.</p></div>
       ${section('Limitations and interpretation')}<div class="reference-limits">${data.limitations.map(row=>`<section class="prose"><h3>${escape(row.title)}</h3><p>${escape(row.body)}${row.url?' '+external(row.url,'Source.') : ''}</p></section>`).join('')}</div>
       <div class="source-list">${data.sources.map(row=>external(row.url,row.title)).join('')}<a class="source-link" href="${siteUrl('/docs/nasa-comparison-audit.md')}">Extraction and density audit</a></div>${ctx.footer()}`;
     const points=(times,values)=>times.map((time,i)=>[time,values[i]===null?null:values[i]/scale]);
@@ -83,7 +85,7 @@ const codeUrl=(agent,file,line)=>'#code?'+new URLSearchParams({agent,file,...(li
 
 export async function codePage(ctx){
   const title='MHD solver source';
-  const intro='Read the production numerical methods, boundary coupling and controller code behind the three selected reconstructions. Files retain their original text, line numbers and source checksums.';
+  const intro='Inspect the production solver, boundary-condition and controller code for each selected reconstruction.';
   const current=pending(ctx,title,intro);
   try{
     const data=await load(ctx,'/data/solver-code.json');if(!current())return;
@@ -95,7 +97,7 @@ export async function codePage(ctx){
     const file=files.find(file=>file.id===requested?.id)||files[0];
     const lines=sourceLines(file.text,file.language);
     const line=Math.min(file.lineCount,Math.max(1,Math.floor(Number(params.get('line'))||1)));
-    document.getElementById('main').innerHTML=ctx.heading('',title,intro,`<a class="button" href="#methods">Model physics</a><a class="button" href="${siteUrl('/data/solver-code.json')}" download>Source catalogue</a>`)+
+    document.getElementById('main').innerHTML=ctx.heading('',title,intro,`<a class="button" href="#methods?agent=${agent}">Model physics</a><a class="button" href="${siteUrl('/data/solver-code.json')}" download>Source catalogue</a>`)+
       `<div class="model-tabs" aria-label="Source model">${IDS.map(id=>`<a class="model-tab ${id===agent?'active':''}" style="--model-color:${COLORS[id]}" href="#code?agent=${id}" ${id===agent?'aria-current="true"':''}>${modelLabel(id)}</a>`).join('')}</div>
       <p class="footnote">Selected reference: <code>${escape(data.selection[agent])}</code>. ${agent==='claude'?escape(data.claudeMovieNote):agent==='codex'?escape(data.athena.credit):'The CUDA source contains the selected model’s evolution and boundary kernels.'}</p>
       <div class="source-layout"><aside class="panel source-files" aria-label="Solver source files">${files.map(row=>`<a class="source-file ${row.id===file.id?'active':''}" href="${codeUrl(agent,row.id)}" ${row.id===file.id?'aria-current="true"':''}><strong>${escape(row.filename)}</strong><small>${escape(row.language)} · ${row.lineCount.toLocaleString()} lines</small><span>${escape(row.purpose)}</span></a>`).join('')}</aside>
@@ -178,7 +180,7 @@ export function renderWriteupMarkdown(markdown,baseUrl=''){
       html+=`<div class="writeup-equation" data-writeup-math="${escape(tex.trim())}">${escape(tex.trim())}</div>`;continue;
     }
     const heading=/^(#{1,6})\s+(.+)$/.exec(line);
-    if(heading){const level=Math.min(6,heading[1].length+1);html+=`<h${level}>${inline(heading[2])}</h${level}>`;i++;continue;}
+    if(heading){i++;continue;}
     if(i+1<lines.length&&line.includes('|')&&/^\s*\|?\s*:?-{3,}/.test(lines[i+1])){
       html+='<div class="table-scroll"><table class="comparison-table"><thead><tr>'+cells(line).map(text=>`<th>${text}</th>`).join('')+'</tr></thead><tbody>';i+=2;
       while(i<lines.length&&lines[i].includes('|')&&lines[i].trim()){html+='<tr>'+cells(lines[i++]).map(text=>`<td>${text}</td>`).join('')+'</tr>';}
@@ -199,19 +201,19 @@ export function renderWriteupMarkdown(markdown,baseUrl=''){
 
 export async function writeupsPage(ctx){
   const title='Model writeups';
-  const intro='Read each agent’s account of its physical model, implementation, evidence and limitations. Submitted reports are kept separate from the application’s extracted comparisons.';
+  const intro='Each agent describes its model, numerical methods, results and limitations.';
   const current=pending(ctx,title,intro);
   try{
     const data=await load(ctx,'/data/model-writeups.json');if(!current())return;
     const params=new URLSearchParams(location.hash.split('?')[1]||'');
-    const selected=data.reports.find(report=>report.id===params.get('agent'))||data.reports[0];
-    document.getElementById('main').innerHTML=ctx.heading('',title,intro,`<a class="button" href="${siteUrl(data.guideUrl)}" target="_blank">Submission guide</a>`)+
-      `<div class="model-tabs" aria-label="Model writeup">${data.reports.map(report=>`<a class="model-tab ${report.id===selected.id?'active':''}" style="--model-color:${COLORS[report.id]}" href="#writeups?agent=${report.id}" ${report.id===selected.id?'aria-current="true"':''}>${modelLabel(report.id)}<span class="writeup-status">${report.status==='submitted'?'Submitted':'Pending'}</span></a>`).join('')}</div>
-      <p class="footnote">${escape(data.policy)}</p>
-      ${selected.status==='submitted'?`<article class="panel content-panel writeup-article"><div class="panel-head"><h2 class="panel-title">${NAMES[selected.id]} submission</h2>${downloadLink(selected.rawUrl,'Original Markdown')}</div><div class="prose writeup-body">${renderWriteupMarkdown(selected.markdown,siteUrl(selected.rawUrl))}</div><details class="source-provenance"><summary>Submission provenance</summary><p class="source-path">${escape(selected.sourcePath)}</p><p class="source-path">SHA-256 ${escape(selected.sha256)}</p></details></article>`:
-      `<section class="panel content-panel writeup-pending"><h2>No ${NAMES[selected.id]} writeup has been submitted</h2><p>The slot is ready for the agent’s own report. Its current model description, implementation and recorded discussion are already available below.</p><p><a class="accent" href="#methods">Model physics</a> · <a class="accent" href="#code?agent=${selected.id}">Solver source</a> · <a class="accent" href="#transcripts?mode=sessions&agent=${selected.id}">Recorded conversation</a></p><p>Submission file: <code>${escape(selected.sourcePath)}</code></p><p>Reference currently compared: <code>${escape(selected.referenceRun)}</code></p></section>`}
-      <div class="record-guide"><h2>Preparing a report</h2><p>Identify the selected run, evolved equations, numerical methods, boundary and calibration inputs, verification, spacecraft and NASA comparisons, comet/X-ray interpretation, resource accounting and unresolved limitations. The guide includes the submission paths and supported formatting.</p><a class="accent" href="${siteUrl(data.guideUrl)}" target="_blank">Read the submission guide.</a></div>${ctx.footer()}`;
-    document.querySelectorAll('[data-writeup-math]').forEach(node=>window.katex.render(node.dataset.writeupMath,node,{displayMode:node.tagName==='DIV',throwOnError:false,trust:false}));
+    const selected=data.reports.find(report=>report.id===params.get('agent'))||data.reports.find(report=>report.id===ctx.state.writeupAgent)||data.reports[0];
+    ctx.state.writeupAgent=selected.id;
+    document.getElementById('main').innerHTML='<div class="writeup-column">'+ctx.heading('',title,intro,selected.rawUrl?downloadLink(selected.rawUrl,'Original Markdown'):`<a class="button" href="${siteUrl(data.guideUrl)}" target="_blank">Submission guide</a>`)+
+      `<div class="model-tabs" aria-label="Model writeup">${data.reports.map(report=>`<a class="model-tab ${report.id===selected.id?'active':''}" style="--model-color:${COLORS[report.id]}" href="#writeups?agent=${report.id}" ${report.id===selected.id?'aria-current="true"':''}>${modelLabel(report.id)}${report.status==='submitted'?'':'<span class="writeup-status">Pending</span>'}</a>`).join('')}</div>
+      ${selected.status==='submitted'?`<article class="panel content-panel writeup-article"><div class="prose writeup-body">${renderWriteupMarkdown(selected.markdown,siteUrl(selected.rawUrl))}</div><details class="source-provenance"><summary>Source and submission details</summary><p>${escape(data.policy)}</p><p class="source-path">${escape(selected.sourcePath)}</p><p class="source-path">SHA-256 ${escape(selected.sha256)}</p><a class="accent" href="${siteUrl(data.guideUrl)}" target="_blank">Submission guide</a></details></article>`:
+      `<section class="panel content-panel writeup-pending"><h2>No ${NAMES[selected.id]} writeup has been submitted</h2><p>The slot is ready for the agent’s own report. Its current model description, implementation and recorded discussion are already available below.</p><p><a class="accent" href="#methods?agent=${selected.id}">Model physics</a> · <a class="accent" href="#code?agent=${selected.id}">Solver source</a> · <a class="accent" href="#transcripts?mode=sessions&agent=${selected.id}">Recorded conversation</a></p><p>Submission file: <code>${escape(selected.sourcePath)}</code></p><p>Reference currently compared: <code>${escape(selected.referenceRun)}</code></p></section>`}
+      </div>${ctx.footer()}`;
+    renderReportMath(document.querySelector('.writeup-column'));
     ctx.bindCommon();
   }catch(error){failed(ctx,current,error);}
 }

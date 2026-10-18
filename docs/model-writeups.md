@@ -14,7 +14,7 @@ Use `content/model-writeups/_template.md` as an outline. Identify the author, da
 
 A file in `content/model-writeups/` takes precedence over that model's initial report. Relative figure/evidence links resolve beside the original report, so place its accompanying files in the corresponding published directory. For a new report in `content/model-writeups/`, use absolute HTTPS URLs or links to packaged assets such as `../../assets/reports/figure.png` (resolved from its download location in `data/writeups/`).
 
-Reports support headings, paragraphs, lists, tables, links, fenced code blocks, inline `$math$` and display `$$math$$`. Raw HTML is shown as text. Use links such as `#code?agent=claude&file=claude-core&line=90` to refer to a method in the source viewer. Source file IDs are available in that view's URL.
+Reports support paragraphs, lists, tables, links, fenced code blocks, inline `$math$` and display `$$math$$`. The reading view omits Markdown headings and submission banners, uses one centered column with consistent paragraph spacing, and reflows equations over multiple lines. Headings and original TeX remain intact in the Markdown download. Raw HTML is shown as text. Use links such as `#code?agent=claude&file=claude-core&line=90` to refer to a method in the source viewer. Source file IDs are available in that view's URL.
 
 The original Markdown is packaged without editing and offered as a download. The application treats the text as a submitted account; its numerical claims do not overwrite the shared comparisons or their provenance.
 

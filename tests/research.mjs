@@ -35,6 +35,42 @@ try{
     await page.waitForSelector(selector);
   };
   const shot=async(name)=>{if(process.env.CAPTURE_SCREENSHOTS==='1'){mkdirSync('tests/screenshots',{recursive:true});await page.screenshot({path:`tests/screenshots/${name}.png`,fullPage:true,animations:'disabled',timeout:10000});}};
+  const checkAgentSpacing=async()=>{
+    const gaps=await page.locator('.model-tab .agent-cell').evaluateAll(cells=>cells.map(cell=>{
+      const text=[...cell.childNodes].find(node=>node.nodeType===Node.TEXT_NODE&&node.textContent.trim());
+      const range=document.createRange();range.selectNodeContents(text);
+      return range.getBoundingClientRect().left-cell.querySelector('.color-dot').getBoundingClientRect().right;
+    }));
+    assert.equal(gaps.length,3);assert.ok(gaps.every(gap=>gap>=7.9),'Agent colour swatches need an 8px gap before their names');
+    const tops=await page.locator('.model-tab').evaluateAll(tabs=>tabs.map(tab=>tab.getBoundingClientRect().top));
+    assert.ok(Math.max(...tops)-Math.min(...tops)<1,'The three agent selectors should fit on one row');
+  };
+  const checkReportLayout=async(agent,width)=>{
+    await page.evaluate(()=>document.fonts.ready);
+    const layout=await page.evaluate(()=>{
+      const column=document.querySelector('.writeup-column').getBoundingClientRect();
+      const main=document.getElementById('main').getBoundingClientRect();
+      const body=document.querySelector('.writeup-body').getBoundingClientRect();
+      return {
+        centered:Math.abs((column.left+column.right-main.left-main.right)/2)<1,
+        width:column.width,
+        headings:document.querySelectorAll('.writeup-article h1,.writeup-article h2,.writeup-article h3,.writeup-article h4').length,
+        gap:parseFloat(getComputedStyle(document.querySelector('.writeup-body p')).marginBottom),
+        overflow:[...document.querySelectorAll('.writeup-body .table-scroll,.writeup-body pre,.writeup-equation')].filter(node=>node.scrollWidth>node.clientWidth+1).map(node=>({type:node.className,width:node.clientWidth,scroll:node.scrollWidth})),
+        math:[...document.querySelectorAll('.writeup-equation-line')].map(node=>{
+          const box=node.getBoundingClientRect();
+          const parts=[...node.querySelectorAll('.katex-display > .katex > .katex-html > :is(.base,.katex-base)')].map(part=>part.getBoundingClientRect());
+          const left=Math.min(...parts.map(part=>part.left)),right=Math.max(...parts.map(part=>part.right));
+          return {tex:node.closest('[data-writeup-math]').dataset.writeupMath.slice(0,50),fits:left>=body.left-1&&right<=body.right+1,center:Math.abs((left+right-box.left-box.right)/2),...(!parts.length?{html:node.innerHTML.slice(0,500)}:{})};
+        }),
+      };
+    });
+    assert.ok(layout.centered&&layout.width<=780.5,`${agent}: single centered column at ${width}px`);
+    assert.equal(layout.headings,0,'Report bodies should have no headings or submission banners');
+    assert.ok(layout.gap>=22,`${agent} at ${width}px: report paragraphs need clear separation (${layout.gap}px)`);
+    assert.deepEqual(layout.overflow,[],`${agent}: clipped or horizontally scrolling report material at ${width}px`);
+    for(const math of layout.math){assert.ok(math.fits,`${agent} at ${width}px: equation leaves the reading column: ${JSON.stringify(math)}`);assert.ok(math.center<=1.5,`${agent}: equation is off-center: ${JSON.stringify(math)}`);}
+  };
   await open('solar-wind','[data-orbit=mars]');
   await page.waitForFunction(()=>window.__HELIOS__.player.getState().status==='paused',null,{polling:100});
   assert.equal(await page.locator('[data-nav]').count(),11);
@@ -56,16 +92,19 @@ try{
   await open('nasa','#reference-metrics tbody tr');
   assert.equal(await page.locator('#reference-metrics tbody tr').count(),4);
   assert.equal(await page.locator('#reference-comet-means tbody tr').count(),4);
+  assert.equal(await page.locator('[data-chart-export=reference-spacecraft] svg').count(),1,'NASA charts must use the shared download icon');
   for(const craft of ['wind','solar_orbiter','stereo_a']){
     await page.locator(`[data-reference-craft=${craft}]`).click();
     await page.waitForFunction(craft=>window.__HELIOS__.state.referenceCraft===craft,craft,{polling:100});
     await page.waitForSelector('#reference-quantity');
+    assert.equal(await page.locator('p.footnote').filter({hasText:'not the exact Wind trajectory'}).count(),craft==='wind'?1:0,'Earth-proxy qualification belongs only to Wind');
   }
   await page.locator('#reference-quantity').selectOption('density');
   await page.waitForSelector('#reference-spacecraft svg');
   await shot('nasa-light');results.push('four-model NASA metrics, spacecraft and quantity controls');
   for(const agent of ['argon','codex','claude']){
     await open(`code?agent=${agent}`,'.source-line');
+    await checkAgentSpacing();
     const methods=await page.locator('#source-method option').evaluateAll(nodes=>nodes.filter(n=>n.value).map(n=>n.value));
     if(methods.length){
       const line=methods.at(-1);await page.locator('#source-method').selectOption(line);
@@ -77,14 +116,20 @@ try{
     const href=page.url();await page.reload({waitUntil:'domcontentloaded'});await page.waitForSelector('.source-line.selected');
     assert.equal(page.url(),href);
     const download=await page.locator('.source-actions a[download]').getAttribute('href');assert.equal((await page.request.get(download)).status(),200);
+    await page.locator(`.heading-actions a[href="#methods?agent=${agent}"]`).click();
+    await page.waitForSelector(`[data-method=${agent}].active`);
+    assert.equal(await page.evaluate(()=>window.__HELIOS__.state.method),agent,'Source-to-physics links must preserve the model');
   }
   await shot('source-light');results.push('three source catalogues, method scrolling, search, line permalinks and raw downloads');
   for(const agent of ['argon','codex','claude']){
     await open(`writeups?agent=${agent}`,'.writeup-article');
-    assert.equal(await page.locator('.writeup-status').filter({hasText:'Submitted'}).count(),3);
+    await checkAgentSpacing();
+    assert.equal(await page.locator('.writeup-status').filter({hasText:'Submitted'}).count(),0,'Repeated submission labels should be omitted');
     await page.waitForFunction(()=>document.querySelector('.writeup-body .katex'),null,{polling:100});
     assert.ok(await page.locator('.writeup-body .katex').count()>0,`${agent} report equations must render`);
     assert.deepEqual(await page.locator('.writeup-body .katex-error').allTextContents(),[],`${agent} math errors`);
+    await checkReportLayout(agent,1280);
+    if(process.env.CAPTURE_SCREENSHOTS==='1')await page.locator('.writeup-equation').first().screenshot({path:`tests/screenshots/${agent}-equation-desktop.png`});
     for(const img of await page.locator('.writeup-body img').all()){
       await img.scrollIntoViewIfNeeded();
       await img.evaluate(node=>{node.loading='eager';});
@@ -95,18 +140,26 @@ try{
       const url=await link.getAttribute('href');if(url.startsWith(base))assert.equal((await page.request.head(url)).status(),200);
     }
   }
+  await page.locator('[data-nav=overview]').evaluate(node=>node.click());
+  await page.waitForFunction(()=>window.__HELIOS__.state.route==='overview',null,{polling:100});
+  await page.locator('[data-nav=writeups]').evaluate(node=>node.click());
+  await page.waitForSelector('.model-tab.active[href="#writeups?agent=claude"]');
   await shot('writeup-light');results.push('three supplied reports, rendered math, original figures and working evidence links');
-  for(const width of [1024,768,390]){
+  for(const width of [1600,1024,768,390,320]){
     await page.setViewportSize({width,height:900});
-    for(const route of ['nasa','code?agent=codex','writeups?agent=claude']){
+    for(const route of ['nasa','code?agent=codex',...['argon','codex','claude'].map(agent=>`writeups?agent=${agent}`)]){
       await open(route,route==='nasa'?'#reference-metrics':route.startsWith('code')?'.source-code':'.writeup-body');
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${route} overflows at ${width}px`);
+      if(route.startsWith('writeups')){
+        const agent=route.split('agent=')[1];await checkReportLayout(agent,width);await checkAgentSpacing();
+        if(process.env.CAPTURE_SCREENSHOTS==='1'&&width===320)await page.locator('.writeup-equation').first().screenshot({path:`tests/screenshots/${agent}-equation-mobile.png`});
+      }
     }
   }
   await shot('writeup-mobile');await page.locator('#theme-toggle').click();await shot('writeup-dark-mobile');
   const rendered=await page.evaluate(async()=>{const {renderWriteupMarkdown}=await import([...performance.getEntriesByType('resource')].find(row=>row.name.includes('/research-pages.js?')).name);return renderWriteupMarkdown('<script>alert(1)</script>\n\n[x](javascript:alert)\n\n# Heading');});
   assert.ok(!rendered.includes('<script>')&&!rendered.includes('href="javascript:'));
-  results.push('responsive NASA/source/report views at 1024, 768 and 390px; escaped report HTML');
+  results.push('all reports use one centered column, no body headings, spaced paragraphs and centered multiline equations at 1600, 1280, 1024, 768, 390 and 320px; escaped report HTML');
   assert.deepEqual(errors,[]);
   writeFileSync('tests/research-results.json',JSON.stringify({passed:true,browser:engine.name(),results},null,2)+'\n');
   results.forEach(result=>console.log('PASS: '+result));
