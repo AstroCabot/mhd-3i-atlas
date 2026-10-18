@@ -3,7 +3,7 @@ import { siteUrl } from './site-paths.js';
  * await mountSolarPlayers({root,manifestUrl,models,field,playing,speed,progress,onTime,onState})
  * Returns {ready,manifest,play,pause,setSpeed,setProgress,setField,setModel,getState,destroy}.
  * Two persistent predecoded image layers crossfade at requestAnimationFrame cadence.
- * Claude support uses verified native 30 min solver outputs; the other models
+ * Claude support uses verified native 30 min solver outputs; the other models and CCMC
  * interpolate original native samples to that shared support before colour mapping.
  * Intermediate opacity blending adds visual continuity, not native information.
  */
@@ -138,7 +138,7 @@ export async function mountSolarPlayers(options = {}) {
     for (const node of root.querySelectorAll('[data-playback-status-label],span[data-playback-status]')) {
       node.textContent = ({playing:`Playing · native output ${cadenceLabel()}`,loading:'Loading fields…',seeking:'Seeking…',paused:'Paused',stalled:'Loading next field…',error:'Could not load this time. Press play to retry.'})[status] || status;
       node.title = loadingError || (manifest.models.claude.temporalRefinement
-        ? '768 px · 30 min common display support. Claude uses verified native 30 min solver outputs; Argon and Codex interpolate their original approximately 3 h and 6 h samples.'
+        ? '768 px · 30 min common display support. Claude uses verified native 30 min solver outputs; Argon interpolates approximately 3 h output; Codex and CCMC interpolate approximately 6 h output.'
         : '768 px · 30 min interpolated display support; original native samples every approximately 3–6 h.');
     }
     options.onState?.(getState());
@@ -200,7 +200,7 @@ export async function mountSolarPlayers(options = {}) {
     const heading = panel.wrap.querySelector('.canvas-label strong');
     if (heading) {heading.textContent = model.name; heading.style.color = options.modelColors?.[panel.model] || 'var(--text, #e5e3da)';}
     const plane = panel.wrap.querySelector('[data-plane]');
-    if (plane) plane.textContent = `${panel.model === 'argon' ? '−6.455° cone' : 'Ecliptic'} · ${model.nativeSliceDimensions.join(' × ')} samples · ${cadence(panel.model)}${model.temporalRefinement ? ' solver output' : ' retained'}`;
+    if (plane) plane.textContent = panel.model==='enlil'?`Ecliptic from 3-D · ${model.solverDimensions.join(' × ')} cells · ${cadence(panel.model)} output`:`${panel.model === 'argon' ? '−6.455° cone' : 'Ecliptic'} · ${model.nativeSliceDimensions.join(' × ')} samples · ${cadence(panel.model)}${model.temporalRefinement ? ' solver output' : ' retained'}`;
     const title = panel.wrap.querySelector('[data-bar-title]');
     if (title) title.textContent = field === 'contrast' ? 'nₚv × r² / cm⁻² s⁻¹ AU²' : `${panel.model === 'claude' ? 'nₚvᵣ' : 'nₚ|v|'} / cm⁻² s⁻¹`;
     const min = panel.wrap.querySelector('[data-bar-min]');
@@ -231,7 +231,7 @@ export async function mountSolarPlayers(options = {}) {
     panels.push(panel);buildOverlay(panel);updateLabels(panel);
     const resizeLabels=()=>{
       const box=svg.getBoundingClientRect(),factor=768/Math.max(1,Math.min(box.width,box.height));
-      const base=wrap.closest('.solar-triptych')?10:11;
+      const base=wrap.closest('.solar-grid')?10:11;
       for(const text of svg.querySelectorAll('text')) {
         if(!text.dataset.originalFontSize)text.dataset.originalFontSize=text.getAttribute('font-size')||text.parentElement.getAttribute('font-size')||'10';
         text.setAttribute('font-size',String(factor*(Number(text.dataset.originalFontSize)>=12?base+1:base)));

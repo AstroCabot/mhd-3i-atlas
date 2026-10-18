@@ -1,15 +1,15 @@
 {
   "passed": true,
-  "date": "2026-10-18T01:54:51.755Z",
+  "date": "2026-10-18T11:47:03.790Z",
   "results": [
     {
       "prefix": "/",
       "passed": true,
-      "requests": 82,
+      "requests": 97,
       "checks": [
         "eleven views",
         "768 px images and field switching",
-        "six video downloads",
+        "eight video downloads",
         "equations and local fonts",
         "NASA comparison, solver sources and submitted writeups",
         "data and methods downloads",
@@ -22,11 +22,11 @@
     {
       "prefix": "/example-repo/",
       "passed": true,
-      "requests": 82,
+      "requests": 97,
       "checks": [
         "eleven views",
         "768 px images and field switching",
-        "six video downloads",
+        "eight video downloads",
         "equations and local fonts",
         "NASA comparison, solver sources and submitted writeups",
         "data and methods downloads",

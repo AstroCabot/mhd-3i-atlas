@@ -1,10 +1,10 @@
 {
   "passed": true,
   "browser": "firefox",
-  "date": "2026-10-18T01:10:01.588Z",
+  "date": "2026-10-18T11:49:18.495Z",
   "checks": [
     "Slider position and width stay fixed across playback states at four viewport widths",
-    "Rapid scrubbing cancels obsolete downloads and settles all three paused panels at the latest epoch",
+    "Rapid scrubbing cancels obsolete downloads and settles all four paused panels at the latest epoch",
     "Play retries a failed frame request and resumes without remounting the player",
     "Overlapping seek, field change and pause settle consistently without JavaScript errors"
   ]

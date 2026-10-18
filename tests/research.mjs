@@ -75,20 +75,19 @@ try{
   await page.waitForFunction(()=>window.__HELIOS__.player.getState().status==='paused',null,{polling:100});
   assert.equal(await page.locator('[data-nav]').count(),11);
   for(const [id,r]of Object.entries({mercury:.38709927,venus:.72333566,earth:1.00000261,mars:1.52371034})){
-    assert.equal(await page.locator(`[data-orbit=${id}]`).count(),3);
+    assert.equal(await page.locator(`[data-orbit=${id}]`).count(),4);
     assert.ok(Math.abs(Number(await page.locator(`[data-orbit=${id}]`).first().getAttribute('r'))-160*r)<1e-8);
-    assert.equal(await page.locator(`[data-orbit-label=${id}]`).count(),3);
+    assert.equal(await page.locator(`[data-orbit-label=${id}]`).count(),4);
   }
-  await page.evaluate(()=>window.retainedPlayer=window.__HELIOS__.player);
-  assert.equal(await page.locator('html').getAttribute('data-heading-style'),'sans');
-  await page.locator('#heading-toggle').click();
-  assert.equal(await page.locator('html').getAttribute('data-heading-style'),'serif');
-  assert.ok(await page.evaluate(()=>window.retainedPlayer===window.__HELIOS__.player));
-  await page.reload({waitUntil:'domcontentloaded'});await page.waitForSelector('[data-orbit=mars]');
-  assert.equal(await page.locator('html').getAttribute('data-heading-style'),'serif');
-  await page.locator('#heading-toggle').click();await page.locator('#theme-toggle').click();
+  assert.equal(await page.locator('#heading-toggle').count(),0);
+  assert.equal(await page.locator('.top-status').count(),0);
+  assert.equal(await page.locator('.solar-grid [data-solar]').count(),4);
+  assert.equal(await page.locator('[data-video-model=enlil]').count(),2);
+  const typography=await page.evaluate(()=>({brand:getComputedStyle(document.querySelector('.brand-name')).fontFamily,head:getComputedStyle(document.querySelector('h1')).fontFamily,weight:getComputedStyle(document.querySelector('.brand-name')).fontWeight}));
+  assert.equal(typography.brand,typography.head);assert.equal(typography.weight,'900');
+  await page.locator('#theme-toggle').click();
   await page.evaluate(()=>document.fonts.ready);await shot('orbits-light');
-  results.push('planet distance guides; eleven routes; persistent heading preference without remounting playback');
+  results.push('four synchronized fields including CCMC; technical-report typography; no font toggle or notebook label');
   await open('nasa','#reference-metrics tbody tr');
   assert.equal(await page.locator('#reference-metrics tbody tr').count(),4);
   assert.equal(await page.locator('#reference-comet-means tbody tr').count(),4);

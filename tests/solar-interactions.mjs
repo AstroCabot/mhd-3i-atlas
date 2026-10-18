@@ -70,7 +70,7 @@ try {
     const number=Number(/-(\d+)\.webp$/.exec(image.dataset.frameUrl)?.[1]);
     return [234,235].includes(number)&&image.complete&&image.naturalWidth===768;
   })),'Every panel must display the latest requested frame pair');
-  record('Rapid scrubbing cancels obsolete downloads and settles all three paused panels at the latest epoch');
+  record('Rapid scrubbing cancels obsolete downloads and settles all four paused panels at the latest epoch');
   // A failed request must be recoverable through the ordinary play control.
   await page.evaluate(()=>window.__HELIOS__.player.play());
   failOnce=true;

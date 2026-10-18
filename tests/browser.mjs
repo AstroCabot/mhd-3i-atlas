@@ -48,19 +48,19 @@ try {
   await page.waitForFunction(r=>window.__HELIOS__.state.route===r,route,{polling:100});
   assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('[data-math-error]').count(),0);
   if(route==='solar-wind'){
-   await page.waitForFunction(()=>document.querySelectorAll('[data-image-ready=true]').length===3&&window.__HELIOS__.player?.getState().status==='paused',null,{polling:100});
+   await page.waitForFunction(()=>document.querySelectorAll('[data-image-ready=true]').length===4&&window.__HELIOS__.player?.getState().status==='paused',null,{polling:100});
    await page.locator('[data-frame]').evaluate(el=>{el.value='340';el.dispatchEvent(new Event('input',{bubbles:true}));});
    await page.waitForFunction(()=>window.__HELIOS__.player.getState().status==='paused'&&Math.abs(window.__HELIOS__.state.progress-.34)<.0001,null,{polling:100});
-   assert.equal(await page.locator('[data-solar-image]').count(),6);assert.equal(await page.locator('video').count(),0);
+   assert.equal(await page.locator('[data-solar-image]').count(),8);assert.equal(await page.locator('video').count(),0);
    await page.locator('[data-play]').evaluate(el=>el.click());
    await page.waitForFunction(()=>window.__HELIOS__.state.progress>.35,null,{polling:100});
    await page.locator('[data-play]').evaluate(el=>el.click());
    assert.equal(await page.evaluate(()=>window.__HELIOS__.state.playing),false);
    await page.locator('[data-field=fluxR2]').evaluate(el=>el.click());
    await page.waitForFunction(()=>window.__HELIOS__.player?.getState().field==='contrast'&&window.__HELIOS__.player?.getState().status==='paused',null,{polling:100});
-   assert.equal(await page.evaluate(()=>window.__HELIOS__.state.field),'fluxR2');assert.equal(await page.locator('a[download][href$=\".mp4\"]').count(),6);
+   assert.equal(await page.evaluate(()=>window.__HELIOS__.state.field),'fluxR2');assert.equal(await page.locator('a[download][href$=\".mp4\"]').count(),8);
    await page.locator('#design-band').evaluate(el=>el.click());assert.equal(await page.evaluate(()=>window.__HELIOS__.state.band),true);
-   await page.waitForFunction(()=>document.querySelectorAll('[data-image-ready=true]').length===3&&window.__HELIOS__.player?.getState().status==='paused',null,{polling:100});
+   await page.waitForFunction(()=>document.querySelectorAll('[data-image-ready=true]').length===4&&window.__HELIOS__.player?.getState().status==='paused',null,{polling:100});
   }
   if(route==='verification'){
    await page.locator('[data-bench=linear-waves]').evaluate(el=>el.click());

@@ -40,7 +40,7 @@ export async function nasaPage(ctx){
     const titles={density:'Proton density',speed:'Heliocentric speed',flux:'Heliocentric proton flux'};
     const scale=quantity==='flux'?1e8:1;
     const means=data.comet.models;
-    document.getElementById('main').innerHTML=ctx.heading('',title,intro,downloadLink('/data/nasa-comparison.json','Comparison data'))+
+    document.getElementById('main').innerHTML=ctx.heading('',title,intro,`<a class="button" href="#solar-wind">Compare field movies</a>`+downloadLink('/data/nasa-comparison.json','Comparison data'))+
       `<dl class="fact-list"><div><dt>Reference</dt><dd>${escape(data.run.model)}</dd></div><div><dt>Grid · r × θ × φ</dt><dd>${data.run.grid.join(' × ')}</dd></div><div><dt>Radial domain</dt><dd>0.1–3.1 AU</dd></div><div><dt>Latitude</dt><dd>−48° to +48°</dd></div></dl>
       <div class="prose reference-intro"><p>${external(data.run.url,data.run.id)} uses time-dependent GONGZ/WSA input and a 64-entry cone catalogue across its full simulation interval. It is a separate reconstruction of the wind, rather than a measurement at the comet.</p><p>${escape(data.densityConvention)}</p></div>
       ${section('Spacecraft plasma on matched samples')}

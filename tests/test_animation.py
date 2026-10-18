@@ -3,6 +3,7 @@ import hashlib
 import importlib.util
 import json
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 
@@ -10,6 +11,7 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'scripts'))
 spec = importlib.util.spec_from_file_location('animation_builder', ROOT / 'scripts/build_animation_v2.py')
 builder = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builder)
@@ -79,7 +81,7 @@ class Animation(unittest.TestCase):
         axis = np.linspace(-2.4, 2.4, 768, dtype=np.float32)
         xx, yy = np.meshgrid(axis[indices], axis[indices])
         tables = builder.lookup_table()
-        for model in ('argon', 'codex', 'claude'):
+        for model in ('argon', 'codex', 'claude', 'enlil'):
             times, fields, radius, _ = builder.load_native(model, xx, yy)
             # Include a half-hour support point absent from the original Claude
             # archive, as well as the centre of the common interval.
@@ -111,7 +113,7 @@ class Animation(unittest.TestCase):
         xx, yy = np.meshgrid(axis[indices], axis[indices])
         t = MANIFEST['startMjd'] + 720 / 1439 * (MANIFEST['endMjd'] - MANIFEST['startMjd'])
         tables = builder.lookup_table()
-        for model in ('argon', 'codex', 'claude'):
+        for model in ('argon', 'codex', 'claude', 'enlil'):
             times, fields, radius, meta = builder.load_native(model, xx, yy)
             hi = np.searchsorted(times, t, side='right')
             lo = hi - 1

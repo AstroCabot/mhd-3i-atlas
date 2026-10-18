@@ -26,7 +26,7 @@ def check(directory):
     required = ('index.html', '.nojekyll', 'app.js', 'site-paths.js', 'solar-player.js',
                 'styles.css', 'theme.js', 'data/science.json', 'data/models.json',
                 'research-pages.js', 'report-math.js', 'data/nasa-comparison.json', 'data/solver-code.json',
-                'data/model-writeups.json', 'docs/model-writeups.md', 'docs/nasa-comparison-audit.md',
+                'data/model-writeups.json', 'data/ccmc-movie-provenance.json', 'docs/ccmc-movie-audit.md', 'docs/model-writeups.md', 'docs/nasa-comparison-audit.md',
                 'data/transcripts.json', 'data/physics-comparison.json', 'data/animation-v2.json', 'data/equations.json')
     for name in required:
         if not (directory / name).is_file():

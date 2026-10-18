@@ -45,11 +45,11 @@ try {
         if(route==='code')await page.waitForSelector('.source-line');
         if(route==='writeups')await page.waitForSelector('.writeup-article, .writeup-pending');
         if (route==='solar-wind') {
-          await page.waitForFunction(()=>document.querySelectorAll('[data-image-ready=true]').length===3&&window.__HELIOS__.player?.getState().status==='paused',null,{polling:100});
+          await page.waitForFunction(()=>document.querySelectorAll('[data-image-ready=true]').length===4&&window.__HELIOS__.player?.getState().status==='paused',null,{polling:100});
           await page.locator('[data-field=fluxR2]').evaluate(node=>node.click());
           await page.waitForFunction(()=>window.__HELIOS__.player.getState().field==='contrast'&&window.__HELIOS__.player.getState().status==='paused',null,{polling:100});
           const links = await page.locator('a[download][href$=".mp4"]').evaluateAll(nodes=>nodes.map(node=>node.href));
-          assert.equal(links.length,6);
+          assert.equal(links.length,8);
           for(const url of links){assert.ok(new URL(url).pathname.startsWith(prefix));assert.equal((await page.request.head(url)).status(),200);}
         }
         if (route==='methods') {
@@ -90,7 +90,7 @@ try {
       assert.ok(jsonRequests.length>=7,'The routes must request packaged scientific and archive data');
       assert.ok(jsonRequests.every(url=>url.searchParams.get('v')===version),'Data requests must revalidate with the deployed modules');
       assert.deepEqual(errors,[],'JavaScript or HTTP failure');
-      results.push({prefix,passed:true,requests:requests.length,checks:['eleven views','768 px images and field switching','six video downloads','equations and local fonts','NASA comparison, solver sources and submitted writeups','data and methods downloads','transcript chunks, search and notes','hash deep-link reload','no escaped-prefix requests','consistent module and JSON deployment versions']});
+      results.push({prefix,passed:true,requests:requests.length,checks:['eleven views','768 px images and field switching','eight video downloads','equations and local fonts','NASA comparison, solver sources and submitted writeups','data and methods downloads','transcript chunks, search and notes','hash deep-link reload','no escaped-prefix requests','consistent module and JSON deployment versions']});
       console.log(`PASS: strict static host at ${prefix}; ${requests.length} repository-relative requests.`);
     } finally {
       await page.close();

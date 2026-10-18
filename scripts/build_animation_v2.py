@@ -144,6 +144,9 @@ def load_native(model, xx, yy, *, retained=False):
                 'allCoincidentSlicesBitwiseEqual': refinement['allCoincidentSlicesBitwiseEqual'],
                 'generatedArchiveSha256': refinement['generatedArchive']['sha256'],
                 'integrationBoundaryPolicy': refinement['integrationBoundaryPolicy']}
+    elif model == 'enlil':
+        from prepare_ccmc_movie import load_native as load_ccmc
+        return load_ccmc(xx, yy)
     else:
         base = 'codex/results/ct156_w30_theta40_phi192/'
         index = pd.read_csv(source(base + 'snapshots.csv'))
@@ -308,7 +311,7 @@ def main():
     parser.add_argument('--size', type=int, default=768)
     parser.add_argument('--fps', type=int, default=30)
     parser.add_argument('--seconds', type=float, default=48)
-    parser.add_argument('--model', choices=['argon', 'codex', 'claude'])
+    parser.add_argument('--model', choices=['argon', 'codex', 'claude', 'enlil'])
     parser.add_argument('--images-only', action='store_true', help='Add portable image sequences to the existing native-video manifest.')
     parser.add_argument('--with-images', action='store_true', help='Build videos and portable images before publishing one coherent manifest.')
     args = parser.parse_args()
@@ -325,7 +328,7 @@ def main():
         'timeMjd': np.arange(START, END + 1e-8, .125).tolist(),
         'clock': 'Physical geometric UTC, not photon-arrival UTC.',
         'timeMapping': 'video frame i corresponds to startMjd + i/(frameCount−1) × (endMjd−startMjd). Displayed UTC clamps at the final encoded frame.',
-        'temporalInterpolation': ('Claude uses verified native 30-minute solver re-outputs; Argon and Codex retain their original approximately 3-hour and 6-hour archives. Between native epochs, bounded linear physical-flux interpolation precedes logarithmic colour mapping. Display fps adds no independent simulation information.'
+        'temporalInterpolation': ('Claude uses verified native 30-minute solver re-outputs; Argon retains approximately 3-hour output, while Codex and CCMC retain approximately 6-hour output. Between native epochs, bounded linear physical-flux interpolation precedes logarithmic colour mapping. Display fps adds no independent simulation information.'
                                   if REFINEMENT.exists() else 'Bounded linear physical-flux interpolation between consecutive original native epochs precedes logarithmic colour mapping. Native support is approximately three hours for Argon and Claude, and six hours for Codex. Display fps adds no independent simulation information.'),
         'spatialInterpolation': 'Bilinear interpolation from native retained plane samples directly to the 768² display raster; no 128² tile input, no extrapolation. Spatial display pixels are not independent solver cells.',
         'extentAu': [-2.4, 2.4, -2.4, 2.4],
@@ -342,7 +345,7 @@ def main():
     science = json.loads((APP / 'public/data/science.json').read_text())['animation']
     manifest['tracks'] = {name: {axis: np.interp(manifest['timeMjd'], science['timeMjd'], row[axis]).tolist()
                                 for axis in ('x', 'y')} for name, row in science['tracks'].items()}
-    for model in ([args.model] if args.model else ['argon', 'codex', 'claude']):
+    for model in ([args.model] if args.model else ['argon', 'codex', 'claude', 'enlil']):
         if args.images_only:
             if model == 'claude' and REFINEMENT.exists() and not manifest['models'][model].get('temporalRefinement'):
                 raise SystemExit('Promote the refined Claude videos and metadata together: --model claude --with-images')

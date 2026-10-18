@@ -1,0 +1,2862 @@
+{
+  "schemaVersion": 1,
+  "runId": "Jan_Deca_120925_SH_1",
+  "runUrl": "https://ccmc.gsfc.nasa.gov/ror/results/viewrun.php?runnumber=Jan_Deca_120925_SH_1",
+  "block": 0,
+  "blockMeaning": "CME run; ambient control block is excluded from this movie.",
+  "grid": [
+    576,
+    24,
+    90
+  ],
+  "nativeCoordinates": "HEEQ+180",
+  "displayCoordinates": "J2000 ecliptic x/y, z = 0",
+  "coordinateTransform": "Fixed J2000 solar-pole rotation; subtract Earth solar-equatorial azimuth at each native epoch, then add pi for HEEQ+180.",
+  "densityConvention": "np = D / mp / (1 + 4*xalpha), xalpha=0.05; applied once. mp=1.67239e-27 kg matches the native export.",
+  "fluxConvention": "np * sqrt(V1^2+V2^2+V3^2); SI velocity converted to cm/s.",
+  "coordinateChecks": {
+    "earth": {
+      "maxLongitudeDifferenceDegrees": 5.0089563345308305e-06,
+      "maxLatitudeDifferenceDegrees": 0.041801462189511265,
+      "maxRelativeRadiusDifference": 0.004548845468477447
+    },
+    "stereoa": {
+      "maxLongitudeDifferenceDegrees": 0.12925287038869712,
+      "maxLatitudeDifferenceDegrees": 0.056709374256414896,
+      "maxRelativeRadiusDifference": 0.0030323345508149746
+    },
+    "3I-Atlas": {
+      "maxLongitudeDifferenceDegrees": 0.06405140944105753,
+      "maxLatitudeDifferenceDegrees": 0.0018414991694723052,
+      "maxRelativeRadiusDifference": 0.0006381265485476684
+    }
+  },
+  "coordinateQualification": "The fixed-J2000 display ephemerides and the archived virtual-probe ephemerides differ slightly. Recorded differences are below 0.2 degree longitude and 0.1 degree latitude, compared with the native 4-degree angular cells.",
+  "sourceInputs": [
+    {
+      "path": "codex/observations/coordinate_system.json",
+      "sha256": "ea46d45654042ca59c9f3e8ea11d8a885caa328cfb34fb96368b21b19c190d50"
+    },
+    {
+      "path": "argon/data/raw/ephemeris/earth.csv",
+      "sha256": "26c75dc33416d1ce18c693656e1aff0831e17deecc2b0866c576135f0c234c98"
+    },
+    {
+      "path": "codex/observations/ephemeris_stereo_a.tsv",
+      "sha256": "878293048fe710e93d7792d8b9addc45027bb8bf25d18cf13b28939ce68dfacf"
+    },
+    {
+      "path": "codex/observations/ephemeris_comet.tsv",
+      "sha256": "37983059778110ad96121efe2940711fe3da6ca4f17942c89f8a868a12cc56ce"
+    }
+  ],
+  "snapshots": [
+    {
+      "index": 228,
+      "timeMjd": 61006.00071759259,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0228.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "8bf0294d1276428292e0d15a45d668a5287dea0e46c951a393ba763eb00ce4fc",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0228.npz",
+      "productBytes": 4558883,
+      "productSha256": "3949afd8fded3b1e8068a82c9ee237be2aa05b74bbe2283de96599e4769972f4",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 3.5953256259683064e-27,
+          "reference": 4.478403092285758e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 3417.126176559832,
+          "reference": 634846.8125
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 249.9632178572283,
+          "reference": -10111.208984375
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 1194.0972768545507,
+          "reference": -22106.787109375
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 1.3325384400695454e-28,
+          "reference": 7.74911360451486e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 389.3791115778731,
+          "reference": 420495.09375
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 24.897619572338954,
+          "reference": -5087.4072265625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 19.4042445000332,
+          "reference": 3815.562744140625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 2.491832336516597e-28,
+          "reference": 1.1041843357688567e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 776.0802808676381,
+          "reference": 548055.6875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 58.46209328133045,
+          "reference": -10582.2236328125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 28.177119853398835,
+          "reference": -10099.2099609375
+        }
+      ]
+    },
+    {
+      "index": 229,
+      "timeMjd": 61006.25222800926,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0229.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "c10517dc139a60c528da6650a42204bffe0b1b6f99b332881ddd51323bfabd9e",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0229.npz",
+      "productBytes": 4557617,
+      "productSha256": "3d0fab0119a8edb852c0bf13fd100d212239d1444e43482680baeea04e1bf71c",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.8915226868324526e-28,
+          "reference": 3.556189201652548e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 861.8797703856835,
+          "reference": 655206.3125
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 6.949815130508796,
+          "reference": -4910.03857421875
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 79.23451613656107,
+          "reference": -8477.06640625
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 5.380977260997565e-28,
+          "reference": 6.902755972682526e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 40.487649930408224,
+          "reference": 423174.28125
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 1.6744454173895065,
+          "reference": -7147.04638671875
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 7.005085634789339,
+          "reference": 2370.97998046875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.1985074983763583e-28,
+          "reference": 1.0234305255457798e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 436.78739436226897,
+          "reference": 538163.25
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 71.27413889330273,
+          "reference": -8967.34765625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 54.03718420957557,
+          "reference": -9033.03515625
+        }
+      ]
+    },
+    {
+      "index": 230,
+      "timeMjd": 61006.50108217593,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0230.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "3a392cc89689f032ae28758c9d501b9b12fbd24ef5aca04771019832fc945627",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0230.npz",
+      "productBytes": 4557368,
+      "productSha256": "9daaf7de6f46722d6357933dc18436dd726efc6bccaa8f209983d93382698b1e",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 2.3753196742862566e-28,
+          "reference": 3.5631451120575224e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 764.0207297387533,
+          "reference": 664953.5625
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 7.806360366011177,
+          "reference": -4953.22314453125
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 4.85024216437705,
+          "reference": -8342.939453125
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 3.6293357988982746e-28,
+          "reference": 6.6888195205156805e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 30.65360991889611,
+          "reference": 419709.8125
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 8.247941389961852,
+          "reference": -9009.50390625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 0.05781668785130023,
+          "reference": 4431.14697265625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 3.557025154821566e-28,
+          "reference": 9.797410104774883e-22
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 259.54426683078054,
+          "reference": 525510.0625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 37.59613810090923,
+          "reference": -7562.01220703125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 36.689172748981946,
+          "reference": -7410.5234375
+        }
+      ]
+    },
+    {
+      "index": 231,
+      "timeMjd": 61006.75258680555,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0231.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "5176e255c9d94d47904495a97a70e01ba2897386531f79d45bbd34a6ea0c4fe8",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0231.npz",
+      "productBytes": 4556444,
+      "productSha256": "97f42da868d79ed65208897f76dc7ac76b0fedd2b3d87031e5a68f49e913b24d",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 3.5034654963387785e-28,
+          "reference": 3.3258393939473114e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 469.7410355998436,
+          "reference": 671330.0
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 6.736633504488054,
+          "reference": -4129.87109375
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 23.529829886524567,
+          "reference": -7497.71630859375
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 9.385679356409456e-28,
+          "reference": 7.35221150553789e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 25.302826041937806,
+          "reference": 417523.0
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 46.30238460615692,
+          "reference": -6914.85400390625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 114.70499821480485,
+          "reference": 1861.28662109375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.5448516782009405e-29,
+          "reference": 9.6686781024624e-22
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 85.34172564116307,
+          "reference": 512900.84375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 9.008447027155853,
+          "reference": -6936.66015625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 17.539280588696784,
+          "reference": -5934.56689453125
+        }
+      ]
+    },
+    {
+      "index": 232,
+      "timeMjd": 61007.00140625,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0232.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "8829c4b6889be1639a9cee67d0f10a58dbed051dc40d7004338d2460cd56c907",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0232.npz",
+      "productBytes": 4557040,
+      "productSha256": "db8bbb5b0b1e0c7978c8d3d23430234ccfc6a01a59257df10dc65a62a83d7686",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 2.584710080508965e-29,
+          "reference": 3.2301837109237964e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 276.8856529862387,
+          "reference": 674966.125
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 0.16178454328974112,
+          "reference": -3322.08203125
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 2.319862271553575,
+          "reference": -7685.9169921875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 4.891769102531107e-28,
+          "reference": 7.893366148525865e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 14.905268761329353,
+          "reference": 411562.625
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 5.886220113830859,
+          "reference": -2651.107177734375
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 25.93002595072994,
+          "reference": 5180.83349609375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 3.543536646787688e-28,
+          "reference": 9.626776840402936e-22
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 211.6935836134944,
+          "reference": 498835.5
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 6.986739121978644,
+          "reference": -6880.14453125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 2.55339961651498,
+          "reference": -4297.6025390625
+        }
+      ]
+    },
+    {
+      "index": 233,
+      "timeMjd": 61007.25234375,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0233.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "fc214311f843e7008defcb407b87ba3f0f1f4c63401ef826bf788ac93c0c616e",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0233.npz",
+      "productBytes": 4558157,
+      "productSha256": "9258ea8c1d1c02b866092fce3965088a2e83668159b6610d10c2ee359da032fd",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 9.500561258148087e-30,
+          "reference": 3.039094286159285e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 205.83937747881282,
+          "reference": 681392.625
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 6.297030645890118,
+          "reference": -2863.8076171875
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 4.602630646160833,
+          "reference": -6728.67529296875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 9.079142057095809e-28,
+          "reference": 9.280189375433568e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 23.469646448851563,
+          "reference": 405517.625
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 16.440102707811548,
+          "reference": -1729.138671875
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 14.003915083641004,
+          "reference": 5737.966796875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.1962641116064015e-28,
+          "reference": 9.49229031866792e-22
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 152.79890451038955,
+          "reference": 484422.375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 0.8777675405481205,
+          "reference": -7194.06396484375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 21.458787159519716,
+          "reference": -1588.5263671875
+        }
+      ]
+    },
+    {
+      "index": 234,
+      "timeMjd": 61007.5012037037,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0234.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "91934166c134e5bc25db6f319ec9d8d47485127020f8554d807ff6bb45ca5647",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0234.npz",
+      "productBytes": 4557514,
+      "productSha256": "39cf84a33c7a6d205429a24ce0dcf75f17a969dc47bc5296dd2cfe715d40b7e8",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.4070742084359765e-28,
+          "reference": 3.0463242405318463e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 126.56826815288514,
+          "reference": 681484.5
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 1.3005648045364069,
+          "reference": -2813.5654296875
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 5.251422401536729,
+          "reference": -6715.33642578125
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 9.345171061240571e-29,
+          "reference": 8.772585630455141e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 25.205025680945255,
+          "reference": 403250.8125
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 19.899559530351326,
+          "reference": 1452.01611328125
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 30.368213956625368,
+          "reference": 5657.6416015625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 4.156988170969958e-28,
+          "reference": 9.975277160538833e-22
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 292.4461637396016,
+          "reference": 469549.78125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 20.446554787173227,
+          "reference": -7995.19482421875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 9.158682369653661,
+          "reference": 903.105224609375
+        }
+      ]
+    },
+    {
+      "index": 235,
+      "timeMjd": 61007.75086226852,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0235.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "186b47eaf2b372e64bf810d716058ec9b1b408f39f0209d620bf7e9d38ed595d",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0235.npz",
+      "productBytes": 4557066,
+      "productSha256": "f7b300f86837c2974c072a68376f74852dd1627c7aad83a6ff281efa248aa2c8",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.0101945710277357e-28,
+          "reference": 2.9748314806312212e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 166.99281328299548,
+          "reference": 683490.75
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 3.5073152044819835,
+          "reference": -2483.09619140625
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 5.168202692739214,
+          "reference": -6187.4794921875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 9.685599070156222e-28,
+          "reference": 9.674320742475912e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 3.160541405552067,
+          "reference": 401034.03125
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 9.933146290008153,
+          "reference": 3231.20068359375
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 6.864599758111581,
+          "reference": 5324.046875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 8.226034461110831e-29,
+          "reference": 9.796364012105687e-22
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 715.6170434657834,
+          "reference": 455010.875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 33.72346957519403,
+          "reference": -8288.83984375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 128.6209029908823,
+          "reference": 4162.30859375
+        }
+      ]
+    },
+    {
+      "index": 236,
+      "timeMjd": 61008.000497685185,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0236.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "9c6f1aa9ccd177d001871db317d38321c85ce9bd1f988221e5ed9b8fcd340f10",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0236.npz",
+      "productBytes": 4556716,
+      "productSha256": "08ef716b394e623c94d0d131638db7d543e71445295b4dee74ae5277960e319c",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.0076542957621624e-29,
+          "reference": 2.820465361162048e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 75.15400867327116,
+          "reference": 681004.1875
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 4.825747369861347,
+          "reference": -2127.127685546875
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 6.160063920994617,
+          "reference": -7481.2744140625
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 3.822190561822994e-28,
+          "reference": 8.92372299903723e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 1.1207605141680688,
+          "reference": 400194.5
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 3.6512792554431144,
+          "reference": 3766.774169921875
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 0.9075616932532284,
+          "reference": 5287.48291015625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 3.990711542204336e-28,
+          "reference": 1.04951286715793e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 794.2728596763336,
+          "reference": 440408.875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 67.27861288510394,
+          "reference": -8306.953125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 218.68408839669064,
+          "reference": 8043.0751953125
+        }
+      ]
+    },
+    {
+      "index": 237,
+      "timeMjd": 61008.25150462963,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0237.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "de661008a5945b72bc2e9f93074425572092c2e2db3fa2c6114bc6995a8d538c",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0237.npz",
+      "productBytes": 4557289,
+      "productSha256": "1bfb313c99845a2345fd8fff887414235e8182969a764d6560dbaf171a9bea36",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 7.669638679239508e-29,
+          "reference": 2.6435886603111736e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 33.37618087232113,
+          "reference": 674525.3125
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 4.879909517262604,
+          "reference": -1677.147216796875
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 1.7559419964172776,
+          "reference": -6294.8291015625
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 7.586826061427468e-29,
+          "reference": 9.64129975704628e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 29.102675297530368,
+          "reference": 399108.46875
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 20.485711651730526,
+          "reference": 3199.762939453125
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 2.96233280011802,
+          "reference": 9194.5302734375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 7.709764231566973e-28,
+          "reference": 1.1886949919234092e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 627.8736900734948,
+          "reference": 428997.25
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 86.10344311358676,
+          "reference": -7986.24560546875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 203.57799453473126,
+          "reference": 12346.40625
+        }
+      ]
+    },
+    {
+      "index": 238,
+      "timeMjd": 61008.50134259259,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0238.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "83476129f6f475679bf65719c921f24a30593cd35581e6445264f33d02d9a2ed",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0238.npz",
+      "productBytes": 4558025,
+      "productSha256": "714a4d02fd65e5659016470f74f9df7ffa1b24149397f59d31f021bf24353e5b",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.2045315740243223e-28,
+          "reference": 2.7983081894658858e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 105.32667217333801,
+          "reference": 671184.25
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 0.8824811180302277,
+          "reference": -809.2008056640625
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 6.416397733598387,
+          "reference": -6818.56884765625
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 5.583646826229617e-28,
+          "reference": 9.244572141479771e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 0.18726118002086878,
+          "reference": 401013.6875
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 2.6651536778595073,
+          "reference": 1994.26416015625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 1.6092989496864902,
+          "reference": 9137.61328125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.376743031333291e-27,
+          "reference": 1.476635735164712e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 362.67842458729865,
+          "reference": 422534.59375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 145.70787721931447,
+          "reference": -6976.3662109375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 124.296486975667,
+          "reference": 16495.005859375
+        }
+      ]
+    },
+    {
+      "index": 239,
+      "timeMjd": 61008.75098379629,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0239.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "be4c7428cb81d4edd7c13825f3b0ced39fdf4b68b26bb57286d9312d44bf5d20",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0239.npz",
+      "productBytes": 4557209,
+      "productSha256": "b0a92a4f7a241dff3852996040523234641c45b1b6405431ec2b9983873a6bb5",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 2.783692896729154e-28,
+          "reference": 2.7359408715426616e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 260.3279788426589,
+          "reference": 659707.1875
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 3.130639265199079,
+          "reference": -1238.0423583984375
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 4.281562958393806,
+          "reference": -7719.58447265625
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 3.4493940050461515e-28,
+          "reference": 1.0475083274215528e-20
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 47.74698627484031,
+          "reference": 407161.5625
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 14.660457913769278,
+          "reference": 1460.6629638671875
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 4.822595407775225,
+          "reference": 7977.759765625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 6.663992150398041e-28,
+          "reference": 2.0394953873997513e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 111.54259303869912,
+          "reference": 419123.96875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 143.33956970153667,
+          "reference": -5466.58349609375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 131.59558323270176,
+          "reference": 14538.453125
+        }
+      ]
+    },
+    {
+      "index": 240,
+      "timeMjd": 61009.0015162037,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0240.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "502db679fa1cf8f828859a14f4f6bc6e1629a3a09fce4324e9e3a4df88cc2570",
+      "originalResearchPath": "claude/ref/ccmc/raw/tim/tim.0240.nc",
+      "productPath": "runtime/ccmc/flux-0240.npz",
+      "productBytes": 4557592,
+      "productSha256": "81bd3f5bdf481c860328170acdb89c8ea28944562ec5bf4fc31b5a0521cc9683",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 2.885947570442777e-28,
+          "reference": 2.7020387852798834e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 378.54517989524174,
+          "reference": 645987.75
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 9.829576020300237,
+          "reference": -1867.3341064453125
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 0.3550484629049606,
+          "reference": -7620.4423828125
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 1.2184908541920885e-27,
+          "reference": 1.0516655562344853e-20
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 104.1087775969645,
+          "reference": 422617.15625
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 10.401792326594546,
+          "reference": -785.1893920898438
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 19.585506782306766,
+          "reference": 10231.69140625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.062949092616481e-27,
+          "reference": 2.544252063951476e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 0.14796880423091352,
+          "reference": 418386.75
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 62.25155540198148,
+          "reference": -3484.06298828125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 47.8886247000155,
+          "reference": 11353.9326171875
+        }
+      ]
+    },
+    {
+      "index": 241,
+      "timeMjd": 61009.25005787037,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0241.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "069efbd0a4acf05c786a40bff9a0c7024a60a0773cfdb13d98cd1f2c5f9c067b",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0241.npz",
+      "productBytes": 4557188,
+      "productSha256": "58e532bde345535cf5daee54b16c3800264a53a4bb84727306f53130a37f6a70",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 2.482698773622572e-28,
+          "reference": 2.6066951125216014e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 354.5028175432235,
+          "reference": 631063.0625
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 2.573351439114731,
+          "reference": -1284.05224609375
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 6.237236143551854,
+          "reference": -6181.9482421875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 8.560555326914164e-28,
+          "reference": 1.156707396609133e-20
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 275.12738337309565,
+          "reference": 453251.1875
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 23.94719556805373,
+          "reference": -162.81387329101562
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 49.02937504338797,
+          "reference": -1796.605224609375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.4093749913036997e-28,
+          "reference": 2.7170623319863427e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 18.477467215969227,
+          "reference": 421038.53125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 17.32606084378301,
+          "reference": -92.5589370727539
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 2.941173054221508,
+          "reference": 10346.177734375
+        }
+      ]
+    },
+    {
+      "index": 242,
+      "timeMjd": 61009.50104166667,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0242.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "c37db995fb5ca61e335372079a7fde82ed5eb13fbdc4f6b0c6d37bd7f9cf980b",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0242.npz",
+      "productBytes": 4557182,
+      "productSha256": "ca8cbaee5e3e3f1c2a2e71d0ce4353ea32f018f2a791647d0ddee35fd6acf2a2",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 2.5218184996326267e-28,
+          "reference": 2.774923373496357e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 105.62725064205006,
+          "reference": 612232.375
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 1.6487541423282437,
+          "reference": -1482.4232177734375
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 4.095663895180223,
+          "reference": -5679.4716796875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 2.6737271312897297e-27,
+          "reference": 1.0384046554807812e-20
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 549.1983693265356,
+          "reference": 495565.4375
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 39.03046221856965,
+          "reference": 452.0950622558594
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 74.07539371463281,
+          "reference": -15225.16796875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 2.28327863964964e-28,
+          "reference": 2.504494080173512e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 74.34120943304151,
+          "reference": 423016.75
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 19.975666226422618,
+          "reference": 4584.85693359375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 49.44003415195402,
+          "reference": 6115.29150390625
+        }
+      ]
+    },
+    {
+      "index": 243,
+      "timeMjd": 61009.75150462963,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0243.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "f82d934421451f9a6f032b20b56e3d2c60da80d086cd00dae0e891d941c1acfa",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0243.npz",
+      "productBytes": 4557749,
+      "productSha256": "3d6c3a4583c1cc9ac10d866d9ce23fc7462eef9c0632c42605cb18740c250531",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 2.1520390701001075e-28,
+          "reference": 3.0328052093438245e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 421.3148792057764,
+          "reference": 593790.5625
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 19.666338559720543,
+          "reference": -1609.8592529296875
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 30.09751979986777,
+          "reference": -4163.3115234375
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 1.2217969566921378e-27,
+          "reference": 7.30439497313607e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 586.826447386411,
+          "reference": 540224.25
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 78.56961267729923,
+          "reference": -218.11839294433594
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 10.387734123356495,
+          "reference": -21079.828125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.0089778384542956e-28,
+          "reference": 2.6592972159624034e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 0.01024796551791951,
+          "reference": 432357.90625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 1.7425753554853145,
+          "reference": 6432.267578125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 14.312738045125627,
+          "reference": -170.18458557128906
+        }
+      ]
+    },
+    {
+      "index": 244,
+      "timeMjd": 61010.00203703704,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0244.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "8f70db9ca34b0c1664f2ca769bd1419d07a6e13b8916eeb1f1f58c2be3002aed",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0244.npz",
+      "productBytes": 4558467,
+      "productSha256": "002a1fda95031eb3514b3b057dda3cbd8b59f4ea7e1e594f58feee75881a5a1e",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 4.709883454796735e-28,
+          "reference": 3.254537677225269e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 121.86004787043203,
+          "reference": 571569.1875
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 14.226674770646241,
+          "reference": -2524.039306640625
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 11.569306077975398,
+          "reference": -3636.8212890625
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 2.2973261063440003e-27,
+          "reference": 5.590693636498921e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 933.6962223881856,
+          "reference": 572319.875
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 91.05982488867289,
+          "reference": -1732.4122314453125
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 20.62414072611864,
+          "reference": -17037.115234375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 5.787555539301785e-28,
+          "reference": 2.4994906068198467e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 74.77138866944006,
+          "reference": 438621.0625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 15.978319949443176,
+          "reference": 5646.95654296875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 86.08835533369893,
+          "reference": -4116.4453125
+        }
+      ]
+    },
+    {
+      "index": 245,
+      "timeMjd": 61010.25013888889,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0245.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "a36429488b3f08b5dfa09b4e9c90487756944e37f272bedb04a1002ad0efda2f",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0245.npz",
+      "productBytes": 4558705,
+      "productSha256": "95c2af0a61535b4c0002088277dad4d06fa773d564efa1e9c004085664db40b9",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.3217560595859499e-27,
+          "reference": 3.344917458514666e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 1424.5775713425828,
+          "reference": 544497.1875
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 31.865339171794403,
+          "reference": -4015.892333984375
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 61.718146344187744,
+          "reference": -749.3566284179688
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 2.681384816075393e-27,
+          "reference": 4.961658323569289e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 884.2502235490829,
+          "reference": 596887.3125
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 72.04654296182525,
+          "reference": -2146.34765625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 17.378802325665674,
+          "reference": -12210.806640625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.3348332743716161e-27,
+          "reference": 2.3265739119825348e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 176.04173852340318,
+          "reference": 445619.09375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 107.48226431273133,
+          "reference": 3878.66650390625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 182.8822658989302,
+          "reference": -9774.431640625
+        }
+      ]
+    },
+    {
+      "index": 246,
+      "timeMjd": 61010.50015625,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0246.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "43d23d6d5705a0e46db315219f63409373db2cab3959e50ad3f916affafd5cb6",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0246.npz",
+      "productBytes": 4559200,
+      "productSha256": "5657599ecba0c6d46e03fc3a34d7469140e415f94d0e7fa762b003ef5d156b97",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.055116595457969e-27,
+          "reference": 3.1048282857211497e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 1445.6900663463166,
+          "reference": 527364.8125
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 68.76325502834061,
+          "reference": -5228.41455078125
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 146.46817015029194,
+          "reference": 877.9142456054688
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 1.84189187239791e-27,
+          "reference": 4.4405002064342866e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 677.4114278936759,
+          "reference": 613453.25
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 34.372482430823766,
+          "reference": -3242.61865234375
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 14.468902484017235,
+          "reference": -8672.74609375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 8.459273481040536e-28,
+          "reference": 2.0229327919998675e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 81.48545537912287,
+          "reference": 447662.84375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 207.11008027642902,
+          "reference": 2947.25830078125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 130.49982321741845,
+          "reference": -11901.8642578125
+        }
+      ]
+    },
+    {
+      "index": 247,
+      "timeMjd": 61010.75084490741,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0247.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "845493d7919886f85063b7f9a5137c2905925af1f937345e6bce5403bd42b12a",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0247.npz",
+      "productBytes": 4559240,
+      "productSha256": "3f180488691266890a41d6a3362917ec3adc03035e42eac3f305a6f1992972fa",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.0591842211904584e-27,
+          "reference": 3.3454453516106654e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 776.0701147829532,
+          "reference": 510922.1875
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 60.748968043505556,
+          "reference": -5594.9443359375
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 78.9274040765522,
+          "reference": 2268.6279296875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 4.218077574185581e-28,
+          "reference": 3.9610367581540015e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 559.9300162487198,
+          "reference": 625879.0625
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 27.461176088632783,
+          "reference": -3343.888916015625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 6.154953268513054,
+          "reference": -8790.40234375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 3.794543408650976e-28,
+          "reference": 1.7221314703018e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 61.83392900292529,
+          "reference": 444753.96875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 68.45975706455147,
+          "reference": 1168.527099609375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 111.39053399270597,
+          "reference": -8744.3603515625
+        }
+      ]
+    },
+    {
+      "index": 248,
+      "timeMjd": 61011.00166666666,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0248.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "48753d9495493894a858b23318d000f0349beebbb518f2655dcc38c196019bab",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0248.npz",
+      "productBytes": 4558179,
+      "productSha256": "eb29940c4b33f82bc5442a2641397013229ba5b7b9b3d859381761c871593f9e",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.2042331526840723e-27,
+          "reference": 3.865074921368614e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 870.7007589912391,
+          "reference": 495659.1875
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 49.050414706102856,
+          "reference": -5568.5537109375
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 73.39088733222343,
+          "reference": 2688.412841796875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 6.123298475363307e-28,
+          "reference": 3.692921591452066e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 346.35351186373737,
+          "reference": 634716.5625
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 14.169014674977916,
+          "reference": -3101.125732421875
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 4.086847873961233,
+          "reference": -7157.97412109375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.4635433414500434e-28,
+          "reference": 1.556076274996326e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 136.39817249332555,
+          "reference": 439907.1875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 50.17100009296769,
+          "reference": -1156.20263671875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 35.715072847486226,
+          "reference": -4352.275390625
+        }
+      ]
+    },
+    {
+      "index": 249,
+      "timeMjd": 61011.251550925925,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0249.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "f75f3602e608a8e5b929983a33e0d61a59d93ffb9195f0763d77156488c5596a",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0249.npz",
+      "productBytes": 4559340,
+      "productSha256": "b887444bff9204f7c4a411edc03267f37e0ac3e144de9a20782322b9aa6fd504",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.2069698351881539e-27,
+          "reference": 4.254692337958862e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 196.36116188101005,
+          "reference": 478572.6875
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 0.5413742314412957,
+          "reference": -6150.2568359375
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 6.246343208629696,
+          "reference": 4943.28955078125
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 4.455624707560203e-28,
+          "reference": 3.887040847937802e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 390.1887635822641,
+          "reference": 644661.5625
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 18.05253771709522,
+          "reference": -3157.618408203125
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 5.303809383733096,
+          "reference": -7133.16455078125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.0584024482340542e-28,
+          "reference": 1.4362456529206128e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 232.66613033559406,
+          "reference": 434959.71875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 41.028227527515355,
+          "reference": -2712.267822265625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 13.69685217765982,
+          "reference": -1096.9530029296875
+        }
+      ]
+    },
+    {
+      "index": 250,
+      "timeMjd": 61011.50077546296,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0250.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "5e4de28554e726fb63bceaf8576b7377f414bd8affe27c82ead120b4951793a8",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0250.npz",
+      "productBytes": 4559591,
+      "productSha256": "6e887f3abd5ca50be6a08aa82888c60ae6bd8a4490c31dac990ab38c4177a620",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.3664898292541758e-27,
+          "reference": 4.8912126660798184e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 289.3367743907147,
+          "reference": 465158.6875
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 0.9157701726589949,
+          "reference": -7433.6376953125
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 2.9981570493855543,
+          "reference": 5300.154296875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 1.7501759422590698e-28,
+          "reference": 3.8291406284397905e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 158.78728494350798,
+          "reference": 654851.0
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 9.34251239835794,
+          "reference": -3039.730712890625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 5.627963172559248,
+          "reference": -7274.0234375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 9.44508785536555e-29,
+          "reference": 1.468634337935717e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 174.87441217375454,
+          "reference": 431126.78125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 22.302874922725096,
+          "reference": -3796.404052734375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 6.627192904702952,
+          "reference": 2668.3408203125
+        }
+      ]
+    },
+    {
+      "index": 251,
+      "timeMjd": 61011.75222800926,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0251.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "69ae605a1040cc4dac8cdc0915a410d4da171da1562ba6a2f91042fbf9ccbcf4",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0251.npz",
+      "productBytes": 4560985,
+      "productSha256": "342383d632b6a8e4d9063e56525d9903830809f0a426ce59e09d4b1fcc1a0fb6",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.3797103588064615e-27,
+          "reference": 4.9349708436013e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 414.2903009050642,
+          "reference": 452927.75
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 6.478085551710137,
+          "reference": -6270.68798828125
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 0.15511084686022514,
+          "reference": 4561.32421875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 3.4409016470490314e-28,
+          "reference": 3.241351658935221e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 219.1853342957329,
+          "reference": 664143.875
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 11.90071782269024,
+          "reference": -3190.22509765625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 1.5442417395679513,
+          "reference": -9412.3935546875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 2.010138490893137e-28,
+          "reference": 1.5715120993445155e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 216.10303414112423,
+          "reference": 427167.53125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 21.228169047095435,
+          "reference": -5486.47119140625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 32.008675848162966,
+          "reference": 4473.49755859375
+        }
+      ]
+    },
+    {
+      "index": 252,
+      "timeMjd": 61012.00084490741,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0252.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "ffc536964b31691cf87eff34ba84e9e34b752b5342770f39a1648cc5910b3c7d",
+      "originalResearchPath": "claude/ref/ccmc/raw/tim/tim.0252.nc",
+      "productPath": "runtime/ccmc/flux-0252.npz",
+      "productBytes": 4561360,
+      "productSha256": "abcbff69f3807cabb776f93f438feced59af96e537024a1a83abbe236e614261",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.3970463561470778e-27,
+          "reference": 4.6084299876860554e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 560.9039588249288,
+          "reference": 438521.9375
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 23.479786966037864,
+          "reference": -3819.5888671875
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 21.45861263411234,
+          "reference": 4080.038330078125
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 2.7851256682371565e-28,
+          "reference": 2.893324301932771e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 31.01143968279939,
+          "reference": 668114.625
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 0.221140860946889,
+          "reference": -2564.821533203125
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 1.2781131774463574,
+          "reference": -9151.916015625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 8.176213662715071e-29,
+          "reference": 1.6759834355125074e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 298.25025569589343,
+          "reference": 422280.40625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 9.77884072627603,
+          "reference": -7042.95068359375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 51.25943544460097,
+          "reference": 5733.95361328125
+        }
+      ]
+    },
+    {
+      "index": 253,
+      "timeMjd": 61012.252251157406,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0253.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "e58cf3bce769fc6f59a6a16086a8abd1f0ecab1004651e3b149a85eb704dcfc3",
+      "originalResearchPath": "claude/ref/ccmc/raw/tim/tim.0253.nc",
+      "productPath": "runtime/ccmc/flux-0253.npz",
+      "productBytes": 4561111,
+      "productSha256": "e0a36a5ab52a4575e94f0fe74b6efe382f2d5a5b5d725381d67d5c71020f7b04",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 7.0160402049710055e-28,
+          "reference": 4.35576750802302e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 469.9226432842552,
+          "reference": 423590.03125
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 16.129974099770152,
+          "reference": -1714.8702392578125
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 7.123899113310472,
+          "reference": 4204.90380859375
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 2.580605291851713e-29,
+          "reference": 2.7333520951089904e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 160.8637517618481,
+          "reference": 651008.875
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 14.01139027654881,
+          "reference": -3629.5634765625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 3.8316662393308434,
+          "reference": -8118.14697265625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.5703171999980583e-27,
+          "reference": 1.919384359982112e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 226.30274715053383,
+          "reference": 417481.71875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 9.1854197509183,
+          "reference": -8433.5146484375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 0.5017562170132805,
+          "reference": 5355.57177734375
+        }
+      ]
+    },
+    {
+      "index": 254,
+      "timeMjd": 61012.50096643518,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0254.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "ff81401c5d5e0280eecc4aaadb14f90b2bd2c201253ed057a2d078793073493a",
+      "originalResearchPath": "claude/ref/ccmc/raw/tim/tim.0254.nc",
+      "productPath": "runtime/ccmc/flux-0254.npz",
+      "productBytes": 4561958,
+      "productSha256": "54a451a528493dbcc082a59400fb144938a5cab85e7060de3c8a38e70e90809c",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 9.61079273872526e-28,
+          "reference": 4.371635804852113e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 394.44152820442105,
+          "reference": 410644.0
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 6.137575507989936,
+          "reference": 267.98931884765625
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 58.95200784319104,
+          "reference": 3923.92919921875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 4.7957312968237284e-29,
+          "reference": 2.161704456659142e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 99.69370276597328,
+          "reference": 629033.9375
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 10.836603542845296,
+          "reference": -3497.160888671875
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 7.194573779289385,
+          "reference": -7854.53955078125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 2.324630834438121e-28,
+          "reference": 2.0162172001810593e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 256.9134198249667,
+          "reference": 412744.53125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 5.949760742032595,
+          "reference": -8771.7509765625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 19.58417122159608,
+          "reference": 4873.89404296875
+        }
+      ]
+    },
+    {
+      "index": 255,
+      "timeMjd": 61012.75246527778,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0255.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "da32994ab79c6a3509cb86126cdacc2e527a539842e1a5193af2a6f879c84e89",
+      "originalResearchPath": "claude/ref/ccmc/raw/tim/tim.0255.nc",
+      "productPath": "runtime/ccmc/flux-0255.npz",
+      "productBytes": 4561888,
+      "productSha256": "7596dfdc4d6e1fb2a11d0442e67690ea6844b6058e8e8c683bcdd5d1baea5cdd",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.1234291000004124e-27,
+          "reference": 4.6054116670231605e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 724.4515938729746,
+          "reference": 397311.34375
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 48.773365985647615,
+          "reference": 1894.056884765625
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 65.73433347713944,
+          "reference": 4968.1474609375
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 1.8492798886232236e-28,
+          "reference": 1.975250555278552e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 79.21174204931594,
+          "reference": 604006.25
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 7.6946890415765665,
+          "reference": -2340.97265625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 15.358936128653113,
+          "reference": -1869.576416015625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.0540734098612188e-27,
+          "reference": 2.035378871382593e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 224.19984469533665,
+          "reference": 409050.875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 31.188402276406123,
+          "reference": -7413.84130859375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 60.94960404241829,
+          "reference": 4514.3876953125
+        }
+      ]
+    },
+    {
+      "index": 256,
+      "timeMjd": 61013.000706018516,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0256.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "03dae191fc439e2d7b9118dcfe56c0aeaaf82e206982d662edceebd5e7ba7160",
+      "originalResearchPath": "claude/ref/ccmc/raw/tim/tim.0256.nc",
+      "productPath": "runtime/ccmc/flux-0256.npz",
+      "productBytes": 4561420,
+      "productSha256": "cc861f0d30c141885e80017977e3f5c3e9f82f1e819a33344a54e8e35a0baa65",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.94463536142543e-27,
+          "reference": 4.995814662857264e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 598.5662086154916,
+          "reference": 384573.78125
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 69.80285075425809,
+          "reference": 3780.02978515625
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 89.8984857530595,
+          "reference": 7330.37353515625
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 3.827605372542317e-27,
+          "reference": 3.612377302685416e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 13.838613899773918,
+          "reference": 598337.1875
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 0.2847275116405399,
+          "reference": -1543.7386474609375
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 0.991749390480436,
+          "reference": -3026.326171875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 5.922285533379474e-28,
+          "reference": 2.122667226691286e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 106.64325819595251,
+          "reference": 406251.71875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 21.550022083710246,
+          "reference": -5444.44189453125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 55.144331654115376,
+          "reference": 5613.369140625
+        }
+      ]
+    },
+    {
+      "index": 257,
+      "timeMjd": 61013.25208912037,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0257.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "a5ed35cf1e1d3fb9576cee64d53ec3802ded0479aafa920d9a03044cd277e633",
+      "originalResearchPath": "claude/ref/ccmc/raw/tim/tim.0257.nc",
+      "productPath": "runtime/ccmc/flux-0257.npz",
+      "productBytes": 4559953,
+      "productSha256": "3dbfb29e9a535ce00e749b1e8daadb9e6b14813499917ea461319051ccec9da5",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 4.698174134763336e-27,
+          "reference": 6.415703303840781e-21
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 1040.7502146124025,
+          "reference": 375874.28125
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 519.9610577642616,
+          "reference": 9204.580078125
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 711.2406953432073,
+          "reference": 16851.17578125
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 1.824233147126976e-28,
+          "reference": 4.3474189615086296e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 2.4781704677734524,
+          "reference": 586207.125
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 0.21343550703295477,
+          "reference": -2534.427734375
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 0.11664224109972565,
+          "reference": -3550.63330078125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.4264456861521038e-27,
+          "reference": 2.4389133594409755e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 31.07509897480486,
+          "reference": 405711.59375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 8.24340433578709,
+          "reference": -2934.72705078125
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 8.002966140844364,
+          "reference": 6392.47607421875
+        }
+      ]
+    },
+    {
+      "index": 258,
+      "timeMjd": 61013.50072337963,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0258.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "48ed28fd005b57bb1e9c2cd69fcdd1c4a1bdfd196e0301bb19a4f31b15927c80",
+      "originalResearchPath": "claude/ref/ccmc/raw/tim/tim.0258.nc",
+      "productPath": "runtime/ccmc/flux-0258.npz",
+      "productBytes": 4558526,
+      "productSha256": "376a9eb58090da6b508a42998d6f891b19d08aad18f03d3202403cec9249b057",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 1.3047869980919654e-26,
+          "reference": 1.0628038178323246e-20
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 720.2439565829118,
+          "reference": 372782.34375
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 1009.8595182499266,
+          "reference": 13518.884765625
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 530.9335073400616,
+          "reference": 24767.546875
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 6.177381311587013e-28,
+          "reference": 4.368467234585766e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 80.6732682242291,
+          "reference": 559296.0
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 5.750660423913359,
+          "reference": -2438.966796875
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 9.879238654079245,
+          "reference": -1960.772216796875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 1.294687630306627e-27,
+          "reference": 2.8692183282563508e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 5.5839969962253235,
+          "reference": 405041.15625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 25.16478861309281,
+          "reference": -545.609375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 16.92330908377062,
+          "reference": 7815.04736328125
+        }
+      ]
+    },
+    {
+      "index": 259,
+      "timeMjd": 61013.752100694444,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0259.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "423530c6795b9c32c1d72a87ddd8bb087ff380127c824a2e9f0344dc945cbb93",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0259.npz",
+      "productBytes": 4558867,
+      "productSha256": "51c70a240f0691d4434e977fc0b6b1b0c668db83a4fb07acee32bc5ccbe48ffa",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 2.1114734514319878e-27,
+          "reference": 1.489399600536674e-20
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 30.08640234230552,
+          "reference": 381481.125
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 61.53526100196814,
+          "reference": 7605.53564453125
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 5.782940923028946,
+          "reference": 23824.240234375
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 1.3490904462488977e-28,
+          "reference": 3.558781007312095e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 155.95743782294448,
+          "reference": 547524.6875
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 1.4501184932755677,
+          "reference": -3074.084228515625
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 21.309128267725356,
+          "reference": 247.89706420898438
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 3.281844834620736e-27,
+          "reference": 4.013811123572955e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 630.7731162316632,
+          "reference": 412606.875
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 36.29740423436624,
+          "reference": 2462.826416015625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 86.51464724763173,
+          "reference": 13741.935546875
+        }
+      ]
+    },
+    {
+      "index": 260,
+      "timeMjd": 61014.000868055555,
+      "sourceUrl": "https://ccmc.gsfc.nasa.gov/ror/api/get_run_file.php?runnumber=Jan_Deca_120925_SH_1&filename=tim.0260.nc",
+      "sourceBytes": 99541956,
+      "sourceSha256": "cebfa63b51163f17d779e331daf7ec839eb25725ddea90c0156d72c3c6dd4441",
+      "originalResearchPath": null,
+      "productPath": "runtime/ccmc/flux-0260.npz",
+      "productBytes": 4559336,
+      "productSha256": "696f3c94147aeb9d09648131be645b54a11c9c8e939652eddf40cbdbf4139f34",
+      "primitiveChecks": [
+        {
+          "body": "earth",
+          "field": "D",
+          "absoluteError": 5.374411188038166e-27,
+          "reference": 1.7186124791861118e-20
+        },
+        {
+          "body": "earth",
+          "field": "V1",
+          "absoluteError": 545.0308193870005,
+          "reference": 397575.875
+        },
+        {
+          "body": "earth",
+          "field": "V2",
+          "absoluteError": 75.57362282780377,
+          "reference": 17352.955078125
+        },
+        {
+          "body": "earth",
+          "field": "V3",
+          "absoluteError": 55.945629030386044,
+          "reference": 19790.802734375
+        },
+        {
+          "body": "stereoa",
+          "field": "D",
+          "absoluteError": 2.183888090835637e-28,
+          "reference": 3.421809106719977e-21
+        },
+        {
+          "body": "stereoa",
+          "field": "V1",
+          "absoluteError": 92.16452355775982,
+          "reference": 536112.5
+        },
+        {
+          "body": "stereoa",
+          "field": "V2",
+          "absoluteError": 10.771158204052881,
+          "reference": -4893.56396484375
+        },
+        {
+          "body": "stereoa",
+          "field": "V3",
+          "absoluteError": 29.529851010128368,
+          "reference": 2991.609375
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "D",
+          "absoluteError": 2.604720597955442e-28,
+          "reference": 4.7381196292721526e-21
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V1",
+          "absoluteError": 86.53652849252103,
+          "reference": 428266.0
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V2",
+          "absoluteError": 7.438246333288134,
+          "reference": 2705.037353515625
+        },
+        {
+          "body": "3I-Atlas",
+          "field": "V3",
+          "absoluteError": 23.04720103267391,
+          "reference": 16093.138671875
+        }
+      ]
+    }
+  ],
+  "builder": "scripts/prepare_ccmc_movie.py",
+  "builderSha256": "c9ab6183ef85be320a6b44a5a66c9342456a4936934e94aaa739f58124c6b97d"
+}

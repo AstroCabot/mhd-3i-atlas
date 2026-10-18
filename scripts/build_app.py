@@ -26,7 +26,7 @@ for name in ('data','assets'):
     shutil.copytree(ROOT/'public'/name,DIST/name,dirs_exist_ok=True,copy_function=copy_changed)
 if (ROOT/'docs').exists():
     shutil.copytree(ROOT/'docs',DIST/'docs',dirs_exist_ok=True,copy_function=copy_changed)
-for name in ('science.json','models.json','transcripts.json','equations.json','animation-v2.json','physics-comparison.json','nasa-comparison.json','solver-code.json','model-writeups.json'):
+for name in ('science.json','models.json','transcripts.json','equations.json','animation-v2.json','physics-comparison.json','nasa-comparison.json','solver-code.json','model-writeups.json','ccmc-movie-provenance.json'):
     with (DIST/'data'/name).open() as f:json.load(f)
 models=json.loads((DIST/'data/models.json').read_text())
 math=json.loads((DIST/'data/equations.json').read_text())['equations']
@@ -35,6 +35,10 @@ for eq in models['commonEquations']+[e for m in models['models'] for e in m['equ
         raise SystemExit('Equation catalogue is stale: run node scripts/compile_math.mjs')
 manifest=json.loads((DIST/'data/animation-v2.json').read_text())
 for model in manifest['models'].values():
+    if model.get('sourceReceiptUrl'):
+        receipt=DIST/model['sourceReceiptUrl'].lstrip('/')
+        if not receipt.is_file() or hashlib.sha256(receipt.read_bytes()).hexdigest()!=model['sourceReceiptSha256']:
+            raise SystemExit(f'Missing or changed movie source receipt: {receipt}')
     for media in model['media'].values():
         path=DIST/media['url'].lstrip('/')
         if not path.is_file():raise SystemExit(f'Missing animation {path}')
@@ -70,4 +74,5 @@ for path in DIST.glob('*.js'):
 index=(ROOT/'index.html').read_text().replace('/styles.css',f'/styles.css?v={fingerprint}').replace('/app.js',f'/app.js?v={fingerprint}')
 (DIST/'index.html').write_text(index)
 (DIST/'.nojekyll').touch()
-print(f'Built {DIST}: compiled equations, portable field frames and six video exports verified; version {fingerprint}')
+video_count=sum(len(model['media']) for model in manifest['models'].values())
+print(f'Built {DIST}: compiled equations, portable field frames and {video_count} video exports verified; version {fingerprint}')

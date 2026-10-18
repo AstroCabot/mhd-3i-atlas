@@ -54,18 +54,20 @@ Independent reviews cover prose, layout, scientific interpretation and animation
 - `docs/shared-note-metadata-audit.md`: corrected authors and addressed recipients, with original text preserved.
 - `docs/notebook-review.md`: consistency of the notebook presentation, integrated comparison tables and archive entry points.
 
-The original 128², six-hour, stepwise image display has been replaced with 768² fields rendered directly from the native binary/NPY slices. The portable player uses 373 display epochs per field at 30-minute spacing, persistent predecoded image layers and continuous display interpolation. It preserves the previous decoded field until the next is ready. The 2,238 WebP frames are fetched as needed. The six 30 fps, 48-second H.264 videos remain available as standalone exports.
+The original 128², six-hour, stepwise image display has been replaced with 768² fields rendered directly from the native binary/NPY slices. The portable player uses 373 display epochs per field at 30-minute spacing, persistent predecoded image layers and continuous display interpolation. It preserves the previous decoded field until the next is ready. The 2,984 WebP frames are fetched as needed. The eight 30 fps, 48-second H.264 videos remain available as standalone exports.
 
 **Claude now uses genuine 30-minute solver output.** An output-only replay of its selected production setup retains 373 half-hour states, with all 63 coincident three-hour field arrays byte-identical to the original archive. Its slice has 320×360 radial/longitude samples. Argon retains 160×180 samples at about three-hour cadence; Codex retains a 512² interpolation of its native CT grid at about six hours. Their intermediate display epochs remain interpolated. All three use the same geometric-UTC clock, projected extent and colour scales, with their distinct physical support stated beside each field. Higher display resolution does not add spatial information.
 
+The CCMC WSA–ENLIL movie uses 33 native three-dimensional volumes from run `Jan_Deca_120925_SH_1`, with the CME block selected. Its 576 × 24 × 90 grid is sampled on the J2000 ecliptic and uses the same time interval, extent, colour limits, 30-minute display support and 768² / 30 fps / 48-second exports as the three reconstructions. Native CCMC outputs remain about six hours apart; interpolation adds no independent states. The [CCMC movie audit](docs/ccmc-movie-audit.md) documents the coordinate and density checks.
+
 The header’s theme switch selects the existing dark palette or a manila-paper light palette. The choice is saved in the browser and applied before the page is drawn. Charts, tables, equations and exports follow the selected palette; switching themes preserves field playback and chart zoom.
 
-Headings now default to sans serif. The header's **Aa** switch restores the serif headings for comparison; this preference is also saved. Body text retains the notebook's serif face, and tables and code use monospace. Solar-wind fields mark Mercury, Venus, Earth and Mars with circular mean-distance guides; moving markers still follow their ephemerides.
+The wordmark and main headings use heavy DM Sans, with fixed sans-serif section headings, serif report text and monospace tables and code. The font selector and notebook status label have been removed. Solar-wind fields mark Mercury, Venus, Earth and Mars with circular mean-distance guides; moving markers still follow their ephemerides.
 
 ## Application views
 
 1. **Overview:** incident-flux curves, common exposure-weighted density/speed/flux table and selected solver configurations.
-2. **Solar wind:** synchronized field playback, continuous scrubber, field selection, full-screen view and comet time series.
+2. **Solar wind:** four synchronized fields in a two-by-two comparison, including the archived CCMC benchmark; continuous scrubber, field selection, full-screen view and comet time series.
 3. **Verification:** native benchmark profiles, convergence curves and registered numerical controls.
 4. **Observations:** common hourly spacecraft samples/residual masks, WSA boundary map and coronal-replication evidence.
 5. **NASA comparison:** the archived WSA 5.4 / ENLIL 2.8f run, four-model spacecraft residuals on shared masks, common PN-exposure comet means, CME/ambient control and qualified limitations. The [density audit](docs/nasa-comparison-audit.md) documents the corrected NASA overlay; selected agent results are unchanged.
@@ -92,7 +94,8 @@ scripts/build_solver_catalogue.py      selected-run source extraction and receip
 scripts/build_writeups.py       package submitted Markdown without editing it
 scripts/build_models.py         model descriptions and source receipts
 scripts/build_transcripts.py    allowlisted session and shared-note extraction
-scripts/build_animation_v2.py   direct native-slice rendering
+scripts/build_animation_v2.py   native-field rendering with common movie parameters
+scripts/prepare_ccmc_movie.py  fetch/verify native CCMC volumes and project their fields
 scripts/refine_claude_movie.py  verified output-only CUDA replay for finer movie cadence
 scripts/compile_math.mjs        build-time KaTeX compilation to HTML/MathML
 scripts/build_app.py            incremental standalone packaging and asset checks
@@ -164,3 +167,11 @@ Comet plots use photon-arrival UTC at the geometric Earth proxy. Spatial playbac
 Argon’s retained movie samples a constant solar-latitude −6.455° cone. Claude/Codex sample the ecliptic. Each available surface is projected into J2000 ecliptic x/y; a scalar slice cannot supply the missing three-dimensional field. Claude supplies the radial proxy nₚvᵣ, while Argon/Codex supply nₚ|v|. Argon’s fine run supplies the quantitative comet comparison and its baseline supplies the retained movie.
 
 Resource counters keep their recorded scopes. Cached API traffic, fresh tokens and tool-reported goal tokens have different meanings. Missing counters are unknown. The comparisons do not determine absolute X-ray brightness, monetary cost or solver performance on a common workload.
+
+To regenerate the CCMC benchmark from the native archive (downloads are cached outside the immutable research directory):
+
+```bash
+python scripts/prepare_ccmc_movie.py --cache /tmp/mhd-ccmc-native
+python scripts/build_animation_v2.py --model enlil --with-images
+python scripts/build_app.py
+```
