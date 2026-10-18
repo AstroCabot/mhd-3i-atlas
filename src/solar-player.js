@@ -42,39 +42,22 @@ function placeTrackLabels(panel) {
 const imageFrames = new Map();
 const MAX_DECODED_FRAMES = 48;
 let frameUse = 0;
-function loadImageSource(image, url) {
+function loadImageSource(image, url, {signal, cancelSource = true} = {}) {
+  if(signal?.aborted)return Promise.reject(signal.reason);
   if(image.src===url&&image.complete&&image.naturalWidth>0)return Promise.resolve();
   return new Promise((resolve,reject)=>{
-    const finish=error=>{clearTimeout(timer);image.removeEventListener('load',loaded);image.removeEventListener('error',failed);error?reject(error):resolve();};
+    let settled=false;
+    const finish=error=>{if(settled)return;settled=true;clearTimeout(timer);image.removeEventListener('load',loaded);image.removeEventListener('error',failed);signal?.removeEventListener('abort',aborted);error?reject(error):resolve();};
     const loaded=()=>finish();
     const failed=()=>finish(new Error('Retained field image could not be loaded.'));
-    const timer=setTimeout(()=>finish(new Error('Retained field image loading timed out.')),15000);
+    const aborted=()=>{finish(signal.reason);if(cancelSource&&image.src===url)image.removeAttribute('src');};
+    const timer=setTimeout(()=>{finish(new Error('Retained field image loading timed out.'));if(cancelSource&&image.src===url)image.removeAttribute('src');},15000);
     image.addEventListener('load',loaded,{once:true});image.addEventListener('error',failed,{once:true});
+    signal?.addEventListener('abort',aborted,{once:true});
     image.src=url;
     if(image.complete&&image.naturalWidth>0)queueMicrotask(loaded);
   });
 }
-function frameImage(url) {
-  let entry = imageFrames.get(url);
-  if (!entry) {
-    entry = {used:++frameUse, ready:false, image:null, objectUrl:null};
-    entry.promise = Promise.resolve().then(async () => {
-      entry.objectUrl = siteUrl(url);
-      entry.image = new Image();
-      await loadImageSource(entry.image,entry.objectUrl);
-      entry.ready = true;
-      for (const [key, value] of [...imageFrames].sort((a,b)=>a[1].used-b[1].used)) {
-        if (imageFrames.size <= MAX_DECODED_FRAMES) break;
-        if (value.ready && key !== url) imageFrames.delete(key);
-      }
-      return entry;
-    }).catch(error => {imageFrames.delete(url); throw error;});
-    imageFrames.set(url, entry);
-  }
-  entry.used = ++frameUse;
-  return entry.promise;
-}
-
 export async function mountSolarPlayers(options = {}) {
   const root = options.root || document;
   const response = await fetch(siteUrl(options.manifestUrl || '/data/animation-v2.json'),{signal:options.signal});
@@ -94,6 +77,8 @@ export async function mountSolarPlayers(options = {}) {
   let playing = false, status = 'loading', loadingError = null;
   let disposed = false, generation = 0, frameRequest = 0, lastTick = 0, lastUi = 0, lastAnimationTime = 0;
   let requestActive = false;
+  let transition = null, seekTimer = 0, statusTimer = 0;
+  const seekWaiters = [], pendingFrames = new Map();
   const panels = [];
   const controls = [...root.querySelectorAll('[data-play]')];
   const ranges = [...root.querySelectorAll('[data-frame]')];
@@ -101,6 +86,30 @@ export async function mountSolarPlayers(options = {}) {
   const signalController = new AbortController();
   const signal = signalController.signal;
   const sequence = model => manifest.models[model].frameSequence;
+  // Share only completed images across mounts. Each player owns and can cancel
+  // its pending HTTP work, so old seeks cannot occupy the browser's connections.
+  function frameImage(url) {
+    const cached=imageFrames.get(url);
+    if(cached){cached.used=++frameUse;return Promise.resolve(cached);}
+    if(pendingFrames.has(url))return pendingFrames.get(url).promise;
+    const controller=new AbortController();
+    const entry={used:++frameUse,image:new Image(),objectUrl:siteUrl(url),controller};
+    entry.promise=loadImageSource(entry.image,entry.objectUrl,{signal:controller.signal}).then(()=>{
+      imageFrames.set(url,entry);
+      for(const [key] of [...imageFrames].sort((a,b)=>a[1].used-b[1].used)){
+        if(imageFrames.size<=MAX_DECODED_FRAMES)break;
+        imageFrames.delete(key);
+      }
+      return entry;
+    }).finally(()=>{if(pendingFrames.get(url)===entry)pendingFrames.delete(url);});
+    pendingFrames.set(url,entry);
+    return entry.promise;
+  }
+  function cancelPendingFrames(keep = new Set()) {
+    for(const [url,entry] of pendingFrames)if(!keep.has(url)){
+      pendingFrames.delete(url);entry.controller.abort();
+    }
+  }
   const formatCadence = hours => hours < 1 ? `${hours * 60} min` : `${hours} h`;
   const cadence = model => formatCadence(manifest.models[model].nominalCadenceHours);
   const cadenceLabel = () => {
@@ -111,15 +120,16 @@ export async function mountSolarPlayers(options = {}) {
   function getState() {return {playing,requestedPlaying,status,field,speed,progress,error:loadingError,engine:'persistent-images'};}
   function onState() {
     if (disposed) return;
+    const showPause=requestedPlaying&&status!=='error';
     for (const button of controls) {
-      button.innerHTML = icons[requestedPlaying ? 'pause' : 'play'];
-      button.setAttribute('aria-label',requestedPlaying?'Pause solar-wind animation':'Play solar-wind animation');
-      button.setAttribute('aria-pressed',String(requestedPlaying));
+      button.innerHTML = icons[showPause ? 'pause' : 'play'];
+      button.setAttribute('aria-label',showPause?'Pause solar-wind animation':'Play solar-wind animation');
+      button.setAttribute('aria-pressed',String(showPause));
       button.dataset.playbackStatus = status;
     }
     for (const panel of panels) panel.wrap.dataset.playbackStatus = status;
     for (const node of root.querySelectorAll('[data-playback-status-label],span[data-playback-status]')) {
-      node.textContent = ({playing:`Continuous display · native output ${cadenceLabel()}`,loading:'Loading fields…',seeking:'Seeking…',paused:'Paused',stalled:'Loading next field…',error:'Animation unavailable'})[status] || status;
+      node.textContent = ({playing:`Playing · native output ${cadenceLabel()}`,loading:'Loading fields…',seeking:'Seeking…',paused:'Paused',stalled:'Loading next field…',error:'Could not load this time. Press play to retry.'})[status] || status;
       node.title = loadingError || (manifest.models.claude.temporalRefinement
         ? '768 px · 30 min common display support. Claude uses verified native 30 min solver outputs; Argon and Codex interpolate their original approximately 3 h and 6 h samples.'
         : '768 px · 30 min interpolated display support; original native samples every approximately 3–6 h.');
@@ -138,9 +148,9 @@ export async function mountSolarPlayers(options = {}) {
       marker.setAttribute('transform',`translate(${384+x*160},${384-y*160})`);
     }
     const now=performance.now();
+    for (const range of ranges) range.value=String(Math.round(progress*10000)/10);
     if (force || now-lastUi>80) {
       lastUi=now;
-      for (const range of ranges) range.value=String(Math.round(progress*1000));
       for (const node of root.querySelectorAll('[data-frame-time],[data-solar-date]')) node.textContent=utc(mjd);
       options.onTime?.({mjd,progress,seconds:progress*manifest.durationSeconds});
     }
@@ -232,19 +242,33 @@ export async function mountSolarPlayers(options = {}) {
     }
   }
   function prefetch(p) {
-    for(const panel of panels) {
-      const rows=sequence(panel.model).fields[field];
-      for(const offset of [2,3,4,-1]) {
+    // Fetch the nearest epoch for every model before looking farther ahead.
+    for(const offset of [2,3,4,-1]) {
+      for(const panel of panels) {
+        const rows=sequence(panel.model).fields[field];
         const i=p.lower+offset;
         if(i>=0&&i<rows.length)frameImage(rows[i].url).catch(()=>{});
       }
     }
   }
-  async function loadCurrent(nextStatus='stalled') {
-    const token=++generation;
-    requestActive=true;playing=false;status=nextStatus;loadingError=null;onState();
+  function stopTransition() {
+    generation++;transition?.abort();clearTimeout(statusTimer);
     cancelAnimationFrame(frameRequest);frameRequest=0;
+  }
+  async function loadCurrent(nextStatus='stalled') {
+    if(disposed)return;
+    stopTransition();
+    const token=generation;
+    transition=new AbortController();
+    const currentSignal=transition.signal;
+    requestActive=true;playing=false;loadingError=null;
+    // Cached interval changes normally finish before the next paint. Show a
+    // loading message only when the wait is long enough to be useful.
+    if(nextStatus==='stalled'&&status==='playing'){
+      statusTimer=setTimeout(()=>{if(!disposed&&token===generation&&requestActive&&requestedPlaying){status='stalled';onState();}},180);
+    }else {status=nextStatus;onState();}
     const p=position();
+    if(nextStatus!=='stalled')cancelPendingFrames(new Set(panels.flatMap(panel=>keys(panel,p))));
     try {
       const loaded=await Promise.all(panels.map(async panel=>{
         const [loUrl,hiUrl]=keys(panel,p);
@@ -252,48 +276,74 @@ export async function mountSolarPlayers(options = {}) {
         return {panel,loUrl,hiUrl,lo,hi};
       }));
       if(disposed||token!==generation)return;
-      // Every source has already decoded in the bounded image cache. Keep the
-      // existing view until both persistent layers have accepted cached pixels.
-      await Promise.all(loaded.map(async({panel,loUrl,hiUrl,lo,hi})=>{
-        const matchingLower=panel.images.find(image=>image.dataset.frameUrl===loUrl);
-        const lower=matchingLower||panel.images[0];
+      // Stage one incoming layer behind an opaque decoded layer in every panel.
+      // An interrupted transition never clears the last visible field.
+      const targets=await Promise.all(loaded.map(async({panel,loUrl,hiUrl,lo,hi})=>{
+        const matchingLower=panel.images.find(image=>image.dataset.frameUrl===loUrl&&image.complete&&image.naturalWidth>0);
+        const visible=panel.upper&&Number(panel.upper.style.opacity)>=.5?panel.upper:panel.lower;
+        const lower=matchingLower||panel.images.find(image=>image!==visible)||panel.images[0];
         const upper=panel.images.find(image=>image!==lower);
-        if(matchingLower) {
-          // At an interval boundary the previous upper image becomes the new
-          // lower image. Keep it fully visible while recycling the other layer.
-          lower.style.opacity='1';lower.style.zIndex='0';
-          upper.style.opacity='0';upper.style.zIndex='1';
-        } else if(panel.lower) {
-          // During a field/model change one decoded old layer remains opaque
-          // while the first incoming layer accepts its predecoded source.
-          upper.style.opacity='1';upper.style.zIndex='1';
+        if(visible){
+          visible.style.opacity='1';
+          if(lower!==visible)lower.style.opacity='0';
         }
-        await loadImageSource(lower,lo.objectUrl);lower.dataset.frameUrl=loUrl;
+        await loadImageSource(lower,lo.objectUrl,{signal:currentSignal,cancelSource:false});
         if(disposed||token!==generation)return;
-        lower.style.visibility='visible';lower.style.opacity='1';lower.style.zIndex='0';
-        upper.style.opacity='0';upper.style.zIndex='1';
-        await loadImageSource(upper,hi.objectUrl);upper.dataset.frameUrl=hiUrl;
-        if(disposed||token!==generation)return;
-        lower.style.zIndex='0';upper.style.zIndex='1';
-        lower.style.visibility=upper.style.visibility='visible';
-        panel.lower=lower;panel.upper=upper;panel.pairKey=`${panel.model}:${field}:${p.lower}`;
-        panel.wrap.style.backgroundImage='';panel.wrap.dataset.imageReady='true';
-        updateLabels(panel);
+        lower.dataset.frameUrl=loUrl;
+        return {panel,lower,upper,hiUrl,hi};
       }));
       if(disposed||token!==generation)return;
+      // Promote the same epoch across all panels before recycling their other
+      // layers. Metadata is assigned only after a current-generation load.
+      for(const {panel,lower,upper} of targets){
+        lower.style.visibility='visible';lower.style.opacity='1';lower.style.zIndex='0';
+        upper.style.opacity='0';upper.style.zIndex='1';
+        panel.lower=lower;panel.upper=upper;panel.pairKey=null;
+      }
+      await Promise.all(targets.map(async({upper,hiUrl,hi})=>{
+        await loadImageSource(upper,hi.objectUrl,{signal:currentSignal,cancelSource:false});
+        if(disposed||token!==generation)return;
+        upper.dataset.frameUrl=hiUrl;
+      }));
+      if(disposed||token!==generation)return;
+      for(const {panel,lower,upper} of targets){
+        lower.style.visibility=upper.style.visibility='visible';
+        panel.pairKey=`${panel.model}:${field}:${p.lower}`;
+        panel.wrap.style.backgroundImage='';panel.wrap.dataset.imageReady='true';
+        updateLabels(panel);
+      }
+      clearTimeout(statusTimer);
       requestActive=false;status=requestedPlaying?'playing':'paused';playing=requestedPlaying;lastTick=performance.now();
       showBlend(p);updateUi(true);onState();prefetch(p);scheduleAnimation();
     }catch(error){
       if(disposed||token!==generation)return;
+      transition.abort();clearTimeout(statusTimer);cancelPendingFrames();
       requestActive=false;status='error';playing=false;loadingError=error.message;onState();
     }
+  }
+  function restartCurrent(nextStatus) {
+    clearTimeout(seekTimer);seekTimer=0;
+    const waiting=seekWaiters.splice(0);
+    return loadCurrent(nextStatus).finally(()=>waiting.forEach(resolve=>resolve()));
+  }
+  function seek(value) {
+    if(disposed)return Promise.resolve();
+    progress=clamp(value);updateUi(true);stopTransition();
+    requestActive=true;playing=false;status='seeking';loadingError=null;onState();
+    cancelPendingFrames(new Set(panels.flatMap(panel=>keys(panel,position()))));
+    clearTimeout(seekTimer);
+    // A drag produces many inputs. Update the control immediately, but combine
+    // adjacent inputs before starting HTTP work for the chosen epoch.
+    const done=new Promise(resolve=>seekWaiters.push(resolve));
+    seekTimer=setTimeout(()=>restartCurrent('seeking'),40);
+    return done;
   }
   function advance(now) {
     if(disposed)return;
     if(playing&&!requestActive&&!document.hidden) {
       const candidate=(progress+(now-lastTick)*speed/(manifest.durationSeconds*1000))%1;
       lastTick=now;
-      const previous=progress;progress=candidate;
+      progress=candidate;
       const p=position();
       const current=panels.every(panel=>panel.pairKey===`${panel.model}:${field}:${p.lower}`);
       if(current){showBlend(p);updateUi();}
@@ -317,19 +367,19 @@ export async function mountSolarPlayers(options = {}) {
   const clockFallback=setInterval(()=>{const now=performance.now();if(playing&&!document.hidden&&now-lastAnimationTime>80)advance(now);},33);
   const api={
     manifest,getState,
-    play:async()=>{requestedPlaying=true;if(!requestActive&&status!=='error'){playing=true;status='playing';lastTick=performance.now();scheduleAnimation();}onState();},
+    play:async()=>{if(disposed)return;requestedPlaying=true;if(status==='error'){await restartCurrent('loading');return;}if(!requestActive){playing=true;status='playing';lastTick=performance.now();scheduleAnimation();}onState();},
     pause:()=>{requestedPlaying=false;playing=false;cancelAnimationFrame(frameRequest);frameRequest=0;if(status==='playing')status='paused';onState();},
     setSpeed:value=>{speed=clamp(Number(value)||1,.25,4);onState();},
-    setProgress:async value=>{progress=clamp(value);updateUi(true);await loadCurrent('seeking');},
-    setField:async value=>{const next=value==='fluxR2'?'contrast':value;if(!['flux','contrast'].includes(next))throw new Error(`Unknown field ${value}`);if(next!==field){field=next;await loadCurrent('loading');}},
-    setModel:async(value,index=0)=>{if(!manifest.models[value])throw new Error(`Unknown model ${value}`);if(panels[index]&&panels[index].model!==value){panels[index].model=value;panels[index].svg.dataset.solar=value;await loadCurrent('loading');}},
+    setProgress:seek,
+    setField:async value=>{const next=value==='fluxR2'?'contrast':value;if(!['flux','contrast'].includes(next))throw new Error(`Unknown field ${value}`);if(next!==field){field=next;await restartCurrent('loading');}},
+    setModel:async(value,index=0)=>{if(!manifest.models[value])throw new Error(`Unknown model ${value}`);if(panels[index]&&panels[index].model!==value){panels[index].model=value;panels[index].svg.dataset.solar=value;await restartCurrent('loading');}},
     resize:()=>{for(const panel of panels)panel.resizeObserver?.unobserve(panel.wrap);for(const panel of panels)panel.resizeObserver?.observe(panel.wrap);},
-    destroy:()=>{disposed=true;generation++;signalController.abort();options.signal?.removeEventListener('abort',onExternalAbort);cancelAnimationFrame(frameRequest);clearInterval(clockFallback);for(const panel of panels){panel.resizeObserver.disconnect();for(const image of panel.images)image.remove();}for(const button of controls)button.onclick=null;for(const range of ranges)range.oninput=null;for(const select of speeds)select.onchange=null;},
+    destroy:()=>{disposed=true;stopTransition();cancelPendingFrames();clearTimeout(seekTimer);seekWaiters.splice(0).forEach(resolve=>resolve());signalController.abort();options.signal?.removeEventListener('abort',onExternalAbort);clearInterval(clockFallback);for(const panel of panels){panel.resizeObserver.disconnect();for(const image of panel.images)image.remove();}for(const button of controls)button.onclick=null;for(const range of ranges)range.oninput=null;for(const select of speeds)select.onchange=null;},
   };
   const onExternalAbort=()=>api.destroy();
   options.signal?.addEventListener('abort',onExternalAbort,{once:true});
-  for(const button of controls)button.onclick=()=>requestedPlaying?api.pause():api.play();
-  for(const range of ranges){range.min='0';range.max='1000';range.step='1';range.value=String(Math.round(progress*1000));range.oninput=event=>api.setProgress(Number(event.target.value)/1000);}
+  for(const button of controls)button.onclick=()=>status==='error'?api.play():requestedPlaying?api.pause():api.play();
+  for(const range of ranges){range.min='0';range.max='1000';range.step='.1';range.value=String(Math.round(progress*10000)/10);range.oninput=event=>api.setProgress(Number(event.target.value)/1000);}
   for(const select of speeds){select.value=String(speed);select.onchange=event=>api.setSpeed(Number(event.target.value));}
   document.addEventListener('visibilitychange',()=>{lastTick=performance.now();if(document.hidden){cancelAnimationFrame(frameRequest);frameRequest=0;}else scheduleAnimation();},{signal});
   updateUi(true);

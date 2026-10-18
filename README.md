@@ -139,6 +139,7 @@ npm ci
 PLAYWRIGHT_SKIP_BROWSER_GC=1 npx playwright install chromium
 npm test
 node tests/solar-player.mjs
+node tests/solar-interactions.mjs
 ```
 
 `TEST_URL` selects a different serving address. `CHROMIUM_PATH` is an optional browser executable override; use the installed matching browser unless diagnosing the host. Browser checks cover navigation, model/spacecraft selection, math, source archives, exports and mobile layout. Playback checks additionally examine decoded fields, clock advancement, seeking, synchronization and persistence of the image/SVG elements. Scientific checks compare native outputs, flux units, PN exposures, light-time conversion, resampling and source hashes.

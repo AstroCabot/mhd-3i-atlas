@@ -68,3 +68,13 @@ The six native-media regression checks and five temporal-refinement checks passe
 All nine browser behavior and lifecycle checks passed in matching Playwright Chromium 156 and Firefox 157. The measured 1.4 s playback sample advanced the physical clock by approximately 1.395 s of its 48 s display interval, with hundreds of image-attribute updates, zero SVG child replacements, and the same persistent image elements. Firefox captured the actual rendered fields successfully in `tests/screenshots/solar-player-v2.png`. Chromium’s headless screenshot compositor still timed out on this host, independently of its successful runtime checks.
 
 When a remote browser suppresses animation-frame callbacks while its document is visible, a 33 ms timer advances the same clock only after the last animation callback is more than 80 ms old. Normal browser animation frames remain the primary clock. Pausing, loading, unmounting, or hiding the document cancels the animation callback; asynchronous manifest mounts accept an AbortSignal and do not create a stale player after route changes.
+
+## Playback interaction revision, 18 October 2026
+
+The shared controls use fixed grid positions for the slider, timestamp and playback rate, with status text on its own row. Changing between playing, paused, seeking and loading cannot change the slider's position or width. The slider updates on each animation frame; timestamp text remains throttled separately.
+
+Rapid scrub inputs are combined over 40 ms before starting frame downloads. Each new seek cancels obsolete pending image requests and invalidates the previous image transition. Only completed images enter the shared 48-frame cache; pending downloads belong to the mounted player and are cancelled when it is destroyed. Current requests cannot lose their cache entries to a late completion from an older request. Across all three panels, a decoded layer remains visible while replacement layers load, and the final epoch follows the most recent seek and pause/play intent.
+
+Ordinary cached interval changes show a loading message only after a 180 ms wait, avoiding short status flashes. Upcoming frames are prefetched in epoch order across models. Failed downloads can be retried with the play button.
+
+`tests/solar-interactions.mjs` exercises the real application through a controlled HTTP proxy. It checks slider geometry at 1280, 1024, 768 and 390 pixels, obsolete ten-second downloads, rapid scrubbing, pause during loading, preservation of visible decoded fields, retry after an HTTP failure, and overlapping field/epoch changes. These interaction checks and the nine existing player checks passed in Chromium and Firefox.

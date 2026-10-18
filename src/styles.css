@@ -211,7 +211,7 @@ h1 em { color: var(--muted); font-style: normal; }
 .play-button:hover { border-color: var(--muted); background: var(--hover); }
 input[type=range] { accent-color: var(--accent); min-width: 40px; height: 4px; flex: 1; cursor: pointer; }
 select { max-width: 100%; padding: 6px 25px 6px 8px; border: 1px solid var(--line); border-radius: 2px; background: var(--bg); color: var(--text); font: 10px/1.5 var(--mono); }
-.time-label { color: var(--muted); font: 10px/1.5 var(--mono); white-space: nowrap; }
+.time-label { display: block; inline-size: 20ch; color: var(--muted); font: 10px/1.5 var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .observation-label { color: var(--dim); text-align: right; margin: 6px 13px 0; font: 11px/1.4 var(--mono); }
 
 /* The table is the main comparison surface, with a stable numerical rhythm. */
@@ -266,8 +266,12 @@ a.insight:hover h3 { color: var(--accent); }
 .solar-triptych .colorbar .bar-title { font-size: 9px; }
 .solar-triptych .panel-head { padding: 8px 10px; }
 .solar-triptych .panel-footer { padding: 7px 10px; font-size: 10px; }
-.shared-controls { display: flex; align-items: center; gap: 12px; margin-top: 0; padding: 9px 11px; border: 1px solid var(--line2); background: var(--panel); }
-.shared-controls input { flex: 1; }
+.shared-controls { display: grid; grid-template-columns: 30px minmax(0, 1fr) max-content max-content; align-items: center; column-gap: 12px; row-gap: 3px; margin-top: 0; padding: 9px 11px; border: 1px solid var(--line2); background: var(--panel); }
+.shared-controls [data-play] { grid-area: 1 / 1; }
+.shared-controls [data-frame] { grid-area: 1 / 2; width: 100%; min-width: 0; margin: 0; }
+.shared-controls [data-frame-time] { grid-area: 1 / 3; text-align: right; }
+.shared-controls select { grid-area: 1 / 4; }
+.shared-controls span[data-playback-status] { grid-area: 2 / 2 / 3 / -1; min-height: 1.5em; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .panel:fullscreen { display: flex; flex-direction: column; width: 100vw; height: 100vh; background: #14171a; border: 0; }
 .panel:fullscreen .canvas-wrap { flex: 1; aspect-ratio: auto; min-height: 0; max-height: none; }
 .panel:fullscreen .panel-head, .panel:fullscreen .panel-footer { flex-shrink: 0; }
@@ -476,9 +480,11 @@ a.insight:hover h3 { color: var(--accent); }
   .chart { height: 285px; }
   .chart.large { height: 330px; }
   .chart.short { height: 260px; }
-  .shared-controls { flex-wrap: wrap; gap: 9px; }
-  .shared-controls input { order: 5; flex: 1 1 100%; margin: 5px 0; }
-  .shared-controls select { margin-left: auto; }
+  .shared-controls { grid-template-columns: 30px minmax(0, 1fr) max-content; column-gap: 9px; row-gap: 8px; }
+  .shared-controls [data-frame-time] { grid-area: 1 / 2; text-align: left; }
+  .shared-controls select { grid-area: 1 / 3; }
+  .shared-controls [data-frame] { grid-area: 2 / 1 / 3 / -1; }
+  .shared-controls span[data-playback-status] { grid-area: 3 / 1 / 4 / -1; }
   .panel-footer { flex-wrap: wrap; gap: 6px; }
   .comparison-table { font-size: 11px; }
   .comparison-table th { font-size: 10px; }
