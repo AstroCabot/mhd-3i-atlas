@@ -13,7 +13,9 @@
     "test:player": "node tests/solar-player.mjs",
     "test:interactions": "node tests/solar-interactions.mjs",
     "test:pages": "node tests/pages.mjs",
-    "test:research": "node tests/research.mjs"
+    "test:research": "node tests/research.mjs",
+    "test:cache": "node tests/frame-cache.mjs",
+    "test:performance": "node tests/performance.mjs"
   },
   "dependencies": {
     "echarts": "6.1.0",

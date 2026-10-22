@@ -177,7 +177,7 @@ async function startSolar(){
  const key=++solarMountKey;
  solarAbort?.abort();solarAbort=new AbortController();
  try{
-  const player=await mountSolarPlayers({signal:solarAbort.signal,root:document.getElementById('main'),manifestUrl:'/data/animation-v2.json',models:S.route==='overview'?[S.animModel]:MOVIE_IDS,field:S.field==='fluxR2'?'contrast':'flux',playing:S.playing,speed:S.speed,progress:S.progress,onTime:state=>{
+  const player=await mountSolarPlayers({signal:solarAbort.signal,root:document.getElementById('main'),manifest:S.anim,models:S.route==='overview'?[S.animModel]:MOVIE_IDS,field:S.field==='fluxR2'?'contrast':'flux',playing:S.playing,speed:S.speed,progress:S.progress,onTime:state=>{
    const progress=typeof state==='number'?state:state.progress;
    if(Number.isFinite(progress)){S.progress=progress;S.frame=Math.round(progress*1000);}
   },onState:state=>{S.playing=state.requestedPlaying??state.playing;S.speed=state.speed;}});
@@ -329,9 +329,12 @@ async function loadNotes(){
 }
 function toast(message){document.querySelector('.toast')?.remove();const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');el.textContent=message;document.body.append(el);setTimeout(()=>el.remove(),3500);}
 function download(data,name,type='application/json'){const blob=typeof data==='string'?new Blob([data],{type}):new Blob([JSON.stringify(data,null,2)],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Download prepared');}
-function exportData(which){
+async function exportData(which){
+ try {
+ if(['dataset','benchmarks','validation','provenance'].includes(which))await loadFullScience();
  const payload=({dataset:S.science,models:S.models,benchmarks:S.science.benchmarks,validation:S.science.validation,xray:S.science.xray,animation:S.anim||S.science.animation,provenance:{science:S.science.provenance,models:S.models.provenance},record:S.recordMode==='sessions'?S.sessionData:S.notes})[which]||S.science;
  download(payload,`helios-${which}.json`);
+ }catch(error){toast(`Could not prepare download: ${error.message}`);}
 }
 function bindCommon(){
  const chapter=Number(nav.find(n=>n[0]===S.route)?.[3]||1);document.querySelectorAll('.section-heading h2').forEach((h,i)=>{if(!h.querySelector('.section-number')){const span=document.createElement('span');span.className='section-number';span.textContent=`${chapter}–${i+1}`;h.prepend(span);}});
@@ -340,7 +343,19 @@ function bindCommon(){
  document.querySelectorAll('[data-chart-export]').forEach(el=>el.onclick=()=>{const entry=S.charts.find(c=>c.id===el.dataset.chartExport);if(!entry)return;const a=document.createElement('a');a.href=entry.chart.getDataURL({pixelRatio:3,backgroundColor:getComputedStyle(document.documentElement).getPropertyValue('--panel').trim()});a.download=`helios-${entry.id}.svg`;a.click();toast('Chart exported as SVG');});
 }
 function researchContext(){return {state:S,heading,footer,makeChart,exportButton,fetchJson,bindCommon,toast,rerender};}
-function rerender(){S.renderKey++;S.charts.forEach(c=>c.chart.dispose());S.charts=[];destroySolar();const route=nav.find(x=>x[0]===S.route);document.querySelectorAll('[data-nav]').forEach(el=>{el.classList.toggle('active',el.dataset.nav===S.route);if(el.dataset.nav===S.route)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});document.getElementById('crumb').textContent=route?.[2]||'Overview';document.title=`${route?.[2]||'Overview'} — 3I/ATLAS MHD`;({overview, 'solar-wind':solarPage,verification:verificationPage,observations:observationsPage,xray:xrayPage,transcripts:researchPage,methods:methodsPage,nasa:()=>nasaPage(researchContext()),code:()=>codePage(researchContext()),writeups:()=>writeupsPage(researchContext()),resources:resourcesPage}[S.route]||overview)();bindCommon();}
+async function rerender(){
+ const key=++S.renderKey;
+ S.charts.forEach(c=>c.chart.dispose());S.charts=[];destroySolar();
+ const route=nav.find(x=>x[0]===S.route);
+ document.querySelectorAll('[data-nav]').forEach(el=>{el.classList.toggle('active',el.dataset.nav===S.route);if(el.dataset.nav===S.route)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});
+ document.getElementById('crumb').textContent=route?.[2]||'Overview';document.title=`${route?.[2]||'Overview'} — 3I/ATLAS MHD`;
+ if(['verification','observations','resources'].includes(S.route)&&!S.science.provenance){
+  document.getElementById('main').innerHTML=heading('',route[2],'Opening comparison data…');
+  try{await loadFullScience();}catch(error){if(key===S.renderKey)document.getElementById('main').innerHTML=heading('',route[2],'The comparison could not be loaded.')+`<button class="button" id="retry-page">Retry</button>`;document.getElementById('retry-page')?.addEventListener('click',rerender);return;}
+  if(key!==S.renderKey)return;
+ }
+ ({overview, 'solar-wind':solarPage,verification:verificationPage,observations:observationsPage,xray:xrayPage,transcripts:researchPage,methods:methodsPage,nasa:()=>nasaPage(researchContext()),code:()=>codePage(researchContext()),writeups:()=>writeupsPage(researchContext()),resources:resourcesPage}[S.route]||overview)();bindCommon();
+}
 function route(){
  const [hash,query='']=location.hash.slice(1).split('?');S.route=nav.some(n=>n[0]===hash)?hash:'overview';
  if(S.route==='methods'){
@@ -356,12 +371,18 @@ function route(){
  }
  closeNav();rerender();window.scrollTo(0,0);
 }
-async function fetchJson(url){const response=await fetch(siteUrl(url));if(!response.ok)throw new Error(`${url}: ${response.status}`);return response.json();}
+const jsonRequests=new Map();
+function fetchJson(url){
+ if(!jsonRequests.has(url))jsonRequests.set(url,(async()=>{const response=await fetch(siteUrl(url));if(!response.ok)throw new Error(`${url}: ${response.status}`);return response.json();})().catch(error=>{jsonRequests.delete(url);throw error;}));
+ return jsonRequests.get(url);
+}
+async function loadFullScience(){Object.assign(S.science,await fetchJson('/data/science.json'));}
 async function init(){try{
- [S.science,S.models,S.transcripts,S.equations,S.physics,S.anim]=await Promise.all(['/data/science.json','/data/models.json','/data/transcripts.json','/data/equations.json','/data/physics-comparison.json','/data/animation-v2.json'].map(fetchJson));
+ [S.science,S.models,S.transcripts,S.equations,S.physics,S.anim]=await Promise.all(['/data/science-overview.json','/data/models.json','/data/transcripts.json','/data/equations.json','/data/physics-comparison.json','/data/animation-playback.json'].map(fetchJson));
  S.frame=Math.round(S.progress*1000);
- await Promise.all(['400 10px \"IBM Plex Mono\"','500 10px \"IBM Plex Mono\"','400 14px \"DM Sans\"','500 14px \"DM Sans\"','900 25px \"DM Sans\"'].map(f=>document.fonts.load(f)));
  shell();route();window.addEventListener('hashchange',route);window.addEventListener('resize',()=>{S.charts.forEach(c=>c.chart.resize());solarPlayer?.resize?.();});
+ // Fonts swap in without holding the data and fields behind another network round trip.
+ document.fonts.ready.then(()=>S.charts.forEach(c=>c.chart.resize()));
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNav();});
  window.__HELIOS__={state:S,player:solarPlayer};
  }catch(e){document.getElementById('app').innerHTML=`<div class="error-panel"><div class="eyebrow">Data unavailable</div><h1>The archive could not be opened.</h1><p>Serve the packaged application over HTTP and verify that its datasets are available.</p><pre>${esc(e.message)}</pre><button class="button" onclick="location.reload()">Reload application</button></div>`;console.error(e);}}

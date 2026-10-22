@@ -5,6 +5,7 @@ import hashlib
 import json
 import re
 import shutil
+from build_playback import package_playback
 
 ROOT=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser(description=__doc__)
@@ -56,10 +57,12 @@ for model in manifest['models'].values():
                 raise SystemExit(f'Missing or incomplete display frame {path}')
             if hashlib.sha256(path.read_bytes()).hexdigest()!=row['sha256']:
                 raise SystemExit(f'Display-frame checksum differs: {path}')
+package_playback(DIST)
 # Source or data changes produce new requests on an ordinary browser reload.
 version_hash=hashlib.sha256()
 version_files=sorted(path for path in (ROOT/'src').iterdir() if path.suffix in ('.js','.css'))
 version_files.extend(sorted((ROOT/'public/data').rglob('*.json')))
+version_files.extend([ROOT/'scripts/build_app.py', ROOT/'scripts/build_playback.py'])
 for path in version_files:
     version_hash.update(path.relative_to(ROOT).as_posix().encode()+b'\0')
     version_hash.update(path.read_bytes())

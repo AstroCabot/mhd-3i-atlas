@@ -1,0 +1,31 @@
+{
+  "connection": {
+    "latencyMs": 250,
+    "downloadBytesPerSecond": 750000,
+    "cache": "disabled"
+  },
+  "before": {
+    "readyMs": 4844,
+    "secondsAdvanced": 8.657000000010015,
+    "bufferingSamples": 13,
+    "frameRequests": 219,
+    "packRequests": 0,
+    "errors": []
+  },
+  "after": {
+    "readyMs": 3547,
+    "playMs": 1645,
+    "secondsAdvanced": 10.220900000014081,
+    "bufferingSamples": 0,
+    "frameRequests": 60,
+    "packRequests": 52,
+    "errors": []
+  },
+  "baselineCommit": "8450ce6",
+  "notes": [
+    "Cold first-frame readiness and ten seconds of playback are measured separately.",
+    "The optimized player builds a short runway before starting; playMs records that wait.",
+    "Frame requests include individual WebP images and binary frame batches.",
+    "These measurements describe the test connection, not a guarantee for every network."
+  ]
+}

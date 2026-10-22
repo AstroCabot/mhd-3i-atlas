@@ -64,6 +64,14 @@ The header’s theme switch selects the existing dark palette or a manila-paper 
 
 The wordmark and main headings use heavy DM Sans, with fixed sans-serif section headings, serif report text and monospace tables and code. The font selector and notebook status label have been removed. Solar-wind fields mark Mercury, Venus, Earth and Mars with circular mean-distance guides; moving markers still follow their ephemerides.
 
+## Playback performance
+
+The browser fetches eight-frame batches with a rolling lookahead and a short starting buffer. Every batch contains the original WebP bytes: resolution, temporal samples, colour mapping and scientific results are unchanged. Compressed batches are reused across routes in a 32 MiB cache; each player keeps at most 48 decoded images and releases them on disposal. Failed or corrupt batches fall back to individual frames. Scrubbing, pausing and leaving a view cancel obsolete downloads.
+
+The opening science dataset excludes the verification, spacecraft and provenance tables until those views are requested. JSON requests are shared across routes, the player reuses the loaded animation manifest, and fonts load without blocking the interface. `build_app.py` generates the playback batches and smaller opening datasets from the committed products. `check_static_site.py` verifies every packed frame against its original SHA-256.
+
+`node tests/performance.mjs` measures cold-cache startup and playback at 6 Mbit/s with 250 ms latency. `PERF_ASSERT=1` checks that playback keeps pace; `PERF_OUTPUT` saves measurements. `node tests/frame-cache.mjs` tests frame integrity, reuse, corrupt batches, cancellation and fallback.
+
 ## Application views
 
 1. **Overview:** incident-flux curves, common exposure-weighted density/speed/flux table and selected solver configurations.

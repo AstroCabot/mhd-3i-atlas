@@ -82,7 +82,7 @@ try {
       const entry = requestUrls.find(url=>url.pathname===prefix+'app.js');
       const version = entry?.searchParams.get('v');
       assert.match(version||'',/^[a-f0-9]{12}$/,'The deployed entry point must be content-versioned');
-      for(const name of ['solar-player.js','site-paths.js','theme.js','research-pages.js','report-math.js']) {
+      for(const name of ['solar-player.js','frame-cache.js','site-paths.js','theme.js','research-pages.js','report-math.js']) {
         const module=requestUrls.find(url=>url.pathname===prefix+name);
         assert.equal(module?.searchParams.get('v'),version,`${name} must share the deployment version`);
       }

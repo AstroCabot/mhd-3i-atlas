@@ -23,11 +23,12 @@ class Assets(HTMLParser):
 
 def check(directory):
     directory = Path(directory).resolve()
-    required = ('index.html', '.nojekyll', 'app.js', 'site-paths.js', 'solar-player.js',
+    required = ('index.html', '.nojekyll', 'app.js', 'site-paths.js', 'solar-player.js', 'frame-cache.js',
                 'styles.css', 'theme.js', 'data/science.json', 'data/models.json',
                 'research-pages.js', 'report-math.js', 'data/nasa-comparison.json', 'data/solver-code.json',
                 'data/model-writeups.json', 'data/ccmc-movie-provenance.json', 'docs/ccmc-movie-audit.md', 'docs/model-writeups.md', 'docs/nasa-comparison-audit.md',
-                'data/transcripts.json', 'data/physics-comparison.json', 'data/animation-v2.json', 'data/equations.json')
+                'data/transcripts.json', 'data/physics-comparison.json', 'data/animation-v2.json',
+                'data/animation-playback.json', 'data/science-overview.json', 'data/equations.json')
     for name in required:
         if not (directory / name).is_file():
             raise SystemExit(f'Missing packaged file: {name}')
@@ -75,6 +76,30 @@ def check(directory):
     for url in (catalogue['athena']['licenseUrl'], '/docs/model-writeups.md'):
         if not (directory / url.lstrip('/')).is_file():
             raise SystemExit(f'Missing source/report documentation: {url}')
+    source = json.loads((directory / 'data/animation-v2.json').read_text())
+    playback = json.loads((directory / 'data/animation-playback.json').read_text())
+    for model, product in playback['models'].items():
+        sequence = product['frameSequence']
+        original = source['models'][model]['frameSequence']
+        if sequence['timeMjd'] != original['timeMjd']:
+            raise SystemExit('Playback batches changed the scientific time support')
+        for field, rows in sequence['fields'].items():
+            packs = []
+            for pack in sequence['packs'][field]:
+                raw = (directory / pack['url'].lstrip('/')).read_bytes()
+                if len(raw) != pack['bytes'] or hashlib.sha256(raw).hexdigest() != pack['sha256']:
+                    raise SystemExit(f"Changed frame batch: {pack['url']}")
+                packs.append(raw)
+            if len(rows) != len(original['fields'][field]):
+                raise SystemExit('Playback batches dropped animation frames')
+            for row, native in zip(rows, original['fields'][field]):
+                raw = packs[row['pack']][row['offset']:row['offset'] + row['bytes']]
+                if row['url'] != native['url'] or hashlib.sha256(raw).hexdigest() != native['sha256']:
+                    raise SystemExit(f"Frame batch differs from the original: {row['url']}")
+    science = json.loads((directory / 'data/science.json').read_text())
+    opening = json.loads((directory / 'data/science-overview.json').read_text())
+    if opening != {key: value for key, value in science.items() if key not in ('validation', 'benchmarks', 'provenance')}:
+        raise SystemExit('Opening data differs from the scientific catalogue')
     print(f'Standalone Pages artifact: {len(files):,} files, {total / 1_000_000:.1f} MB; '
           'relative index/CSS assets and all archive chunks verified.')
 
