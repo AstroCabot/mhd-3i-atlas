@@ -15,7 +15,8 @@
     "test:pages": "node tests/pages.mjs",
     "test:research": "node tests/research.mjs",
     "test:cache": "node tests/frame-cache.mjs",
-    "test:performance": "node tests/performance.mjs"
+    "test:performance": "node tests/performance.mjs",
+    "test:review": "node tests/usability.mjs && node tests/player-lifecycle.mjs && node tests/responsive-layout.mjs"
   },
   "dependencies": {
     "echarts": "6.1.0",

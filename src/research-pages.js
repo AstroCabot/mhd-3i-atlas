@@ -25,7 +25,10 @@ function pending(ctx,title,body){
   return ()=>key===ctx.state.renderKey;
 }
 function failed(ctx,current,error){
-  if(current())document.getElementById('main').insertAdjacentHTML('beforeend',`<p class="callout" role="alert">The archived material could not be opened: ${escape(error.message)}</p>`);
+  if(!current())return;
+  const main=document.getElementById('main');main.querySelector('.loading')?.remove();
+  main.insertAdjacentHTML('beforeend',`<div class="callout" role="alert"><div>The archived material could not be opened: ${escape(error.message)} <button class="button" data-retry-archive>Retry</button></div></div>`);
+  main.querySelector('[data-retry-archive]').addEventListener('click',()=>ctx.rerender());
 }
 
 export async function nasaPage(ctx){
@@ -104,16 +107,27 @@ export async function codePage(ctx){
       <section class="panel source-viewer"><div class="panel-head"><div><h2 class="panel-title">${escape(file.filename)}</h2><div class="panel-sub">${escape(file.language)} · ${file.lineCount.toLocaleString()} lines · ${number(file.bytes/1024,1)} KiB</div></div><div class="source-actions"><button class="button" id="copy-source">Copy source</button><a class="button" href="${siteUrl(file.rawUrl)}" download="${escape(file.filename)}">Download</a></div></div>
       <p class="source-purpose">${escape(file.purpose)}</p>
       <div class="source-tools"><label class="searchbox"><span class="sr-only">Search source</span><input id="source-search" type="search" placeholder="Find in this file…" autocomplete="off"/></label><button class="button" id="source-previous" aria-label="Previous matching line" disabled>↑</button><button class="button" id="source-next" aria-label="Next matching line" disabled>↓</button><span id="source-search-status" class="micro" role="status"></span>${file.methods.length?`<label class="source-method-label">Method <select id="source-method"><option value="">Jump to method</option>${file.methods.map(method=>`<option value="${method.line}">${escape(method.name)}</option>`).join('')}</select></label>`:''}</div>
-      <div class="source-code" tabindex="0" role="region" aria-label="${escape(file.filename)} source code"><pre><code>${lines.map((html,i)=>`<span class="source-line" data-source-line="${i+1}"><a class="line-number" href="${codeUrl(agent,file.id,i+1)}" aria-label="Link to line ${i+1}">${i+1}</a><span class="source-text">${html||' '}</span></span>`).join('')}</code></pre></div>
+      <p class="sr-only" id="source-keyboard-help">Use Up and Down to select a line, or Home and End to jump to the first or last line. Tab moves to the selected line link and then out of the source viewer.</p>
+      <div class="source-code" tabindex="0" role="region" aria-label="${escape(file.filename)} source code" aria-describedby="source-keyboard-help"><pre><code>${lines.map((html,i)=>`<span class="source-line" data-source-line="${i+1}"><a class="line-number" tabindex="-1" href="${codeUrl(agent,file.id,i+1)}" aria-label="Link to line ${i+1}">${i+1}</a><span class="source-text">${html||' '}</span></span>`).join('')}</code></pre></div>
       <details class="source-provenance"><summary>Source path and SHA-256</summary><p class="source-path">${escape(file.sourcePath)}</p><p class="source-path">${escape(file.sha256)}</p><p>${escape(file.provenance)}</p>${agent==='codex'?`<a class="accent" href="${siteUrl(data.athena.licenseUrl)}" target="_blank">Athena++ BSD 3-Clause licence</a>`:''}</details></section></div>${ctx.footer()}`;
     const rows=[...document.querySelectorAll('[data-source-line]')];
     const viewport=document.querySelector('.source-code');
+    let selectedLine=null;
     function selectLine(value,share=true){
-      rows.forEach(row=>row.classList.toggle('selected',Number(row.dataset.sourceLine)===value));
-      const row=rows[value-1];if(row)viewport.scrollTop=Math.max(0,viewport.scrollTop+row.getBoundingClientRect().top-viewport.getBoundingClientRect().top-viewport.clientHeight/3);
+      const previous=rows[selectedLine-1];
+      if(previous&&selectedLine!==value){previous.classList.remove('selected');previous.querySelector('.line-number').tabIndex=-1;}
+      selectedLine=value;
+      const row=rows[value-1];if(row){row.classList.add('selected');row.querySelector('.line-number').tabIndex=0;viewport.scrollTop=Math.max(0,viewport.scrollTop+row.getBoundingClientRect().top-viewport.getBoundingClientRect().top-viewport.clientHeight/3);}
       if(share)history.replaceState(null,'',codeUrl(agent,file.id,value));
     }
     selectLine(line,false);
+    viewport.addEventListener('keydown',event=>{
+      if(event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
+      if(event.target!==viewport&&!event.target.matches('.line-number'))return;
+      const next={ArrowUp:Math.max(1,selectedLine-1),ArrowDown:Math.min(rows.length,selectedLine+1),Home:1,End:rows.length}[event.key];
+      if(next===undefined)return;
+      event.preventDefault();selectLine(next);rows[next-1].querySelector('.line-number').focus({preventScroll:true});
+    });
     document.querySelectorAll('.line-number').forEach(anchor=>anchor.onclick=event=>{event.preventDefault();selectLine(Number(anchor.parentElement.dataset.sourceLine));});
     document.getElementById('source-method')?.addEventListener('change',event=>{if(event.target.value)selectLine(Number(event.target.value));});
     document.getElementById('copy-source').onclick=async()=>{try{await navigator.clipboard.writeText(file.text);ctx.toast('Source copied');}catch{ctx.toast('Clipboard unavailable; use Download.');}};

@@ -52,6 +52,7 @@ Independent reviews cover prose, layout, scientific interpretation and animation
 - `docs/animation-audit.md`: archived spatial/time support, interpolation, player behaviour and numerical checks.
 - `docs/scientific-review.md`: selected CME forcing, common comparison quantities and source-specific limits.
 - `docs/shared-note-metadata-audit.md`: corrected authors and addressed recipients, with original text preserved.
+- `docs/interface-review-2026-10-25.md`: responsive panels and map labels, keyboard navigation, archive recovery, displayed field/time integrity, and offscreen playback efficiency.
 - `docs/notebook-review.md`: consistency of the notebook presentation, integrated comparison tables and archive entry points.
 
 The original 128², six-hour, stepwise image display has been replaced with 768² fields rendered directly from the native binary/NPY slices. The portable player uses 373 display epochs per field at 30-minute spacing, persistent predecoded image layers and continuous display interpolation. It preserves the previous decoded field until the next is ready. The 2,984 WebP frames are fetched as needed. The eight 30 fps, 48-second H.264 videos remain available as standalone exports.
@@ -165,6 +166,7 @@ npm test
 node tests/solar-player.mjs
 node tests/solar-interactions.mjs
 node tests/research.mjs
+npm run test:review
 ```
 
 `TEST_URL` selects a different serving address. `CHROMIUM_PATH` is an optional browser executable override; use the installed matching browser unless diagnosing the host. Browser checks cover navigation, model/spacecraft selection, math, source archives, exports and mobile layout. Playback checks additionally examine decoded fields, clock advancement, seeking, synchronization and persistence of the image/SVG elements. Scientific checks compare native outputs, flux units, PN exposures, light-time conversion, resampling and source hashes.

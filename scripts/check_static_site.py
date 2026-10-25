@@ -23,7 +23,7 @@ class Assets(HTMLParser):
 
 def check(directory):
     directory = Path(directory).resolve()
-    required = ('index.html', '.nojekyll', 'app.js', 'site-paths.js', 'solar-player.js', 'frame-cache.js',
+    required = ('index.html', '.nojekyll', 'app.js', 'site-paths.js', 'solar-player.js', 'solar-labels.js', 'frame-cache.js',
                 'styles.css', 'theme.js', 'data/science.json', 'data/models.json',
                 'research-pages.js', 'report-math.js', 'data/nasa-comparison.json', 'data/solver-code.json',
                 'data/model-writeups.json', 'data/ccmc-movie-provenance.json', 'docs/ccmc-movie-audit.md', 'docs/model-writeups.md', 'docs/nasa-comparison-audit.md',

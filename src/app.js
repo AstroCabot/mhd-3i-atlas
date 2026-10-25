@@ -46,16 +46,27 @@ const num = (v,d=2) => typeof v==='number'&&isFinite(v)?v.toLocaleString('en-GB'
 const fmt = v => v===null||v===undefined?'—':typeof v==='object'?JSON.stringify(v):String(v);
 const S = {route:'overview',active:new Set(IDS),charts:[],physics:null,models:null,science:null,transcripts:null,anim:null,frame:806,progress:25/31,playing:!matchMedia('(prefers-reduced-motion: reduce)').matches,animModel:'argon',field:'flux',speed:1,method:'argon',band:false,bench:'sod',craft:'STEREO-A',session:null,chunk:0,search:'',recordMode:'sessions',recordThread:'',role:'all',recordAgent:'all',sessionData:null,notes:null,searchIndexes:new Map(),renderKey:0};
 const nav = [ ['overview','grid','Overview','01'], ['solar-wind','wind','Solar wind','02'], ['verification','check','Verification','03'], ['observations','signal','Observations','04'], ['nasa','signal','NASA comparison','05'], ['xray','chart','X-ray comparison','06'], ['transcripts','record','Agent conversations','07'], ['methods','atom','Model physics','08'], ['code','cpu','Solver code','09'], ['writeups','record','Model writeups','10'], ['resources','cpu','Resources & provenance','11'] ];
+const mobileNavigation=matchMedia('(max-width: 760px)');
 function shell(){
  document.getElementById('app').innerHTML=`<aside class="sidebar" id="sidebar"><a class="brand" href="#overview" aria-label="3I/ATLAS model comparison"><div><div class="brand-name">3I/ATLAS</div><div class="brand-sub">SOLAR-WIND MODELS</div></div></a><div class="nav-label">CONTENTS</div><nav aria-label="Main navigation">${nav.map(([id,icon,label,index])=>`<a class="nav-link" href="#${id}" data-nav="${id}"><span class="nav-index">${Number(index)}</span><span>${label}</span></a>`).join('')}</nav><div class="sidebar-bottom"><div class="research-note"><span class="micro">XMM–NEWTON</span><p>0963720201<br>3–4 December 2025</p><span class="source-path">Argon · Codex · Claude</span></div><div class="sidebar-foot">Results: 17 October 2026</div></div></aside><div class="workspace"><header class="topbar"><button class="menu-button" id="menu" aria-label="Open navigation" aria-expanded="false">${ic('menu',19)}</button><div class="breadcrumbs"><strong>3I/ATLAS</strong> <span>/</span> <span id="crumb">Overview</span></div><div class="top-actions"><button id="theme-toggle" class="button theme-toggle" type="button" role="switch" aria-label="Light mode" aria-checked="false"></button></div></header><main class="main" id="main" tabindex="-1"></main></div>`;
  updateThemeToggle();
  document.getElementById('theme-toggle').onclick=()=>setTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+ document.getElementById('menu').setAttribute('aria-controls','sidebar');
  document.getElementById('menu').onclick=()=>{
-  const open=document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('menu').setAttribute('aria-expanded',String(open));
-  document.querySelector('.sidebar-backdrop')?.remove();
-  if(open){const b=document.createElement('div');b.className='sidebar-backdrop';b.onclick=closeNav;document.body.append(b);}
+  const sidebar=document.getElementById('sidebar');
+  if(sidebar.classList.contains('open')){closeNav();return;}
+  sidebar.classList.add('open');syncNavigation();
+  const backdrop=document.createElement('div');backdrop.className='sidebar-backdrop';backdrop.onclick=()=>closeNav();document.body.append(backdrop);
+  (sidebar.querySelector('[aria-current=page]')||sidebar.querySelector('a')).focus();
  };
+ document.getElementById('sidebar').addEventListener('click',event=>{
+  const link=event.target.closest('a[href^="#"]');
+  if(link&&mobileNavigation.matches&&location.hash===link.hash&&!event.metaKey&&!event.ctrlKey){
+   closeNav(false);document.getElementById('main').focus({preventScroll:true});
+  }
+ });
+ mobileNavigation.addEventListener('change',()=>{closeNav(false);syncNavigation();});
+ syncNavigation();
 }
 function updateThemeToggle(){
  const light=document.documentElement.dataset.theme==='light';
@@ -72,7 +83,31 @@ function setTheme(theme){
  updateThemeToggle();
  for(const {chart} of S.charts)chart.setOption(chartColors(chart.getOption(),previous));
 }
-function closeNav(){document.getElementById('sidebar').classList.remove('open');document.querySelector('.sidebar-backdrop')?.remove();document.getElementById('menu').setAttribute('aria-expanded','false');}
+function syncNavigation(){
+ const sidebar=document.getElementById('sidebar');
+ const open=mobileNavigation.matches&&sidebar.classList.contains('open');
+ const hidden=mobileNavigation.matches&&!open;
+ document.querySelector('.workspace').inert=open;
+ if(hidden&&sidebar.contains(document.activeElement))document.getElementById('menu').focus();
+ sidebar.inert=hidden;
+ if(hidden)sidebar.setAttribute('aria-hidden','true');else sidebar.removeAttribute('aria-hidden');
+ document.body.classList.toggle('nav-open',open);
+ document.getElementById('menu').setAttribute('aria-expanded',String(open));
+}
+function closeNav(restoreFocus=true){
+ const sidebar=document.getElementById('sidebar'),wasOpen=sidebar.classList.contains('open');
+ sidebar.classList.remove('open');document.querySelector('.sidebar-backdrop')?.remove();syncNavigation();
+ if(wasOpen&&restoreFocus&&mobileNavigation.matches)document.getElementById('menu').focus();
+}
+function navigationKeys(event){
+ const sidebar=document.getElementById('sidebar');
+ if(event.key==='Escape'){closeNav();return;}
+ if(event.key!=='Tab'||!mobileNavigation.matches||!sidebar.classList.contains('open'))return;
+ const links=[...sidebar.querySelectorAll('a[href],button,[tabindex]')].filter(node=>node.tabIndex>=0&&!node.disabled);
+ const first=links[0],last=links.at(-1);
+ if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+ else if(!event.shiftKey&&(document.activeElement===last||!sidebar.contains(document.activeElement))){event.preventDefault();first.focus();}
+}
 function heading(kicker,title,body,buttons=''){
  const chapter=Number(nav.find(n=>n[0]===S.route)?.[3]||1);
  return `<div class="page-heading"><div><h1><span class="section-number">${chapter}</span>${title}</h1><p class="intro">${body}</p></div><div class="heading-actions">${buttons||`<button class="button" data-export="dataset">${ic('down',13)} Data</button><a class="button" href="#methods">Model physics</a>`}</div></div>`;
@@ -167,8 +202,10 @@ function drawSolarCharts(){
  }
 }
 function redrawAnimationCharts(){
+ const windows=new Map(S.charts.map(({id,chart})=>[id,(chart.getOption().dataZoom||[]).map(({start,end,startValue,endValue})=>({start,end,startValue,endValue}))]));
  S.charts.forEach(c=>c.chart.dispose());S.charts=[];
  if(S.route==='overview')drawOverviewChart();else drawSolarCharts();
+ for(const {id,chart} of S.charts)if(windows.get(id)?.length)chart.setOption({dataZoom:windows.get(id)});
  document.querySelectorAll('[data-model-legend]').forEach(el=>el.innerHTML=legend(IDS.filter(id=>S.active.has(id))));
  document.querySelectorAll('[data-model-toggle]').forEach(el=>el.setAttribute('aria-pressed',String(S.active.has(el.dataset.modelToggle))));
 }
@@ -283,6 +320,7 @@ function researchPage(){
  ${callout(`<strong>Archive disclosure.</strong> ${esc(t.disclosure)}`)}${footer()}`;
  document.querySelectorAll('[data-record-mode]').forEach(el=>el.onclick=()=>{location.hash=recordLink({mode:el.dataset.recordMode});});
  document.querySelector('[data-record-view=exchanges]').onclick=()=>{location.hash=recordLink({mode:'notes',role:'directed'});};
+ if(S.recordMode==='notes')document.querySelectorAll('#record-role option').forEach(option=>{if(!['all','directed'].includes(option.value))option.remove();});
  document.getElementById('record-agent').onchange=e=>{S.recordAgent=e.target.value;S.chunk=0;if(S.recordAgent!=='all'&&selected.agent!==S.recordAgent)S.session=t.sessions.find(s=>s.agent===S.recordAgent&&!s.parent_id).id;rerender();};
  document.getElementById('record-role').onchange=e=>{S.role=e.target.value;S.chunk=0;document.querySelector('[data-record-view=exchanges]').classList.toggle('active',S.recordMode==='notes'&&S.role==='directed');document.querySelector('[data-record-mode=notes]').classList.toggle('active',S.recordMode==='notes'&&S.role!=='directed');loadRecord();};
  document.getElementById('record-search-form').onsubmit=e=>{e.preventDefault();S.search=document.getElementById('record-search').value.trim();S.chunk=0;loadRecord();};
@@ -298,34 +336,53 @@ function messageHtml(m,searchResult=false){
  const body=tool?`<details class="tool-entry" ${S.search?'open':''}><summary>${m.kind==='tool_call'?'Tool input':'Tool output'} · ${m.text.split('\n').length.toLocaleString()} lines</summary>${text}</details>`:text;
  return `<article class="message ${tool?'tool':m.role==='user'?'user':''}" id="message-${esc(m.id)}"><div class="message-head"><span class="message-role">${esc(m.role)}</span><span class="message-type">${esc(m.kind.replace(/_/g,' '))}${m.tool_name?' / '+esc(m.tool_name):''}</span><span class="message-time">${m.timestamp?esc(new Date(m.timestamp).toISOString().replace('T',' ').slice(0,19))+' UTC':'Time unrecorded'}</span></div>${m.directed_to?.length?`<div class="directed">${ic('record',12)} Directed to ${m.directed_to.map(esc).join(', ')}</div>`:''}${body}${searchResult?`<button class="link-button" style="margin-top:10px" data-jump="${m.chunk}" data-jump-message="${esc(m.id)}">Open complete entry ${ic('arrow',12)}</button>`:''}</article>`;
 }
-async function loadRecord(){if(S.recordMode==='notes')return loadNotes();const key=S.renderKey;const id=S.session;const s=S.transcripts.sessions.find(s=>s.id===id);if(!s)return;
- const output=document.getElementById('transcript-output');if(!output)return;output.innerHTML='<div class="loading">Loading archived entries…</div>';
+let recordLoadKey=0;
+function recordRequest(){
+ const request=++recordLoadKey,renderKey=S.renderKey;
+ return ()=>request===recordLoadKey&&renderKey===S.renderKey;
+}
+function recordFailure(output,current,retry){
+ if(!current())return;
+ output.classList.remove('loading');output.removeAttribute('aria-busy');
+ output.innerHTML='<div class="empty" role="alert">This archive page could not be loaded. <button class="link-button" data-retry-record>Retry</button></div>';
+ output.querySelector('[data-retry-record]').addEventListener('click',retry);
+}
+async function loadRecord(){
+ if(S.recordMode==='notes')return loadNotes();
+ const current=recordRequest(),id=S.session,s=S.transcripts.sessions.find(s=>s.id===id);
+ const output=document.getElementById('transcript-output');if(!s||!output)return;
+ output.setAttribute('aria-busy','true');output.innerHTML='<div class="loading" role="status">Loading archived entries…</div>';
  try{
   if(S.search||S.role!=='all'){
    if(!S.searchIndexes.has(id))S.searchIndexes.set(id,await fetchJson(s.search_url));
-   if(key!==S.renderKey)return;
+   if(!current())return;
    const index=S.searchIndexes.get(id).messages;
    const terms=S.search.toLowerCase().match(/[\p{L}\p{N}_./-]+/gu)||[];
    const matches=index.filter(m=>roleMatch(m)&&terms.every(t=>(m.terms||m.text.toLowerCase()).includes(t)));
    const page=matches.slice(S.chunk*20,(S.chunk+1)*20);S.sessionData={session_id:id,messages:page};
    output.innerHTML=`<div class="session-meta">${matches.length.toLocaleString()} matching entries · excerpts shown</div><div class="transcript-list">${page.length?page.map(m=>messageHtml(m,true)).join(''):'<div class="empty">No matching entries. Try a shorter term or change the entry filter.</div>'}</div>${pager(S.chunk,Math.ceil(matches.length/20),'search')}`;
   }else{
-   S.chunk=Math.max(0,Math.min(S.chunk,s.chunks.length-1));const data=await fetchJson(s.chunks[S.chunk].url);if(key!==S.renderKey||S.session!==id)return;S.sessionData=data;
+   S.chunk=Math.max(0,Math.min(S.chunk,s.chunks.length-1));
+   const data=await fetchJson(s.chunks[S.chunk].url);if(!current())return;S.sessionData=data;
    output.innerHTML=`<div class="transcript-list">${data.messages.map(m=>messageHtml(m)).join('')}</div>${pager(S.chunk,s.chunks.length,'chunks')}`;
   }
-  output.classList.remove('loading');bindRecordPaging();
- }catch(e){if(key===S.renderKey)output.innerHTML=`<div class="empty">This archive page could not be loaded. <button class="link-button" id="retry-record">Retry</button></div>`;document.getElementById('retry-record')?.addEventListener('click',loadRecord);}
+  output.classList.remove('loading');output.removeAttribute('aria-busy');bindRecordPaging();
+ }catch(error){recordFailure(output,current,loadRecord);}
 }
 function pager(page,pages,type){return `<div class="pager"><button class="button" data-record-page="${page-1}" ${page<=0?'disabled':''}>← Previous</button><span>Page ${page+1} / ${Math.max(1,pages)} ${type==='search'?'· search results':''}</span><button class="button" data-record-page="${page+1}" ${page>=pages-1?'disabled':''}>Next →</button></div>`;}
 function bindRecordPaging(){document.querySelectorAll('[data-record-page]').forEach(el=>el.onclick=()=>{S.chunk=+el.dataset.recordPage;loadRecord();document.querySelector('.transcript-content')?.scrollIntoView({block:'start'});});document.querySelectorAll('[data-jump]').forEach(el=>el.onclick=async()=>{S.chunk=+el.dataset.jump;S.search='';S.role='all';document.getElementById('record-search').value='';document.getElementById('record-role').value='all';await loadRecord();const target=document.getElementById(`message-${el.dataset.jumpMessage}`);const details=target?.querySelector('details');if(details)details.open=true;target?.scrollIntoView({block:'center'});});}
 async function loadNotes(){
+ const current=recordRequest(),output=document.getElementById('notes-output');if(!output)return;
+ output.setAttribute('aria-busy','true');output.innerHTML='<div class="loading" role="status">Opening shared notes…</div>';
+ try{
  if(!S.notes)S.notes=await fetchJson(S.transcripts.notes.url);
- const output=document.getElementById('notes-output');if(!output)return;
+ if(!current())return;
  const q=S.search.toLowerCase();const thread=RECORD_THREADS[S.recordThread];const all=S.notes.notes.filter(n=>(!thread||thread.files.includes(n.filename))&&(S.recordAgent==='all'||n.author.toLowerCase().includes(S.recordAgent))&&(!q||(n.text+' '+n.filename).toLowerCase().includes(q))&&(S.role!=='directed'||n.directed_to?.length));
  const notes=all.slice(S.chunk*15,(S.chunk+1)*15);
  output.innerHTML=`<div class="micro">${all.length} NOTES · CHRONOLOGICAL ORDER · ORIGINAL TEXT</div>${notes.map(n=>`<article class="panel note-card" id="note-${esc(n.id)}"><div class="note-meta">${dot(IDS.find(id=>n.author.toLowerCase().includes(id)))}<span>${esc(n.author.toUpperCase())}</span><span>${date(n.timestamp,true)} UTC</span>${n.directed_to.length?tag('→ '+n.directed_to.join(', '),'green'):''}</div><h3>${esc(n.filename)}</h3>${n.exchange_excerpt?`<div class="callout green" style="font-size:10px;margin:12px 0">${ic('record',14)}<div>${esc(n.exchange_excerpt)}</div></div>`:''}<pre>${highlight(n.text,S.search)}</pre>${n.references?.length?`<div class="source-list">${n.references.map(r=>`<button class="source-link" data-note-ref="${esc(typeof r==='string'?r:r.id||r.filename)}">${ic('link',10)} ${esc(typeof r==='string'?r:r.filename||r.id)}</button>`).join('')}</div>`:''}</article>`).join('')}${!notes.length?'<div class="empty">No notes match the selected filters.</div>':''}${pager(S.chunk,Math.ceil(all.length/15),'notes')}`;
  document.querySelectorAll('[data-record-page]').forEach(el=>el.onclick=()=>{S.chunk=+el.dataset.recordPage;loadNotes();document.getElementById('record-search-form').scrollIntoView({block:'start'});});
- document.querySelectorAll('[data-note-ref]').forEach(el=>el.onclick=()=>{S.search=el.dataset.noteRef;S.chunk=0;S.recordAgent='all';S.role='all';S.recordThread='';document.getElementById('record-search').value=S.search;document.getElementById('record-agent').value='all';loadNotes();});
+ document.querySelectorAll('[data-note-ref]').forEach(el=>el.onclick=()=>{location.hash=recordLink({mode:'notes',q:el.dataset.noteRef});}); output.removeAttribute('aria-busy');
+ }catch(error){recordFailure(output,current,loadNotes);}
 }
 function toast(message){document.querySelector('.toast')?.remove();const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');el.textContent=message;document.body.append(el);setTimeout(()=>el.remove(),3500);}
 function download(data,name,type='application/json'){const blob=typeof data==='string'?new Blob([data],{type}):new Blob([JSON.stringify(data,null,2)],{type});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Download prepared');}
@@ -363,13 +420,15 @@ function route(){
  }
  if(S.route==='transcripts'){
   const params=new URLSearchParams(query);S.recordMode=params.get('mode')==='notes'?'notes':'sessions';
-  const roles=['all','assistant','user','recorded_reasoning','tool','directed'];S.role=roles.includes(params.get('role'))?params.get('role'):'all';
+  const roles=S.recordMode==='notes'?['all','directed']:['all','assistant','user','recorded_reasoning','tool','directed'];S.role=roles.includes(params.get('role'))?params.get('role'):'all';
   S.recordAgent=IDS.includes(params.get('agent'))?params.get('agent'):'all';
   S.recordThread=S.recordMode==='notes'&&RECORD_THREADS[params.get('thread')]?params.get('thread'):'';
   S.search=params.get('q')||'';S.chunk=0;
   if(S.recordAgent!=='all')S.session=S.transcripts.sessions.find(session=>session.agent===S.recordAgent&&!session.parent_id)?.id;
  }
- closeNav();rerender();window.scrollTo(0,0);
+ const userNavigation=Boolean(window.__HELIOS__);
+ closeNav(false);rerender();window.scrollTo(0,0);
+ if(userNavigation)document.getElementById('main').focus({preventScroll:true});
 }
 const jsonRequests=new Map();
 function fetchJson(url){
@@ -380,10 +439,10 @@ async function loadFullScience(){Object.assign(S.science,await fetchJson('/data/
 async function init(){try{
  [S.science,S.models,S.transcripts,S.equations,S.physics,S.anim]=await Promise.all(['/data/science-overview.json','/data/models.json','/data/transcripts.json','/data/equations.json','/data/physics-comparison.json','/data/animation-playback.json'].map(fetchJson));
  S.frame=Math.round(S.progress*1000);
- shell();route();window.addEventListener('hashchange',route);window.addEventListener('resize',()=>{S.charts.forEach(c=>c.chart.resize());solarPlayer?.resize?.();});
+ shell();route();window.addEventListener('hashchange',route);window.addEventListener('resize',()=>{syncNavigation();S.charts.forEach(c=>c.chart.resize());solarPlayer?.resize?.();});
  // Fonts swap in without holding the data and fields behind another network round trip.
- document.fonts.ready.then(()=>S.charts.forEach(c=>c.chart.resize()));
- document.addEventListener('keydown',e=>{if(e.key==='Escape')closeNav();});
+ document.fonts.ready.then(()=>{S.charts.forEach(c=>c.chart.resize());solarPlayer?.resize?.();});
+ document.addEventListener('keydown',navigationKeys);
  window.__HELIOS__={state:S,player:solarPlayer};
  }catch(e){document.getElementById('app').innerHTML=`<div class="error-panel"><div class="eyebrow">Data unavailable</div><h1>The archive could not be opened.</h1><p>Serve the packaged application over HTTP and verify that its datasets are available.</p><pre>${esc(e.message)}</pre><button class="button" onclick="location.reload()">Reload application</button></div>`;console.error(e);}}
 init();

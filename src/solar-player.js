@@ -1,5 +1,6 @@
 import { siteUrl } from './site-paths.js';
 import { createFrameCache } from './frame-cache.js';
+import { createSolarLabelLayout } from './solar-labels.js';
 /** Continuous playback of retained scientific fields without a platform video codec.
  * await mountSolarPlayers({root,manifestUrl,models,field,playing,speed,progress,onTime,onState})
  * Returns {ready,manifest,play,pause,setSpeed,setProgress,setField,setModel,getState,destroy}.
@@ -82,15 +83,18 @@ export async function mountSolarPlayers(options = {}) {
   let field = options.field === 'fluxR2' ? 'contrast' : (options.field || 'flux');
   let speed = options.speed || 1;
   let progress = clamp(options.progress ?? 25/31);
+  let displayedProgress = progress;
   let requestedPlaying = (options.playing ?? true) && !matchMedia('(prefers-reduced-motion: reduce)').matches;
   let playing = false, status = 'loading', loadingError = null;
-  let disposed = false, generation = 0, frameRequest = 0, lastTick = 0, lastUi = 0, lastAnimationTime = 0;
+  let disposed = false, generation = 0, frameRequest = 0, clockFallback = 0, lastTick = 0, lastUi = 0, lastAnimationTime = 0;
   let requestActive = false;
   let transition = null, seekTimer = 0, statusTimer = 0;
   const seekWaiters = [], pendingFrames = new Map();
   const imageFrames = new Map();
   let frameUse = 0;
   const panels = [];
+  let viewportActive = true;
+  const canRun = () => viewportActive && !document.hidden;
   const frameCache = createFrameCache(manifest, warmImages);
   const controls = [...root.querySelectorAll('[data-play]')];
   const ranges = [...root.querySelectorAll('[data-frame]')];
@@ -140,7 +144,7 @@ export async function mountSolarPlayers(options = {}) {
     const low = Math.min(...hours), high = Math.max(...hours);
     return low === high ? formatCadence(low) : `${formatCadence(low)}–${formatCadence(high)}`;
   };
-  function getState() {return {playing,requestedPlaying,status,field,speed,progress,error:loadingError,engine:'persistent-images',cache:{...frameCache.stats,decodedFrames:imageFrames.size}};}
+  function getState() {return {playing,requestedPlaying,status,field,speed,progress,displayedProgress,error:loadingError,engine:'persistent-images',cache:{...frameCache.stats,decodedFrames:imageFrames.size}};}
   function onState() {
     if (disposed) return;
     const showPause=requestedPlaying&&status!=='error';
@@ -153,7 +157,7 @@ export async function mountSolarPlayers(options = {}) {
     }
     for (const panel of panels) if(panel.wrap.dataset.playbackStatus!==status)panel.wrap.dataset.playbackStatus = status;
     for (const node of root.querySelectorAll('[data-playback-status-label],span[data-playback-status]')) {
-      const text=({playing:`Playing · native output ${cadenceLabel()}`,loading:'Loading fields…',seeking:'Seeking…',paused:'Paused',stalled:'Loading next field…',error:'Could not load this time. Press play to retry.'})[status] || status;
+      const text=({playing:`Playing · native output ${cadenceLabel()}`,loading:'Loading fields…',seeking:'Seeking…',paused:'Paused',suspended:'Paused outside view',stalled:'Loading next field…',error:'Could not load this time. Press play to retry.'})[status] || status;
       if(node.textContent!==text)node.textContent=text;
       node.title = loadingError || (manifest.models.claude.temporalRefinement
         ? '768 px · 30 min common display support. Claude uses verified native 30 min solver outputs; Argon interpolates approximately 3 h output; Codex and CCMC interpolate approximately 6 h output.'
@@ -162,7 +166,7 @@ export async function mountSolarPlayers(options = {}) {
     options.onState?.(getState());
   }
   function updateUi(force = false) {
-    const mjd = manifest.startMjd + progress*(manifest.endMjd-manifest.startMjd);
+    const mjd = manifest.startMjd + displayedProgress*(manifest.endMjd-manifest.startMjd);
     const now=performance.now();
     if(!force&&now-lastUi<33)return;
     const times = manifest.timeMjd;
@@ -174,11 +178,12 @@ export async function mountSolarPlayers(options = {}) {
       const y=track.y[lo]*(1-weight)+track.y[lo+1]*weight;
       marker.setAttribute('transform',`translate(${384+x*160},${384-y*160})`);
     }
+    for(const panel of panels)panel.labelLayout?.update();
     for (const range of ranges) range.value=String(Math.round(progress*10000)/10);
     if (force || now-lastUi>=33) {
       lastUi=now;
       for (const node of root.querySelectorAll('[data-frame-time],[data-solar-date]')) node.textContent=utc(mjd);
-      options.onTime?.({mjd,progress,seconds:progress*manifest.durationSeconds});
+      options.onTime?.({mjd,progress:displayedProgress,requestedProgress:progress,seconds:displayedProgress*manifest.durationSeconds});
     }
   }
   function buildOverlay(panel) {
@@ -215,39 +220,42 @@ export async function mountSolarPlayers(options = {}) {
     }
   }
   function updateLabels(panel) {
-    const model = manifest.models[panel.model];
+    const modelId = panel.displayedModel;
+    const displayedField = panel.displayedField;
+    const model = manifest.models[modelId];
     const heading = panel.wrap.querySelector('.canvas-label strong');
-    if (heading) {heading.textContent = model.name; heading.style.color = options.modelColors?.[panel.model] || 'var(--text, #e5e3da)';}
+    if (heading) {heading.textContent = model.name; heading.style.color = options.modelColors?.[modelId] || 'var(--text, #e5e3da)';}
     const plane = panel.wrap.querySelector('[data-plane]');
-    if (plane) plane.textContent = panel.model==='enlil'?`Ecliptic from 3-D · ${model.solverDimensions.join(' × ')} cells · ${cadence(panel.model)} output`:`${panel.model === 'argon' ? '−6.455° cone' : 'Ecliptic'} · ${model.nativeSliceDimensions.join(' × ')} samples · ${cadence(panel.model)}${model.temporalRefinement ? ' solver output' : ' retained'}`;
+    if (plane) plane.textContent = modelId==='enlil'?`Ecliptic from 3-D · ${model.solverDimensions.join(' × ')} cells · ${cadence(modelId)} output`:`${modelId === 'argon' ? '−6.455° cone' : 'Ecliptic'} · ${model.nativeSliceDimensions.join(' × ')} samples · ${cadence(modelId)}${model.temporalRefinement ? ' solver output' : ' retained'}`;
     const title = panel.wrap.querySelector('[data-bar-title]');
-    if (title) title.textContent = field === 'contrast' ? 'nₚv × r² / cm⁻² s⁻¹ AU²' : `${panel.model === 'claude' ? 'nₚvᵣ' : 'nₚ|v|'} / cm⁻² s⁻¹`;
+    if (title) title.textContent = displayedField === 'contrast' ? 'nₚv × r² / cm⁻² s⁻¹ AU²' : `${modelId === 'claude' ? 'nₚvᵣ' : 'nₚ|v|'} / cm⁻² s⁻¹`;
     const min = panel.wrap.querySelector('[data-bar-min]');
     const mid = panel.wrap.querySelector('[data-bar-mid]');
     const max = panel.wrap.querySelector('[data-bar-max]');
     if (min) min.textContent = '≤10⁷';
-    if (mid) mid.textContent = field === 'contrast' ? '1.4×10⁸' : '5.5×10⁸';
-    if (max) max.textContent = field === 'contrast' ? '≥2×10⁹' : '≥3×10¹⁰';
+    if (mid) mid.textContent = displayedField === 'contrast' ? '1.4×10⁸' : '5.5×10⁸';
+    if (max) max.textContent = displayedField === 'contrast' ? '≥2×10⁹' : '≥3×10¹⁰';
     const gradient = panel.wrap.querySelector('.gradient');
     if (gradient) {
       gradient.style.background = `linear-gradient(90deg,${manifest.palette.map(color => `rgb(${color.join(',')})`).join(',')})`;
       gradient.title = 'Colours saturate at both displayed limits. Values below the lower limit use the darkest colour; unsupported pixels use the separate dark-grey background.';
     }
-    panel.svg.setAttribute('aria-label', `${model.name} solar-wind ${field === 'contrast' ? 'flux times radius squared' : 'proton flux'}; ${model.nativePlane}; retained ${model.nativeSliceDimensions.join(' by ')} samples`);
+    panel.svg.setAttribute('aria-label', `${model.name} solar-wind ${displayedField === 'contrast' ? 'flux times radius squared' : 'proton flux'}; ${model.nativePlane}; retained ${model.nativeSliceDimensions.join(' by ')} samples`);
+    panel.labelLayout?.resize();
   }
   for (const svg of root.querySelectorAll('[data-solar]')) {
     const model=allowed.includes(svg.dataset.solar)?svg.dataset.solar:allowed[0];
     if (!sequence(model)) throw new Error(`Portable field frames missing for ${model}. Run python scripts/build_animation_v2.py --images-only`);
     const wrap=svg.closest('.canvas-wrap')||svg.parentElement;
     Object.assign(wrap.style,{position:'relative',backgroundColor:`rgb(${manifest.background.join(',')})`,backgroundImage:`url("${siteUrl(manifest.models[model].media[field].poster)}")`,backgroundSize:'contain',backgroundPosition:'center',backgroundRepeat:'no-repeat'});
-    const panel={svg,wrap,model,markers:new Map(),images:[],lower:null,upper:null,pairKey:null};
+    const panel={svg,wrap,model,displayedModel:model,displayedField:field,markers:new Map(),images:[],lower:null,upper:null,pairKey:null};
     for(let i=0;i<2;i++) {
       const img=document.createElement('img');
       img.alt=''; img.setAttribute('aria-hidden','true'); img.dataset.solarImage=String(i);
       Object.assign(img.style,{position:'absolute',inset:'0',width:'100%',height:'100%',objectFit:'contain',visibility:'hidden',pointerEvents:'none',zIndex:String(i)});
       wrap.insertBefore(img,svg);panel.images.push(img);
     }
-    panels.push(panel);buildOverlay(panel);updateLabels(panel);
+    panels.push(panel);buildOverlay(panel);updateLabels(panel);panel.labelLayout=createSolarLabelLayout(panel);
     const resizeLabels=()=>{
       const box=svg.getBoundingClientRect(),factor=768/Math.max(1,Math.min(box.width,box.height));
       const base=wrap.closest('.solar-grid')?10:11;
@@ -256,7 +264,8 @@ export async function mountSolarPlayers(options = {}) {
         text.setAttribute('font-size',String(factor*(Number(text.dataset.originalFontSize)>=12?base+1:base)));
       }
     };
-    panel.resizeObserver=new ResizeObserver(()=>{resizeLabels();placeTrackLabels(panel);});panel.resizeObserver.observe(wrap);resizeLabels();placeTrackLabels(panel);
+    const resizeOverlay=()=>{resizeLabels();placeTrackLabels(panel);panel.labelLayout.resize();};
+    panel.resizeObserver=new ResizeObserver(resizeOverlay);panel.resizeObserver.observe(wrap);resizeOverlay();
     for(const label of wrap.querySelectorAll('.canvas-label,.canvas-date,.colorbar'))label.style.zIndex='3';
   }
   function position() {
@@ -275,7 +284,7 @@ export async function mountSolarPlayers(options = {}) {
     }
   }
   function prefetch(p) {
-    if(!requestedPlaying||disposed||document.hidden){frameCache.prefetch([]);return;}
+    if(!requestedPlaying||disposed||!canRun()){frameCache.prefetch([]);return;}
     // Two seconds of compressed data, nearest epochs first across all panels.
     // Only the next few frames are decoded; batches do not inflate texture RAM.
     const ahead=Math.ceil(2*speed*(sequence(panels[0].model).frameCount-1)/manifest.durationSeconds);
@@ -297,7 +306,7 @@ export async function mountSolarPlayers(options = {}) {
     return urls;
   }
   function warmImages() {
-    if(!requestedPlaying||disposed||document.hidden||!panels.length)return;
+    if(!requestedPlaying||disposed||!canRun()||!panels.length)return;
     const p=position();
     for(let offset=2;offset<=8;offset++)for(const panel of panels){
       const rows=sequence(panel.model).fields[field];
@@ -316,13 +325,14 @@ export async function mountSolarPlayers(options = {}) {
     transition=new AbortController();
     const currentSignal=transition.signal;
     const started=performance.now(),continuous=nextStatus==='stalled'&&playing;
-    requestActive=true;if(!continuous)playing=false;loadingError=null;
+    requestActive=true;if(!continuous){playing=false;stopClock();}loadingError=null;
     // Cached interval changes normally finish before the next paint. Show a
     // loading message only when the wait is long enough to be useful.
     if(nextStatus==='stalled'&&status==='playing'){
-      statusTimer=setTimeout(()=>{if(!disposed&&token===generation&&requestActive&&requestedPlaying){playing=false;status='stalled';onState();}},180);
+      statusTimer=setTimeout(()=>{if(!disposed&&token===generation&&requestActive&&requestedPlaying){playing=false;stopClock();status='stalled';onState();}},180);
     }else {status=nextStatus;onState();}
     const p=position();
+    const requestedProgress=progress, frameIntervals=sequence(panels[0].model).frameCount-1;
     if(nextStatus!=='stalled')cancelPendingFrames(new Set(panels.flatMap(panel=>keys(panel,p))));
     try {
       const loaded=await Promise.all(panels.map(async panel=>{
@@ -333,6 +343,7 @@ export async function mountSolarPlayers(options = {}) {
       if(disposed||token!==generation)return;
       // Stage one incoming layer behind an opaque decoded layer in every panel.
       // An interrupted transition never clears the last visible field.
+      let retainedTime;
       const targets=await Promise.all(loaded.map(async({panel,loUrl,hiUrl,lo,hi})=>{
         const matchingLower=panel.images.find(image=>image.dataset.frameUrl===loUrl&&image.complete&&image.naturalWidth>0);
         const visible=panel.upper&&Number(panel.upper.style.opacity)>=.5?panel.upper:panel.lower;
@@ -341,24 +352,32 @@ export async function mountSolarPlayers(options = {}) {
         if(visible){
           visible.style.opacity='1';
           if(lower!==visible)lower.style.opacity='0';
+          if(retainedTime===undefined&&visible.dataset.frameProgress!==undefined){retainedTime=Number(visible.dataset.frameProgress);displayedProgress=retainedTime;updateUi(true);}
         }
         await loadImageSource(lower,lo.objectUrl,{signal:currentSignal,cancelSource:false});
         if(disposed||token!==generation)return;
         lower.dataset.frameUrl=loUrl;
+        lower.dataset.frameProgress=String(p.lower/frameIntervals);
         return {panel,lower,upper,hiUrl,hi};
       }));
       if(disposed||token!==generation)return;
       // Promote the same epoch across all panels before recycling their other
       // layers. Metadata is assigned only after a current-generation load.
       for(const {panel,lower,upper} of targets){
+        if(panel.displayedModel!==panel.model||panel.displayedField!==field){
+          panel.displayedModel=panel.model;panel.displayedField=field;
+          panel.svg.dataset.solar=panel.model;updateLabels(panel);
+        }
         lower.style.visibility='visible';lower.style.opacity='1';lower.style.zIndex='0';
         upper.style.opacity='0';upper.style.zIndex='1';
         panel.lower=lower;panel.upper=upper;panel.pairKey=null;
       }
+      displayedProgress=p.lower/frameIntervals;updateUi(true);
       await Promise.all(targets.map(async({upper,hiUrl,hi})=>{
         await loadImageSource(upper,hi.objectUrl,{signal:currentSignal,cancelSource:false});
         if(disposed||token!==generation)return;
         upper.dataset.frameUrl=hiUrl;
+        upper.dataset.frameProgress=String(p.upper/frameIntervals);
       }));
       if(disposed||token!==generation)return;
       for(const {panel,lower,upper} of targets){
@@ -366,21 +385,22 @@ export async function mountSolarPlayers(options = {}) {
         panel.pairKey=`${panel.model}:${field}:${p.lower}`;
         panel.wrap.style.backgroundImage='';panel.wrap.dataset.imageReady='true';
       }
+      displayedProgress=requestedProgress;showBlend(p);updateUi(true);
       // Establish a short runway once, rather than starting and immediately
       // stopping at the first network boundary. Scrubs and pause cancel this.
-      if(requestedPlaying&&nextStatus!=='stalled'&&frameCache.packed){
+      if(requestedPlaying&&canRun()&&nextStatus!=='stalled'&&frameCache.packed){
         showBlend(p);updateUi(true);
         await frameCache.prefetch(bufferUrls(p));
         if(disposed||token!==generation)return;
       }
       clearTimeout(statusTimer);
-      requestActive=false;status=requestedPlaying?'playing':'paused';playing=requestedPlaying;
+      requestActive=false;playing=requestedPlaying&&canRun();status=playing?'playing':requestedPlaying?'suspended':'paused';
       const now=performance.now();lastTick=continuous&&now-started<180?started:now;
       showBlend(p);updateUi(true);onState();prefetch(p);scheduleAnimation();
     }catch(error){
       if(disposed||token!==generation)return;
       transition.abort();clearTimeout(statusTimer);cancelPendingFrames();
-      requestActive=false;status='error';playing=false;loadingError=error.message;onState();
+      requestActive=false;status='error';playing=false;stopClock();loadingError=error.message;onState();
     }
   }
   function restartCurrent(nextStatus) {
@@ -403,13 +423,13 @@ export async function mountSolarPlayers(options = {}) {
   }
   function advance(now) {
     if(disposed)return;
-    if(playing&&!requestActive&&!document.hidden) {
+    if(playing&&!requestActive&&canRun()) {
       const candidate=(progress+(now-lastTick)*speed/(manifest.durationSeconds*1000))%1;
       lastTick=now;
       progress=candidate;
       const p=position();
       const current=panels.every(panel=>panel.pairKey===`${panel.model}:${field}:${p.lower}`);
-      if(current){showBlend(p);updateUi();}
+      if(current){showBlend(p);displayedProgress=progress;updateUi();}
       else {
         // Freeze the physical clock at this requested epoch until adjacent
         // decoded images are ready; the previous view remains on screen.
@@ -419,32 +439,57 @@ export async function mountSolarPlayers(options = {}) {
   }
   function animate(now) {
     frameRequest=0;
-    if(disposed||!playing||document.hidden)return;
+    if(disposed||!playing||!canRun())return;
     lastAnimationTime=now;advance(now);
     scheduleAnimation();
   }
-  function scheduleAnimation(){if(!disposed&&playing&&!document.hidden&&!frameRequest)frameRequest=requestAnimationFrame(animate);}
+  function scheduleAnimation(){if(!disposed&&playing&&canRun()){startClock();if(!frameRequest)frameRequest=requestAnimationFrame(animate);}}
   // Some remote/headless browsers suppress compositor animation callbacks
   // while the document remains visible. A bounded timer preserves the clock
   // in that case without running a second animation loop during normal RAF.
-  const clockFallback=setInterval(()=>{const now=performance.now();if(playing&&!document.hidden&&now-lastAnimationTime>80)advance(now);},33);
+  function startClock(){if(!clockFallback)clockFallback=setInterval(()=>{const now=performance.now();if(playing&&canRun()&&now-lastAnimationTime>80)advance(now);},33);}
+  function stopClock(){clearInterval(clockFallback);clockFallback=0;}
   const api={
     manifest,getState,
-    play:async()=>{if(disposed)return;requestedPlaying=true;if(status==='error'||(!requestActive&&frameCache.packed&&bufferUrls(position()).some(url=>!frameCache.has(url)&&!frameCache.failed(url)))){await restartCurrent('loading');return;}if(!requestActive){playing=true;status='playing';lastTick=performance.now();prefetch(position());scheduleAnimation();}onState();},
-    pause:()=>{requestedPlaying=false;playing=false;cancelAnimationFrame(frameRequest);frameRequest=0;frameCache.prefetch([]);if(status==='playing')status='paused';onState();},
+    play:async()=>{if(disposed)return;requestedPlaying=true;if(!canRun()){playing=false;stopClock();if(!requestActive&&status!=='error')status='suspended';onState();return;}if(status==='error'||(!requestActive&&frameCache.packed&&bufferUrls(position()).some(url=>!frameCache.has(url)&&!frameCache.failed(url)))){await restartCurrent('loading');return;}if(!requestActive){playing=true;status='playing';lastTick=performance.now();prefetch(position());scheduleAnimation();}onState();},
+    pause:()=>{requestedPlaying=false;playing=false;cancelAnimationFrame(frameRequest);frameRequest=0;stopClock();frameCache.prefetch([]);if(['playing','suspended','stalled'].includes(status))status='paused';onState();},
     setSpeed:value=>{speed=clamp(Number(value)||1,.25,4);prefetch(position());onState();},
     setProgress:seek,
-    setField:async value=>{const next=value==='fluxR2'?'contrast':value;if(!['flux','contrast'].includes(next))throw new Error(`Unknown field ${value}`);if(next!==field){field=next;panels.forEach(updateLabels);frameCache.prefetch([]);await restartCurrent('loading');}},
-    setModel:async(value,index=0)=>{if(!manifest.models[value])throw new Error(`Unknown model ${value}`);if(panels[index]&&panels[index].model!==value){panels[index].model=value;panels[index].svg.dataset.solar=value;updateLabels(panels[index]);frameCache.prefetch([]);await restartCurrent('loading');}},
+    setField:async value=>{const next=value==='fluxR2'?'contrast':value;if(!['flux','contrast'].includes(next))throw new Error(`Unknown field ${value}`);if(next!==field){field=next;frameCache.prefetch([]);await restartCurrent('loading');}},
+    setModel:async(value,index=0)=>{if(!manifest.models[value])throw new Error(`Unknown model ${value}`);if(panels[index]&&panels[index].model!==value){panels[index].model=value;frameCache.prefetch([]);await restartCurrent('loading');}},
     resize:()=>{for(const panel of panels)panel.resizeObserver?.unobserve(panel.wrap);for(const panel of panels)panel.resizeObserver?.observe(panel.wrap);},
-    destroy:()=>{disposed=true;stopTransition();cancelPendingFrames();frameCache.destroy();clearTimeout(seekTimer);seekWaiters.splice(0).forEach(resolve=>resolve());signalController.abort();options.signal?.removeEventListener('abort',onExternalAbort);clearInterval(clockFallback);for(const panel of panels){panel.resizeObserver.disconnect();for(const image of panel.images)image.remove();}for(const entry of imageFrames.values())entry.release();imageFrames.clear();for(const button of controls)button.onclick=null;for(const range of ranges)range.oninput=null;for(const select of speeds)select.onchange=null;},
+    destroy:()=>{disposed=true;stopTransition();stopClock();visibilityObserver?.disconnect();clearTimeout(visibilityTimer);cancelPendingFrames();frameCache.destroy();clearTimeout(seekTimer);seekWaiters.splice(0).forEach(resolve=>resolve());signalController.abort();options.signal?.removeEventListener('abort',onExternalAbort);for(const panel of panels){panel.resizeObserver.disconnect();for(const image of panel.images)image.remove();}for(const entry of imageFrames.values())entry.release();imageFrames.clear();for(const button of controls)button.onclick=null;for(const range of ranges)range.oninput=null;for(const select of speeds)select.onchange=null;},
   };
   const onExternalAbort=()=>api.destroy();
   options.signal?.addEventListener('abort',onExternalAbort,{once:true});
   for(const button of controls)button.onclick=()=>status==='error'?api.play():requestedPlaying?api.pause():api.play();
   for(const range of ranges){range.min='0';range.max='1000';range.step='.1';range.value=String(Math.round(progress*10000)/10);range.oninput=event=>api.setProgress(Number(event.target.value)/1000);}
   for(const select of speeds){select.value=String(speed);select.onchange=event=>api.setSpeed(Number(event.target.value));}
-  document.addEventListener('visibilitychange',()=>{lastTick=performance.now();if(document.hidden){cancelAnimationFrame(frameRequest);frameRequest=0;frameCache.prefetch([]);}else{prefetch(position());scheduleAnimation();}},{signal});
+  function syncVisibility(){
+    if(disposed)return;
+    lastTick=performance.now();
+    if(!canRun()){
+      playing=false;cancelAnimationFrame(frameRequest);frameRequest=0;stopClock();frameCache.prefetch([]);
+      cancelPendingFrames(new Set(panels.flatMap(panel=>keys(panel,position()))));
+      if(!requestActive&&status!=='error')status=requestedPlaying?'suspended':'paused';
+      onState();
+    }else if(requestedPlaying&&!requestActive&&status!=='error')void api.play();
+  }
+  let visibilityTimer=0;
+  function checkViewport(){
+    if(disposed)return;
+    const active=panels.some(panel=>{const box=panel.wrap.getBoundingClientRect();return box.width>0&&box.height>0&&box.bottom>-120&&box.top<innerHeight+120&&box.right>0&&box.left<innerWidth;});
+    if(active!==viewportActive){viewportActive=active;syncVisibility();}
+  }
+  const visibilityObserver=typeof IntersectionObserver==='undefined'?null:new IntersectionObserver(checkViewport,{rootMargin:'120px 0px'});
+  for(const panel of panels)visibilityObserver?.observe(panel.wrap);
+  // Scroll notifications also cover environments that defer compositor-driven
+  // intersection callbacks. Measure at most once per scroll burst, never per frame.
+  const scheduleViewportCheck=()=>{if(!visibilityTimer)visibilityTimer=setTimeout(()=>{visibilityTimer=0;checkViewport();},40);};
+  document.addEventListener('scroll',scheduleViewportCheck,{capture:true,passive:true,signal});
+  window.addEventListener('resize',scheduleViewportCheck,{signal});
+  document.addEventListener('visibilitychange',syncVisibility,{signal});
+  checkViewport();
   updateUi(true);
   api.ready=loadCurrent('loading').then(()=>{if(!disposed&&status==='error')throw new Error(loadingError||'Field images unavailable.');});
   return api;
