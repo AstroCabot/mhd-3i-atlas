@@ -1,0 +1,84 @@
+# ENLIL v2.8f control file draft
+#
+#  ALL NULL ARGS ARE NOT PASSED ON
+#
+#   uploaded CME parameters file name is DONKI_2025-09-01_2025-12-09_v600_w30.txt
+#
+batch=yes           # Submit run to batch queue
+project=Jan_Deca_120925_SH_1 # Use run request number for project directory name *RUNID*
+cr=null             # Carrington Rotation number (null | xxxx) (null for du and dt run types)
+reg=3               # Computational region
+res=low            # Numerical grid resolution
+nblk=2              # Number of computational blocks (1 for ambient run, 2 for CME run)
+vutime=null         # Time unit scale factor (s) gives default 3600. (null) = 1 hour |  86400=1day  # USE FLOATING POINT VALUES
+tstart=null         # Start computation at this time for 1 AU grid - default -240 hours (null) = 10 days (vutime units)
+		    #     ^Only change this when changing vutime 
+tstop=1656  	    # Stop computation at this time (vutime units)  (use 33 days = 792 hours for fr)
+tstep=6          # Output with this step in time (vutime units)  (use 27.2753 days = 654.6072 hours for fr)
+
+corfile=null        # Coronal data file; null (for fr it will be defined in script) unless it is a custom file
+corobs=gongz          # Solar photospheric field observatory name (du,dt: gongb | gongz) (fr:  gong | mwo | nso | mdi) 
+cordata=wsadw_5.4
+
+projfcst=0          # Project structure (0 | 1 | 2)  # USE THE SAME PROJECT NAME IF CONTROL FILE HAS projfcst = 1 or 2
+
+rundate=2025-10-01T00        # Start computation at this date (yyyy-mm-ddThh) (*use null for fr*)
+obsdate=null        # Coronal observations at this date (yyyy-mm-ddThh) (*only set for du run type*)
+resdate=null        # Restart computation from this date (null | yyyy-mm-ddThh)
+resgrd=null         # Restart computation from this grid
+resbnd=null         # Restart computation from this boundary
+
+#---------------------------------------------------------------------
+# Ambient wind conditions setting (default is a6b1 for synodic rotation)
+# User modified ambient setting is a6b1mod 
+amb=a6b1
+#
+# *USE FLOATING POINT VALUES E.G. 700.*
+vmean=null          # Radial flow velocity of mean stream (km/s)
+bmean=null          # Radial magnetic field of mean stream (nT)
+dmean=null          # Number density at the inner boundary (cm-3)
+tmean=null           # Mean temperature at the inner boundary (MK)
+#
+vfast=null          # Radial flow velocity of fast stream (km/s)
+vslow=null          # Radial flow velocity of slow stream (km/s)
+vrfast=null          # Reduction of the maximum flow velocity (km/s)
+vrslow=null          # Reduction of the minimum flow velocity (km/s)
+bfast=null          # Radial magnetic field of fast stream (nT)
+dfast=null          # Number density at the inner boundary (cm-3)
+tfast=null           # Mean temperature at the inner boundary (MK)
+bscl=null              # Magnetic field scaling factor
+xalpha=null         # Fraction of alpha particles (rel. to protons)
+bndrot=null      # Rotation of the inner boundary (sidereal | synodic -default)
+
+runpar=g53q5        # Gamma and heating parameters (g53q5 | g15q0 | g53q0)
+#----------------------------------
+# properties of cone clouds for run
+#----------------------------------
+# 
+cmedir=null         # Transient data directory   #$# CCMC: this should be /Request_data
+cmedata=Jan_Deca_120925_SH_1  # Transient data sub-directory - use run request number *RUNID*
+cmefile=cme_param.txt  # Transient data file - user submitted CME file
+ncmes=-1            # number of cmes  (0 for ambient -1 for cmefile 1 or more for CMEs listed explicitly below)
+
+cld=d4t1x1          # Hydrodynamic cloud conditions setting (default is d4t1x1)
+                    #*if dcld, tcld, xcld,radcav, dcav, or tcav are changed this will become d4t1x1mod*
+
+# *IF MULTIPLE CMES ARE INSERTED AND DIFFERENT VALUES ARE DESIRED FOR EACH USE EG dcld=4,4,8*
+dcld=null            # density enhancement factor of cloud compared to fast solar wind (default=4)
+tcld=null            # Cloud temperature / fast stream temperature
+xcld=null            # elongation factor of the trailing part of cloud; =1 for sphere, =2 for twice longer, etc.
+ncld=2            # Cloud geometric shape (1-piston, 2-spheroid (default), 3-sphere)
+radcav=null          # Cloud cavity radius over cloud radius (0 to 0.9)
+dcav=null        # Cavity density / fast stream density
+tcav=null        # Cavity temperature / fast stream temperature
+#JobRequestDir=     #NOT USED
+#SPECIAL REQUEST FOR GRID (always adjust values for reg=1 res=low default) 
+# *USE FLOATING POINT VALUES E.G. 20.*
+x1l=null            # Inner boundary (AU)
+x1r=null            #Outer Boundary (AU)
+x2l=42            # Minimum co-latitude (deg)
+x2r=138            # Maximum co-latitude (deg)
+n1=null             # No. of basic X1-grid points
+n2=24               # No. of basic X2-grid points
+n3=null             # No. of basic X3-grid points
+procs=64 # No. of processors

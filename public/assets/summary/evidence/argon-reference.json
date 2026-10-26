@@ -1,0 +1,14 @@
+{
+  "mode": "solar_wind",
+  "bc_file": "data/processed/bc_mode3_assimilated.bin",
+  "nr": 224, "nth": 48, "nph": 240,
+  "lat_max_deg": 60,
+  "gamma": 1.5,
+  "cfl": 0.35,
+  "enable_grav": 1,
+  "enable_mag": 1,
+  "enable_cmes": 0,
+  "wall_time_s": 164.114,
+  "weighted_divB": 0.00521374,
+  "n_slices": 0
+}

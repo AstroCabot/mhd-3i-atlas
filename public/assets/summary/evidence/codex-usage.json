@@ -1,0 +1,39 @@
+{
+  "case": "ct156_w30_theta40_phi192",
+  "backend": "Athena++ native double HLLD CT CPU",
+  "wall_seconds_including_inputs": 3819.48199650296,
+  "exit_code": 0,
+  "native_returncode": 0,
+  "process_tree_RSS_cap_MiB": 1280,
+  "sampled_peak_process_tree_RSS_MiB": 967.16796875,
+  "address_space_cap_MiB": 3072,
+  "CPU_time_cap_s": 14400,
+  "wall_limit_s": 7200.0,
+  "core_dump_cap_bytes": 0,
+  "threads": 4,
+  "radial_meshblocks": 4,
+  "runtime_env": {
+    "OMP_DYNAMIC": "FALSE",
+    "OMP_WAIT_POLICY": "PASSIVE",
+    "GOMP_SPINCOUNT": "0",
+    "OMP_NUM_THREADS": "4"
+  },
+  "command": [
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/results/ct156_w30_theta40_phi192/resource_usage.txt",
+    "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/solver/athena_ct_pins/3e5e08f2fd6564f1b1e11500fca784abb94564dc48410407bf59074c84978d9f/athena",
+    "-i",
+    "/mnt/c/Users/cabot/OneDrive/Documents/Research/Cambridge/X3I/mhd_llm/codex/results/ct156_w30_theta40_phi192/athinput.ct"
+  ],
+  "nice": 15,
+  "concurrent_case_limit": 1,
+  "termination_reason": null,
+  "resource_usage_source": "/usr/bin/time -v resource_usage.txt is authoritative per-process CPU/RSS; no RUSAGE_CHILDREN accumulation",
+  "scientific_gates_passed": true,
+  "user_seconds": 9618.67,
+  "system_seconds": 193.45,
+  "maxrss_kb": 987860,
+  "gnu_time_resource_complete": true
+}

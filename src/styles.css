@@ -641,7 +641,32 @@ h1, .section-heading h2, .panel-title, .insight h3, .prose h3, .record-guide h2 
 .cooperation-quote blockquote { margin: 0; }
 .cooperation-quote blockquote p { margin: 0 0 10px; }
 .cooperation-quote-note { margin-bottom: 0; color: var(--muted); font: 12px/1.7 var(--sans); }
+/* The concluding synthesis loads as prose and tables, without chart or media work. */
+.summary-column { width: 100%; max-width: 860px; margin-inline: auto; }
+.summary-article { color: var(--text); font: 16px/1.8 var(--serif); }
+.summary-article > p { margin: 0 0 1.25em; }
+.summary-article a { color: var(--accent); }
+.summary-article .summary-meta { color: var(--muted); font: 10px/1.7 var(--mono); margin-block: 0 20px; }
+.summary-article .summary-lead { font-size: 18px; line-height: 1.7; }
+.summary-article .section-heading { margin-top: 32px; }
+.summary-article .summary-cite { font: 11px/1.7 var(--sans); white-space: nowrap; }
+.summary-article code { overflow-wrap: anywhere; font-size: .85em; }
+.summary-article .summary-note { color: var(--muted); font: 12px/1.7 var(--sans); }
+.summary-table-scroll { margin: 22px 0 14px; }
+.summary-table { min-width: 620px; }
+.summary-table caption { text-align: left; color: var(--muted); padding-bottom: 9px; font: 11px/1.6 var(--mono); }
+.summary-table td { vertical-align: top; font-size: 12px; line-height: 1.65; }
+.summary-table th, .summary-table td { vertical-align: top; white-space: normal; }
+.summary-table th:first-child { width: 120px; }
+#summary-confidence td:nth-child(2), #summary-confidence td:nth-child(3) { text-align: right; font-variant-numeric: tabular-nums; }
+.summary-sources { margin: 30px 0; padding-top: 14px; border-top: 1px solid var(--line); }
+.summary-sources > summary { cursor: pointer; color: var(--text); font: 600 13px/1.7 var(--sans); }
+.summary-sources[open] > summary { margin-bottom: 16px; }
+.summary-sources p, .summary-sources li { font-size: 13px; }
+.summary-sources li { margin-block: 8px; }
 @media (max-width: 760px) {
+  .summary-article { font-size: 15px; }
+  .summary-article .summary-lead { font-size: 17px; }
   .cooperation-article { font-size: 15px; }
   .cooperation-article .cooperation-lead { font-size: 17px; }
   .cooperation-figure figcaption { font-size: 11px; }

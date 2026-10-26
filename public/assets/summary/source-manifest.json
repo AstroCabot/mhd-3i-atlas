@@ -1,0 +1,71 @@
+{
+  "scope": "Unmodified copies of selected research records; no solver reruns.",
+  "files": [
+    {
+      "url": "/assets/summary/evidence/argon-inputs.py",
+      "sourcePath": "argon/scripts/prepare_inputs.py",
+      "bytes": 28273,
+      "sha256": "5607cb090062a2db7f7406d167a4f58b5e6db492132ee9461f1a7cb972926f11"
+    },
+    {
+      "url": "/assets/summary/evidence/argon-reference.json",
+      "sourcePath": "argon/outputs/runs/res_fine_224x48x240_run_meta.json",
+      "bytes": 304,
+      "sha256": "91455327db53e160868bce573e475dcfc2361662a11dddec9d5270da8e707e78"
+    },
+    {
+      "url": "/assets/summary/evidence/claude-assimilation.py",
+      "sourcePath": "claude/src/py/da.py",
+      "bytes": 4877,
+      "sha256": "6e6747fd79ac557bca354f34a3fc4a11ed6a9e238e389a69dca1d815d815f95a"
+    },
+    {
+      "url": "/assets/summary/evidence/claude-readme.txt",
+      "sourcePath": "claude/README.md",
+      "bytes": 18230,
+      "sha256": "b0743958806d494e57c14860e8761d801b97537c247fe8d2a63cfe3ad8141249"
+    },
+    {
+      "url": "/assets/summary/evidence/claude-reference.json",
+      "sourcePath": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2.json",
+      "bytes": 2615,
+      "sha256": "93c20112a25b24743da9c9b91be41ca676dea4f824ea6264b1f4fe24ee544863"
+    },
+    {
+      "url": "/assets/summary/evidence/claude-runtime.txt",
+      "sourcePath": "claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/stdout.txt",
+      "bytes": 7629,
+      "sha256": "0a4a9dacb66157ed4bd24182380d20f5fb70bfb2f9074e8449407e9961f9c280"
+    },
+    {
+      "url": "/assets/summary/evidence/codex-inputs.json",
+      "sourcePath": "codex/inputs/metadata.json",
+      "bytes": 7373,
+      "sha256": "54ebd0db108ae1ab7bdb15dcf456ab186965395ccac4cb578b260a0dc441c754"
+    },
+    {
+      "url": "/assets/summary/evidence/codex-readme.txt",
+      "sourcePath": "codex/README.txt",
+      "bytes": 13533,
+      "sha256": "e4ac3775af60b5fb934a971df90e9f11c49e4b00e992a0264d49672e270e1f7d"
+    },
+    {
+      "url": "/assets/summary/evidence/codex-usage.json",
+      "sourcePath": "codex/results/ct156_w30_theta40_phi192/runner_usage.json",
+      "bytes": 1442,
+      "sha256": "3b40373b9343eb04fa552a4fd9d0c456f7de9bc26426bc0dc80d8910421b3af3"
+    },
+    {
+      "url": "/assets/summary/evidence/codex-runtime.txt",
+      "sourcePath": "codex/results/ct156_w30_theta40_phi192/run.log",
+      "bytes": 3470,
+      "sha256": "f1d51b770936cf365ce395abea86670a6713b5828a29dab1494147bded96cf58"
+    },
+    {
+      "url": "/assets/summary/evidence/enlil-control.txt",
+      "sourcePath": "claude/ref/ccmc/Jan_Deca_120925_SH_1_control_file.txt",
+      "bytes": 4899,
+      "sha256": "0a6e9e8fc7ce34533795d94e35b6e6a56cecff364ece15b165980e349f54b598"
+    }
+  ]
+}

@@ -1,0 +1,246 @@
+{
+  "origin_utc": "2025-11-01T00:00:00Z",
+  "origin_mjd_utc": 60980.0,
+  "r0_au": 0.0999850461106864,
+  "rotation_rad_day": 0.24756448241988369,
+  "rotation_epoch_day": 0,
+  "longitude_offset_rad": -1.0502672621698068,
+  "phase_residual_max_deg": 0.7313945232730961,
+  "map_longitude_centers_deg": "(CARRLONG + 1 + 2*i) mod360; validated against photospheric GONG WCS",
+  "map_latitude_centers_deg": "-89 + 2*j, south to north",
+  "calibration_interval_utc": [
+    "2025-11-10T00:00:00",
+    "2025-11-25T00:00:00"
+  ],
+  "training_instruments": {
+    "stereo_a": {
+      "records": 349,
+      "n400_1au_cm3_p16_50_84": [
+        3.7175618523025635,
+        6.053138036028717,
+        14.735746142887635
+      ],
+      "T400_01au_K_p16_50_84": [
+        695941.6360535778,
+        1044305.9258631289,
+        1346068.5813049392
+      ],
+      "abs_Br_1au_nt_p16_50_84": [
+        2.347982846468678,
+        4.631014751292845,
+        6.663938530934045
+      ]
+    },
+    "solar_orbiter": {
+      "records": 348,
+      "n400_1au_cm3_p16_50_84": [
+        7.004063610716736,
+        11.25207740359005,
+        22.621200353157462
+      ],
+      "T400_01au_K_p16_50_84": [
+        527273.8625463239,
+        878121.8661885755,
+        1248390.8502227173
+      ],
+      "abs_Br_1au_nt_p16_50_84": [
+        0.9523756751010639,
+        3.0457721898820456,
+        5.2994712643565025
+      ]
+    }
+  },
+  "holdout": "Wind/OMNI never used to fit parameters",
+  "density_1au_at400_cm3": 8.252901169649991,
+  "proton_temperature_01au_at400_K": 957615.7206785604,
+  "Br_1au_absolute_median_target_nt": 3.755664513827249,
+  "WSA_Br_multiplier": 2.357096167258441,
+  "speed_offset_kms": -50,
+  "density_prescription": "n(r0)=n400*(400/v)^2/r0^2",
+  "temperature_prescription": "Tp(r0)=T400*(v/400)^2; gamma1.5 extrapolation from in-situ Tp",
+  "pressure": "p=2 np kB Tp, assuming equal electron and proton temperatures",
+  "limitations": [
+    "Scalar moments constrain normalization; density angular variation remains assumed constant n v^2.",
+    "Training contains compressions; ballistic inward extrapolation does not undo stream interactions.",
+    "Daily maps are retrospective time-interpolated boundary estimates; this is not an operational forecast.",
+    "Daily maps use historical synoptic far-side information, not simultaneous full-Sun measurements.",
+    "Single calibration interval and two spacecraft do not determine errors at the comet."
+  ],
+  "maps": [
+    {
+      "file": "external_model/raw/vel_202511101614R000_gongz.fits",
+      "mjd_utc": 60989.67640000023,
+      "day": 9.676400000229478,
+      "carrlong": 195.0,
+      "obslon": 255.23
+    },
+    {
+      "file": "external_model/raw/vel_202511110014R000_gongz.fits",
+      "mjd_utc": 60990.00969999982,
+      "day": 10.009699999820441,
+      "carrlong": 191.0,
+      "obslon": 250.84
+    },
+    {
+      "file": "external_model/raw/vel_202511120014R000_gongz.fits",
+      "mjd_utc": 60991.00969999982,
+      "day": 11.009699999820441,
+      "carrlong": 178.0,
+      "obslon": 237.66
+    },
+    {
+      "file": "external_model/raw/vel_202511130014R000_gongz.fits",
+      "mjd_utc": 60992.00969999982,
+      "day": 12.009699999820441,
+      "carrlong": 165.0,
+      "obslon": 224.56
+    },
+    {
+      "file": "external_model/raw/vel_202511140014R000_gongz.fits",
+      "mjd_utc": 60993.00969999982,
+      "day": 13.009699999820441,
+      "carrlong": 151.0,
+      "obslon": 211.29
+    },
+    {
+      "file": "external_model/raw/vel_202511150004R000_gongz.fits",
+      "mjd_utc": 60994.0027999999,
+      "day": 14.002799999900162,
+      "carrlong": 138.0,
+      "obslon": 198.19
+    },
+    {
+      "file": "external_model/raw/vel_202511160014R000_gongz.fits",
+      "mjd_utc": 60995.00969999982,
+      "day": 15.009699999820441,
+      "carrlong": 125.0,
+      "obslon": 185.45
+    },
+    {
+      "file": "external_model/raw/vel_202511170014R000_gongz.fits",
+      "mjd_utc": 60996.00969999982,
+      "day": 16.00969999982044,
+      "carrlong": 112.0,
+      "obslon": 172.27
+    },
+    {
+      "file": "external_model/raw/vel_202511180004R000_gongz.fits",
+      "mjd_utc": 60997.0027999999,
+      "day": 17.002799999900162,
+      "carrlong": 99.0,
+      "obslon": 158.82
+    },
+    {
+      "file": "external_model/raw/vel_202511190104R000_gongz.fits",
+      "mjd_utc": 60998.04440000001,
+      "day": 18.04440000001341,
+      "carrlong": 85.0,
+      "obslon": 144.76
+    },
+    {
+      "file": "external_model/raw/vel_202511200004R000_gongz.fits",
+      "mjd_utc": 60999.0027999999,
+      "day": 19.002799999900162,
+      "carrlong": 72.0,
+      "obslon": 132.1
+    },
+    {
+      "file": "external_model/raw/vel_202511210114R000_gongz.fits",
+      "mjd_utc": 61000.05140000023,
+      "day": 20.051400000229478,
+      "carrlong": 59.0,
+      "obslon": 119.36
+    },
+    {
+      "file": "external_model/raw/vel_202511220014R000_gongz.fits",
+      "mjd_utc": 61001.00969999982,
+      "day": 21.00969999982044,
+      "carrlong": 46.0,
+      "obslon": 105.73
+    },
+    {
+      "file": "external_model/raw/vel_202511230004R000_gongz.fits",
+      "mjd_utc": 61002.0027999999,
+      "day": 22.002799999900162,
+      "carrlong": 33.0,
+      "obslon": 93.25
+    },
+    {
+      "file": "external_model/raw/vel_202511240014R000_gongz.fits",
+      "mjd_utc": 61003.00969999982,
+      "day": 23.00969999982044,
+      "carrlong": 20.0,
+      "obslon": 80.33
+    },
+    {
+      "file": "external_model/raw/vel_202511250004R000_gongz.fits",
+      "mjd_utc": 61004.0027999999,
+      "day": 24.002799999900162,
+      "carrlong": 7.0,
+      "obslon": 67.06
+    },
+    {
+      "file": "external_model/raw/vel_202511260014R000_gongz.fits",
+      "mjd_utc": 61005.00969999982,
+      "day": 25.00969999982044,
+      "carrlong": 353.0,
+      "obslon": 53.0
+    },
+    {
+      "file": "external_model/raw/vel_202511270014R000_gongz.fits",
+      "mjd_utc": 61006.00969999982,
+      "day": 26.00969999982044,
+      "carrlong": 340.0,
+      "obslon": 40.34
+    },
+    {
+      "file": "external_model/raw/vel_202511280014R000_gongz.fits",
+      "mjd_utc": 61007.00969999982,
+      "day": 27.00969999982044,
+      "carrlong": 327.0,
+      "obslon": 26.63
+    },
+    {
+      "file": "external_model/raw/vel_202511290014R000_gongz.fits",
+      "mjd_utc": 61008.00969999982,
+      "day": 28.00969999982044,
+      "carrlong": 314.0,
+      "obslon": 14.15
+    },
+    {
+      "file": "external_model/raw/vel_202511300004R000_gongz.fits",
+      "mjd_utc": 61009.0027999999,
+      "day": 29.002799999900162,
+      "carrlong": 301.0,
+      "obslon": 1.49
+    },
+    {
+      "file": "external_model/raw/vel_202512010004R000_gongz.fits",
+      "mjd_utc": 61010.0027999999,
+      "day": 30.002799999900162,
+      "carrlong": 287.0,
+      "obslon": 346.9
+    },
+    {
+      "file": "external_model/raw/vel_202512020014R000_gongz.fits",
+      "mjd_utc": 61011.00969999982,
+      "day": 31.00969999982044,
+      "carrlong": 274.0,
+      "obslon": 334.51
+    },
+    {
+      "file": "external_model/raw/vel_202512030014R000_gongz.fits",
+      "mjd_utc": 61012.00969999982,
+      "day": 32.00969999982044,
+      "carrlong": 261.0,
+      "obslon": 321.5
+    },
+    {
+      "file": "external_model/raw/vel_202512040214R000_gongz.fits",
+      "mjd_utc": 61013.09310000017,
+      "day": 33.09310000017285,
+      "carrlong": 247.0,
+      "obslon": 307.18
+    }
+  ]
+}

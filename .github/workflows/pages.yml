@@ -30,6 +30,7 @@ jobs:
       - name: Package the committed research data
         run: |
           python scripts/build_writeups.py
+          python scripts/build_summary.py
           python scripts/build_app.py
       - name: Check the standalone site
         run: python scripts/check_static_site.py dist

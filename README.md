@@ -87,6 +87,7 @@ The opening science dataset excludes the verification, spacecraft and provenance
 10. **Model writeups:** each agent's supplied Markdown account with equations, tables, figures, evidence links and original downloads. Further submissions follow the [writeup guide](docs/model-writeups.md); the Pages workflow packages them automatically.
 11. **Resources and provenance:** scoped CPU/GPU/token accounting, source discrepancies and SHA-256 receipts.
 12. **Cooperation & competition:** a concise account of the six research runs, matched spacecraft errors, elapsed time and output, verified quotations, and the analyzer’s complete report/data/figure bundle. The source is `../mhd_agent_report`; import it with `python scripts/build_agent_comparison.py` when that report changes.
+13. **Summary:** an accessible synthesis of shared physics, data and calibration, visual differences, confidence, computational cost and scientific contribution, with three tables and primary literature links. Edit `content/summary.html`, then run `python scripts/build_summary.py`; it rebuilds from committed evidence without accessing the original research directory. The optional `--source ../mhd_llm` imports unchanged source records when deliberately updating that evidence.
 
 ## Source organisation
 
@@ -102,6 +103,7 @@ scripts/build_science.py        common science extraction, no solver reruns
 scripts/build_reference_comparison.py  matched NASA/agent comparison and density audit
 scripts/build_solver_catalogue.py      selected-run source extraction and receipts
 scripts/build_writeups.py       package submitted Markdown without editing it
+scripts/build_summary.py        concluding article, common-sample checks and research receipts
 scripts/build_models.py         model descriptions and source receipts
 scripts/build_transcripts.py    allowlisted session and shared-note extraction
 scripts/build_animation_v2.py   native-field rendering with common movie parameters
@@ -169,6 +171,7 @@ node tests/solar-interactions.mjs
 node tests/research.mjs
 npm run test:review
 npm run test:cooperation
+npm run test:summary
 ```
 
 `TEST_URL` selects a different serving address. `CHROMIUM_PATH` is an optional browser executable override; use the installed matching browser unless diagnosing the host. Browser checks cover navigation, model/spacecraft selection, math, source archives, exports and mobile layout. Playback checks additionally examine decoded fields, clock advancement, seeking, synchronization and persistence of the image/SVG elements. Scientific checks compare native outputs, flux units, PN exposures, light-time conversion, resampling and source hashes.
