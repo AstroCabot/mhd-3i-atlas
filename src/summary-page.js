@@ -1,9 +1,10 @@
 import {siteUrl} from './site-paths.js';
+import {renderReportMath} from './report-math.js';
 
 export async function summaryPage(ctx){
   const current=ctx.state.renderKey;
   const main=document.getElementById('main');
-  const intro='How the models were built, what they learned from data, and how much to trust the answer.';
+  const intro='The measurements, magnetic physics and modeling choices behind the reconstructions.';
   main.innerHTML=ctx.heading('','Summary',intro)+'<p class="loading" role="status">Opening the summary…</p>';
   try{
     const data=await ctx.fetchJson('/data/summary.json');
@@ -18,6 +19,8 @@ export async function summaryPage(ctx){
         link.rel='noopener noreferrer';
       }
     }
+    for(const image of main.querySelectorAll('[data-summary-src]'))image.src=siteUrl(image.dataset.summarySrc);
+    renderReportMath(main);
     ctx.bindCommon();
   }catch(error){
     if(current!==ctx.state.renderKey)return;

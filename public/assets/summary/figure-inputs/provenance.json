@@ -1,0 +1,69 @@
+{
+  "epochUtc": "2025-12-03T23:00:00.000",
+  "positionSource": "Archived JPL Horizons-derived tables from the original Claude research workspace.",
+  "projection": "Sun-centered fixed-J2000 ecliptic x/y, viewed from ecliptic north. Positions are projected, not moved into the plane.",
+  "originalSources": [
+    {
+      "sourcePath": "claude/data/gong/mrzqs251125t0004c2304_007.fits.gz",
+      "sha256": "1ccf2905d229debf2dba4154274722e204ed648deb88fadaddd4e1be22b44764"
+    },
+    {
+      "sourcePath": "claude/data/wsa_ccmc/wsa_202511250004R000_gong_z.fits",
+      "sha256": "9e3cd880cf3e78ce0b53c1a32c5d9a27dabef1ee7f7ebad5b160a4cd29a1a6b2"
+    },
+    {
+      "sourcePath": "claude/data/wsa_ccmc/vel/vel_202511250004R000_gongz.fits",
+      "sha256": "d9eb318720a89f2f1e6263900d75977158fdf03bf01af305702bd4ae74844cc6"
+    },
+    {
+      "sourcePath": "claude/data/ephem/3i_atlas.csv",
+      "sha256": "24b02137daa533f18c743ac293217a09823fa99a1e25753a91167e0268842e06",
+      "extraction": "One exact archived row; no interpolation or trajectory rerun."
+    },
+    {
+      "sourcePath": "claude/data/ephem/stereo_a.csv",
+      "sha256": "a652d1d4694af6eeecb88c9a89358c646fee8e892ef364902af57cf19bacfe76",
+      "extraction": "One exact archived row; no interpolation or trajectory rerun."
+    },
+    {
+      "sourcePath": "claude/data/ephem/solar_orbiter.csv",
+      "sha256": "8db4e317d07721fa4d41c174a16c1586c2d9ca4b15eb9a1efdb799e23976ba2e",
+      "extraction": "One exact archived row; no interpolation or trajectory rerun."
+    },
+    {
+      "sourcePath": "claude/data/ephem/earth.csv",
+      "sha256": "99f6a2f68b02a95d2620f00f31cb1eb7ab4c7d4fcef33235e164692a798bd053",
+      "extraction": "One exact archived row; no interpolation or trajectory rerun."
+    },
+    {
+      "sourcePath": "claude/data/ephem/wind.csv",
+      "sha256": "09906e6e3d1cc95eecf6841460803fd0a3bcc3a2833fbba61fef7f026d766e7e",
+      "extraction": "One exact archived row; no interpolation or trajectory rerun."
+    },
+    {
+      "sourcePath": "claude/data/ephem/ace.csv",
+      "sha256": "aa5d8775d5a41a9b188ba8f52fe26a35dca4fc7df32a699134e8084b0c500daa",
+      "extraction": "One exact archived row; no interpolation or trajectory rerun."
+    },
+    {
+      "sourcePath": "claude/data/ephem/mercury.csv",
+      "sha256": "74a7d8a505726713ee7be55beb635eee2abf9e18d84cf8a6cef6598997ac5ec2",
+      "extraction": "One exact archived row; no interpolation or trajectory rerun."
+    },
+    {
+      "sourcePath": "claude/data/ephem/venus.csv",
+      "sha256": "f13e51990077cbe92806fd0f504bb7be72929f3a1486ec2bab6e82730857248e",
+      "extraction": "One exact archived row; no interpolation or trajectory rerun."
+    },
+    {
+      "sourcePath": "claude/data/ephem/mars.csv",
+      "sha256": "0c172f36647514d664b576e70183f8b8bbd0d5a1319c912843dda6e9b9c4f5fb",
+      "extraction": "One exact archived row; no interpolation or trajectory rerun."
+    }
+  ],
+  "credit": "GONG observations: NSF National Solar Observatory / NISP / GONG. WSA 5.4 maps: NASA CCMC/iSWA. Geometry: NASA/JPL Horizons.",
+  "originalDataUrls": [
+    "https://gong.nso.edu/data/magmap/QR/zqs/",
+    "https://iswa.gsfc.nasa.gov/iswa_data_tree/model/solar/WSA5.4/R21.5/"
+  ]
+}

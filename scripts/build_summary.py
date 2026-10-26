@@ -57,7 +57,13 @@ def build(source=None):
         manifest_path.write_text(json.dumps({'scope': 'Unmodified copies of selected research records; no solver reruns.',
                                             'files': files}, indent=2) + '\n')
     manifest = read(manifest_path)
-    for row in manifest['files']:
+    figure_manifest_path = ASSETS / 'figure-manifest.json'
+    figure_manifest = read(figure_manifest_path)
+    figure_builder = ROOT / figure_manifest['builder']['path']
+    if receipt(figure_builder)['sha256'] != figure_manifest['builder']['sha256']:
+        raise ValueError('The figure builder changed; run scripts/build_summary_figures.py before packaging')
+    source_files = manifest['files'] + figure_manifest['files']
+    for row in source_files:
         path = ROOT / 'public' / row['url'].lstrip('/')
         if receipt(path) != {key: row[key] for key in ['bytes', 'sha256']}:
             raise ValueError(f'Changed research source: {path}')
@@ -123,7 +129,42 @@ def build(source=None):
         ['Claude', '22.12 million', 'Shared RTX 4080 SUPER / float32', f"{claude['wall_s'] / 60:.1f} min"],
         ['NASA/CCMC ENLIL', '1.24 million', 'CPU job; 64 processes requested', 'Not recorded in this archive'],
     ])
+    figures = {row['id']: row for row in figure_manifest['figures']}
+
+    def figure(name, alt, caption):
+        row = figures[name]
+        return (f'<figure class="summary-figure" id="summary-figure-{name}">'
+                f'<div class="summary-figure-scroll" tabindex="0" role="region" aria-label="{html.escape(alt)}">'
+                f'<img data-summary-src="{row["url"]}?v={row["sha256"][:12]}" width="{math.ceil(row["width"])}" '
+                f'height="{math.ceil(row["height"])}" loading="lazy" decoding="async" alt="{html.escape(alt)}"></div>'
+                f'<figcaption>{caption} <a href="{row["url"]}?v={row["sha256"][:12]}">Enlarge</a> · '
+                f'<a href="{row["url"].removesuffix(".svg")}.pdf" download>PDF</a>.</figcaption></figure>')
+
+    geometry_figure = figure('geometry',
+        'Projected positions of 3I/ATLAS, Earth, inner planets, STEREO-A and Solar Orbiter during the XMM observation; a side panel compares their solar latitudes.',
+        'Figure 13.1. Exact archived positions at 23:00 UTC on 3 December 2025, close to the observation midpoint. '
+        'This is an ecliptic projection; Solar Orbiter is about 0.17 AU above that plane. The latitude list uses the Sun’s equator. '
+        'The dotted rays mark a longitude separation, not a measured magnetic connection. '
+        '<a href="/assets/summary/figure-inputs/positions.csv" download>Position data</a>.')
+    gong_figure = figure('gong-wsa',
+        'A real GONG synoptic radial magnetic map above the corresponding WSA 5.4 wind-speed estimate, both based on the 25 November 2025 GONG source.',
+        'Figure 13.2. The upper panel is an observed-map product: positive radial field is red, negative blue, with saturation beyond ±50 G. '
+        'The lower panel is a modeled speed, obtained after coronal extrapolation and an empirical rule. The products name the same GONG input; '
+        'they sample different radii and have different grids. This is an input example, not a final assimilated reconstruction. '
+        '<a href="/assets/summary/figure-inputs/gong-20251125.fits.gz" download>GONG FITS</a> · '
+        '<a href="/assets/summary/figure-inputs/wsa-speed-20251125.fits" download>WSA FITS</a>.')
+    schematic_figure = figure('field-and-cme',
+        'Conceptual comparison of a spiral magnetic field with radial bulk flow, and a moving spherical CME cloud with an angular cone envelope crossing a model boundary.',
+        'Figure 13.3. Left: an idealized equatorial Parker pattern at one instant, with one magnetic polarity illustrated; grey arrows show bulk flow. '
+        'Right: a generic cone prescription in cross-section. The dashed rays describe angular extent; the highlighted boundary patch receives cloud inputs. '
+        'These are explanatory sketches, not fitted field lines or an identified eruption. The cloud carries no prescribed magnetic flux rope.')
+    examples = figure_manifest['magnetogramAndWsa']['examplesKms']
+    example_text = (f'{round(examples["f3_d0p2"], -1):.0f} km s⁻¹ for fₛ = 3 and d = 0.2°, '
+                    f'versus {round(examples["f3_d4"], -1):.0f} km s⁻¹ at d = 4°. '
+                    f'At d = 4° but fₛ = 30, the estimate drops to about {round(examples["f30_d4"], -1):.0f} km s⁻¹')
     substitutions = {'METHOD_TABLE': methods, 'CONFIDENCE_TABLE': confidence, 'RUNTIME_TABLE': runtime,
+                     'GEOMETRY_FIGURE': geometry_figure, 'GONG_FIGURE': gong_figure, 'SCHEMATIC_FIGURE': schematic_figure,
+                     'WSA_EXAMPLES': example_text,
                      'NASA_CME_PERCENT': f"{nasa['comet']['cmeRelativeFluxChange'] * 100:.2f}",
                      'XRAY_CORRELATIONS': ', '.join(f"{science['xray']['models'][model]['pearsonR']:+.2f}" for model in order[:3]),
                      'CLAUDE_MUPDATES': f'{claude_updates:.0f}', 'CODEX_MUPDATES': f'{codex_updates:.1f}',
@@ -134,12 +175,13 @@ def build(source=None):
         if article.count('{{' + key + '}}') != 1:
             raise ValueError(f'Missing or duplicate article field: {key}')
         article = article.replace('{{' + key + '}}', value)
-    if '{{' in article or re.search(r'<(?:img|figure|canvas|script|iframe)\b', article, re.I):
-        raise ValueError('The summary must contain resolved prose and tables, without figures or scripts')
+    if '{{' in article or re.search(r'<(?:canvas|script|iframe|video)\b', article, re.I) or article.count('<figure ') != 3:
+        raise ValueError('The summary must contain resolved prose and three static figures, without scripts or movies')
     inputs = [{'path': path.relative_to(ROOT).as_posix(), **receipt(path)}
-              for path in [article_path, model_path, nasa_path, science_path]]
+              for path in [article_path, model_path, nasa_path, science_path, figure_manifest_path]]
     record = {'researchDate': '2026-10-26', 'scope': 'Selected cooperative references plus Jan_Deca_120925_SH_1; no solver reruns.',
-              'files': manifest['files'], 'applicationInputs': inputs,
+              'files': source_files, 'applicationInputs': inputs,
+              'figureDerivations': {'geometry': figure_manifest['geometry'], 'magnetogramAndWsa': figure_manifest['magnetogramAndWsa']},
               'derivations': {'stereoCommonSamples': len(valid), 'speedRmseKms': errors,
                               'claudeCellSteps': 512 * 120 * 360 * int(steps), 'claudeNativeWallSeconds': float(native_wall),
                               'claudeMillionCellStepsPerSecond': claude_updates, 'codexMillionZoneCyclesPerSecond': codex_updates,
@@ -152,12 +194,15 @@ def build(source=None):
                   'NASA gamma/heating identification uses the archived g53q5 control and the CCMC 2016 validation presentation; no unverified q5 heating exponent is asserted.',
                   'Published throughput comparisons differ in hardware, precision, grid geometry, numerical work and timing scope; no efficiency ranking is established.',
                   'No priority search can establish exhaustive absence of prior work; interesting extensions are identified without claiming invention.',
+                  'Feynman references are to his discussions of fields and induction. Volume II section 40–2 explicitly excludes MHD; the modern plasma application is a separate synthesis.',
+                  'The Parker and cone diagrams are conceptual. The GONG/WSA comparison and the solar-system geometry use archived native products with preserved inputs and checksums.',
               ]}
     (ASSETS / 'evidence.json').write_text(json.dumps(record, indent=2, ensure_ascii=False) + '\n')
-    files = manifest['files'] + [{'url': '/assets/summary/source-manifest.json', **receipt(manifest_path)},
+    files = source_files + [{'url': '/assets/summary/source-manifest.json', **receipt(manifest_path)},
+                                 {'url': '/assets/summary/figure-manifest.json', **receipt(figure_manifest_path)},
                                  {'url': '/assets/summary/evidence.json', **receipt(ASSETS / 'evidence.json')}]
     output = {'schemaVersion': 1, 'title': 'Summary',
-              'intro': 'How the models were built, what they learned from data, and how much to trust the answer.',
+              'intro': 'The measurements, magnetic physics and modeling choices behind the reconstructions.',
               'articleHtml': article, 'files': files, 'evidence': record['derivations']}
     (ROOT / 'public/data/summary.json').write_text(json.dumps(output, ensure_ascii=False, separators=(',', ':')) + '\n')
     print(f'Built section 13: {len(valid)} common samples checked, {len(manifest["files"])} research sources verified.')

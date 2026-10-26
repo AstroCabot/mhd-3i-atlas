@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "figures": [
+    {
+      "id": "geometry",
+      "url": "/assets/summary/figures/geometry.svg",
+      "width": 748.8,
+      "height": 442.8,
+      "sha256": "53d52d5c5ecff706f23d87973f740f494812707cddcd8571a86aa4e38476ff83"
+    },
+    {
+      "id": "gong-wsa",
+      "url": "/assets/summary/figures/gong-wsa.svg",
+      "width": 748.8,
+      "height": 460.8,
+      "sha256": "19f2a81ddd3fd3f3c69c6eb0f99e2f6da430951615d750c0d6b06ccbbaa6207c"
+    },
+    {
+      "id": "field-and-cme",
+      "url": "/assets/summary/figures/field-and-cme.svg",
+      "width": 748.8,
+      "height": 352.8,
+      "sha256": "c40ac2c80ba60ae541fd4e69b9c0ccbd99c21449f8412ad9767c3ba2fb9447cd"
+    }
+  ],
+  "files": [
+    {
+      "url": "/assets/summary/figure-inputs/gong-20251125.fits.gz",
+      "bytes": 243874,
+      "sha256": "1ccf2905d229debf2dba4154274722e204ed648deb88fadaddd4e1be22b44764"
+    },
+    {
+      "url": "/assets/summary/figure-inputs/positions.csv",
+      "bytes": 751,
+      "sha256": "7c805816c9c00ef749c3a1a07117b0070c663684e9da7090cdfc0752d6badd58"
+    },
+    {
+      "url": "/assets/summary/figure-inputs/provenance.json",
+      "bytes": 3222,
+      "sha256": "5ca17944885819f6bc77bcbb3bd717dc6446ac12a1848958119d63369493c062"
+    },
+    {
+      "url": "/assets/summary/figure-inputs/wsa-corona-20251125.fits",
+      "bytes": 624960,
+      "sha256": "9e3cd880cf3e78ce0b53c1a32c5d9a27dabef1ee7f7ebad5b160a4cd29a1a6b2"
+    },
+    {
+      "url": "/assets/summary/figure-inputs/wsa-speed-20251125.fits",
+      "bytes": 135360,
+      "sha256": "d9eb318720a89f2f1e6263900d75977158fdf03bf01af305702bd4ae74844cc6"
+    },
+    {
+      "url": "/assets/summary/figures/field-and-cme.pdf",
+      "bytes": 25461,
+      "sha256": "86da190eab65b3405545e2ebbb0d397e7efbf2b1e12b133f73697a9ec8e3f298"
+    },
+    {
+      "url": "/assets/summary/figures/field-and-cme.png",
+      "bytes": 182031,
+      "sha256": "9f2b43d3cfea113020946c98f9321ca57cb8a0759bc2087245d35a39e3c3d088"
+    },
+    {
+      "url": "/assets/summary/figures/field-and-cme.svg",
+      "bytes": 77315,
+      "sha256": "c40ac2c80ba60ae541fd4e69b9c0ccbd99c21449f8412ad9767c3ba2fb9447cd"
+    },
+    {
+      "url": "/assets/summary/figures/geometry.pdf",
+      "bytes": 26681,
+      "sha256": "b510dd4723e76a530ce706a1f5e719ca8d6cfad9ee1e05c7349a7a4e41737b1c"
+    },
+    {
+      "url": "/assets/summary/figures/geometry.png",
+      "bytes": 239233,
+      "sha256": "d1c4ed6000af27a1330342badaeca2739c77d6ff78520f6c8b35c88e6bc0ac25"
+    },
+    {
+      "url": "/assets/summary/figures/geometry.svg",
+      "bytes": 100099,
+      "sha256": "53d52d5c5ecff706f23d87973f740f494812707cddcd8571a86aa4e38476ff83"
+    },
+    {
+      "url": "/assets/summary/figures/gong-wsa.pdf",
+      "bytes": 137721,
+      "sha256": "0d26467ad57ba19170c06e65b4b38b50529b9bef5ff393ae6e31bc2cafed40b4"
+    },
+    {
+      "url": "/assets/summary/figures/gong-wsa.png",
+      "bytes": 388503,
+      "sha256": "6e197c6238836865d4a08edbeb4cbd130a0226ea2aa3b8ca0603329b21a7e85e"
+    },
+    {
+      "url": "/assets/summary/figures/gong-wsa.svg",
+      "bytes": 380154,
+      "sha256": "19f2a81ddd3fd3f3c69c6eb0f99e2f6da430951615d750c0d6b06ccbbaa6207c"
+    }
+  ],
+  "geometry": {
+    "epochUtc": "2025-12-03T23:00:00.000",
+    "positions": {
+      "3i_atlas": {
+        "xEclipticAu": -1.5694078099318323,
+        "yEclipticAu": 1.022599219672219,
+        "zEclipticAu": 0.013283668493026209,
+        "radiusAu": 1.87321288,
+        "solarLatitudeDeg": -6.45476987
+      },
+      "stereo_a": {
+        "xEclipticAu": -0.5134037481323892,
+        "yEclipticAu": 0.819568670658736,
+        "zEclipticAu": -0.0021599830351921026,
+        "radiusAu": 0.967099209,
+        "solarLatitudeDeg": -5.3634053
+      },
+      "solar_orbiter": {
+        "xEclipticAu": 0.07754424174676877,
+        "yEclipticAu": 0.8783102622798334,
+        "zEclipticAu": 0.1662520341206319,
+        "radiusAu": 0.897263487,
+        "solarLatitudeDeg": 9.4390131
+      },
+      "earth": {
+        "xEclipticAu": 0.3098064387527042,
+        "yEclipticAu": 0.9357111449465629,
+        "zEclipticAu": -5.9911205883816705e-05,
+        "radiusAu": 0.985664943,
+        "solarLatitudeDeg": 0.511774316
+      },
+      "wind": {
+        "xEclipticAu": 0.3086065699667649,
+        "yEclipticAu": 0.9248485488552017,
+        "zEclipticAu": 0.0004279215886095816,
+        "radiusAu": 0.97497848,
+        "solarLatitudeDeg": 0.557010174
+      },
+      "ace": {
+        "xEclipticAu": 0.3083747095559387,
+        "yEclipticAu": 0.9259005049273022,
+        "zEclipticAu": 0.000740497238586865,
+        "radiusAu": 0.975903302,
+        "solarLatitudeDeg": 0.571105213
+      },
+      "mercury": {
+        "xEclipticAu": -0.2562659703565596,
+        "yEclipticAu": 0.21699236716630285,
+        "zEclipticAu": 0.04123768705299489,
+        "radiusAu": 0.338317132,
+        "solarLatitudeDeg": 0.477217272
+      },
+      "venus": {
+        "xEclipticAu": -0.44087751553692317,
+        "yEclipticAu": -0.5743145626069553,
+        "zEclipticAu": 0.017548369885384163,
+        "radiusAu": 0.72423625,
+        "solarLatitudeDeg": -1.48030285
+      },
+      "mars": {
+        "xEclipticAu": -0.06347814974837103,
+        "yEclipticAu": -1.4588544491625872,
+        "zEclipticAu": -0.029014800796710274,
+        "radiusAu": 1.46052307,
+        "solarLatitudeDeg": 0.342486409
+      }
+    },
+    "eclipticCometStereoSeparationDeg": 24.84809299999999
+  },
+  "magnetogramAndWsa": {
+    "gongShape": [
+      180,
+      360
+    ],
+    "wsaShape": [
+      90,
+      180
+    ],
+    "commonSourceFilelist": "mrzql251125t0004c2304_007",
+    "gongDisplayLimitGauss": 50,
+    "gongActualRangeGauss": [
+      -726.528564453125,
+      886.7017211914062
+    ],
+    "nativeWsaSpeedRangeKms": [
+      287.5299377441406,
+      843.2813720703125
+    ],
+    "nativeVelocityLaw": "285.0+625.0/((1.0 + fexp)**(0.22222)) * (1.0 - 0.8* math.exp(-(arc_ft_bd/2.0)**2.0))**3.0",
+    "velocityLawMaximumErrorKms": 3.051500436868082e-05,
+    "examplesKms": {
+      "f3_d0p2": 289.1307651619734,
+      "f3_d4": 724.3984175407911,
+      "f30_d4": 563.7647552155734
+    },
+    "wsaLongitudeCentersDeg": [
+      0.0,
+      2.0,
+      4.0,
+      6.0,
+      8.0,
+      10.0,
+      12.0,
+      14.0,
+      16.0,
+      18.0,
+      20.0,
+      22.0,
+      24.0,
+      26.0,
+      28.0,
+      30.0,
+      32.0,
+      34.0,
+      36.0,
+      38.0,
+      40.0,
+      42.0,
+      44.0,
+      46.0,
+      48.0,
+      50.0,
+      52.0,
+      54.0,
+      56.0,
+      58.0,
+      60.0,
+      62.0,
+      64.0,
+      66.0,
+      68.0,
+      70.0,
+      72.0,
+      74.0,
+      76.0,
+      78.0,
+      80.0,
+      82.0,
+      84.0,
+      86.0,
+      88.0,
+      90.0,
+      92.0,
+      94.0,
+      96.0,
+      98.0,
+      100.0,
+      102.0,
+      104.0,
+      106.0,
+      108.0,
+      110.0,
+      112.0,
+      114.0,
+      116.0,
+      118.0,
+      120.0,
+      122.0,
+      124.0,
+      126.0,
+      128.0,
+      130.0,
+      132.0,
+      134.0,
+      136.0,
+      138.0,
+      140.0,
+      142.0,
+      144.0,
+      146.0,
+      148.0,
+      150.0,
+      152.0,
+      154.0,
+      156.0,
+      158.0,
+      160.0,
+      162.0,
+      164.0,
+      166.0,
+      168.0,
+      170.0,
+      172.0,
+      174.0,
+      176.0,
+      178.0,
+      180.0,
+      182.0,
+      184.0,
+      186.0,
+      188.0,
+      190.0,
+      192.0,
+      194.0,
+      196.0,
+      198.0,
+      200.0,
+      202.0,
+      204.0,
+      206.0,
+      208.0,
+      210.0,
+      212.0,
+      214.0,
+      216.0,
+      218.0,
+      220.0,
+      222.0,
+      224.0,
+      226.0,
+      228.0,
+      230.0,
+      232.0,
+      234.0,
+      236.0,
+      238.0,
+      240.0,
+      242.0,
+      244.0,
+      246.0,
+      248.0,
+      250.0,
+      252.0,
+      254.0,
+      256.0,
+      258.0,
+      260.0,
+      262.0,
+      264.0,
+      266.0,
+      268.0,
+      270.0,
+      272.0,
+      274.0,
+      276.0,
+      278.0,
+      280.0,
+      282.0,
+      284.0,
+      286.0,
+      288.0,
+      290.0,
+      292.0,
+      294.0,
+      296.0,
+      298.0,
+      300.0,
+      302.0,
+      304.0,
+      306.0,
+      308.0,
+      310.0,
+      312.0,
+      314.0,
+      316.0,
+      318.0,
+      320.0,
+      322.0,
+      324.0,
+      326.0,
+      328.0,
+      330.0,
+      332.0,
+      334.0,
+      336.0,
+      338.0,
+      340.0,
+      342.0,
+      344.0,
+      346.0,
+      348.0,
+      350.0,
+      352.0,
+      354.0,
+      356.0,
+      358.0
+    ],
+    "mapDisplay": "Longitude columns sorted to 0–360 degrees with their native WCS; the first WSA column is repeated at the periodic seam. No numerical smoothing. Latitude uses sine latitude in both panels. Strong GONG pixels saturate at ±50 G."
+  },
+  "builder": {
+    "path": "scripts/build_summary_figures.py",
+    "sha256": "43677ffdc49ec590ac3510aca4e2513953cd2d7796d7487c6b00bcddbf059530",
+    "matplotlib": "3.10.9",
+    "numpy": "2.3.5"
+  },
+  "interpretation": [
+    "Only the geometry and magnetogram/WSA panels use archived measurements or model products.",
+    "The Parker and cone drawings are conceptual illustrations; they do not identify any particular event.",
+    "No research solvers or coronal extrapolations were rerun. The WSA law is evaluated only to verify archived inputs."
+  ]
+}
