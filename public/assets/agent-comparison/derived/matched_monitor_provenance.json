@@ -1,0 +1,325 @@
+{
+  "created_utc": "2026-10-26T13:06:49.857737+00:00",
+  "scope": "Matched descriptive comparison of six selected nominal reconstructions, actual NASA ambient, and persistence; not a controlled predictive leaderboard.",
+  "requested_interval_utc": [
+    "2025-12-01T00:00:00Z",
+    "2025-12-05T00:00:00Z"
+  ],
+  "interval_half_open": true,
+  "science_interval_utc": [
+    "2025-12-03T12:04:07Z",
+    "2025-12-04T10:11:54Z"
+  ],
+  "method": [
+    "One fixed hourly reference per probe; all eight predictions use exactly the same96timestamps.",
+    "No observation interpolation,smoothing,rescaling,phase fitting,light-time correction,gap filling,or model extrapolation.",
+    "Recompute native bulk speed from full3-vector where needed; native bulkflux=n*|v|*1e5. Independently linearly interpolate density,speed,and native bulkflux to observed timestamps; do not multiply separately interpolated primitives.",
+    "Native physical spacecraft times converted to MJDUTC. NASA MJD retained instead of rounded minute UTC text.",
+    "No ICME mask: all valid hourly samples in fixed interval, identical across models.",
+    "Native Earth or Wind model positions preserved. Claude selected nominals assimilate evaluated data; these are not leave-one-out outputs.",
+    "NASA N left unscaled and labeled proton-density proxy; alpha-aware ASCII conversion unresolved.",
+    "Correlated hourly slots are not96independent tests; retrospective tuning/training differs across models.",
+    "No original modules imported or simulations run. Only this report's derived artifacts written."
+  ],
+  "model_order": [
+    "collaborative_argon",
+    "collaborative_claude",
+    "collaborative_codex",
+    "competitive_argon",
+    "competitive_claude",
+    "competitive_codex",
+    "nasa_ccmc_ambient",
+    "persistence_24h"
+  ],
+  "units": {
+    "density": "cm^-3",
+    "speed": "km/s",
+    "bulk_flux": "cm^-2 s^-1"
+  },
+  "coverage": {
+    "wind": {
+      "native_valid_slots_in_requested_interval": 96,
+      "shared_valid_slots": 96,
+      "first_utc": "2025-12-01T00:30:00.000Z",
+      "last_utc": "2025-12-04T23:30:00.000Z",
+      "excluded_utc": [],
+      "reference_prior24h_count": 24,
+      "persistence_n_cm3": 2.6,
+      "persistence_speed_kms": 587.5,
+      "models": {
+        "collaborative_argon": {
+          "first_mjd": 60998.0,
+          "last_mjd": 61015.0,
+          "median_cadence_seconds": 599.9616000568494,
+          "maximum_cadence_seconds": 600.0480000860989,
+          "validation_status": "Assimilated nominal: in-sample observational reconstruction"
+        },
+        "collaborative_claude": {
+          "first_mjd": 60991.0,
+          "last_mjd": 61018.0,
+          "median_cadence_seconds": 1800.0000002095476,
+          "maximum_cadence_seconds": 1800.0000002095476,
+          "validation_status": "Assimilated nominal: in-sample observational reconstruction; Earth trajectory for Wind"
+        },
+        "collaborative_codex": {
+          "first_mjd": 60994.0,
+          "last_mjd": 61014.0,
+          "median_cadence_seconds": 3599.9999997904524,
+          "maximum_cadence_seconds": 3600.000000419095,
+          "validation_status": "Wind excluded from scalar calibration; descriptive validation"
+        },
+        "competitive_argon": {
+          "first_mjd": 61003.0,
+          "last_mjd": 61015.5,
+          "median_cadence_seconds": 1012.521600164473,
+          "maximum_cadence_seconds": 1012.521600164473,
+          "validation_status": "Assimilated/conditioned nominal: in-sample reconstruction"
+        },
+        "competitive_claude": {
+          "first_mjd": 60972.0,
+          "last_mjd": 61022.0,
+          "median_cadence_seconds": 600.0000000698492,
+          "maximum_cadence_seconds": 600.0000000698492,
+          "validation_status": "Assimilated nominal, not leave-one-out: in-sample; Earth/OMNI trajectory proxy for Wind"
+        },
+        "competitive_codex": {
+          "first_mjd": 60994.0,
+          "last_mjd": 61014.0,
+          "median_cadence_seconds": 599.9999994412065,
+          "maximum_cadence_seconds": 600.0000050989911,
+          "validation_status": "Wind excluded from fitting, but model selected after validation; Earth trajectory proxy"
+        },
+        "nasa_ccmc_ambient": {
+          "first_mjd": 60949.0005,
+          "last_mjd": 61018.0006,
+          "median_cadence_seconds": 224.63999998290092,
+          "maximum_cadence_seconds": 233.2800003932789,
+          "validation_status": "Independent retrospective comparison; archived N is proton-density proxy with unresolved alpha convention; Earth trajectory proxy for Wind"
+        },
+        "persistence_24h": {
+          "first_mjd": 61009.0,
+          "last_mjd": 61014.0,
+          "median_cadence_seconds": 432000.0,
+          "maximum_cadence_seconds": 432000.0,
+          "validation_status": "Precutoff24h median density and speed, held fixed; no fit to evaluation interval"
+        }
+      }
+    },
+    "stereo_a": {
+      "native_valid_slots_in_requested_interval": 96,
+      "shared_valid_slots": 96,
+      "first_utc": "2025-12-01T00:00:00.000Z",
+      "last_utc": "2025-12-04T23:00:00.000Z",
+      "excluded_utc": [],
+      "reference_prior24h_count": 24,
+      "persistence_n_cm3": 2.6,
+      "persistence_speed_kms": 684.7,
+      "models": {
+        "collaborative_argon": {
+          "first_mjd": 60998.0,
+          "last_mjd": 61015.0,
+          "median_cadence_seconds": 599.9616000568494,
+          "maximum_cadence_seconds": 600.0480000860989,
+          "validation_status": "Assimilated nominal: in-sample observational reconstruction"
+        },
+        "collaborative_claude": {
+          "first_mjd": 60991.0,
+          "last_mjd": 61018.0,
+          "median_cadence_seconds": 1800.0000002095476,
+          "maximum_cadence_seconds": 1800.0000002095476,
+          "validation_status": "Assimilated nominal: in-sample observational reconstruction"
+        },
+        "collaborative_codex": {
+          "first_mjd": 60994.0,
+          "last_mjd": 61014.0,
+          "median_cadence_seconds": 3599.9999997904524,
+          "maximum_cadence_seconds": 3600.000000419095,
+          "validation_status": "Post-calibration temporal comparison; scalar source calibration used earlier STEREO-A"
+        },
+        "competitive_argon": {
+          "first_mjd": 61003.0,
+          "last_mjd": 61015.5,
+          "median_cadence_seconds": 1012.521600164473,
+          "maximum_cadence_seconds": 1012.521600164473,
+          "validation_status": "Assimilated/conditioned nominal: in-sample reconstruction"
+        },
+        "competitive_claude": {
+          "first_mjd": 60972.0,
+          "last_mjd": 61022.0,
+          "median_cadence_seconds": 600.0000000698492,
+          "maximum_cadence_seconds": 600.0000000698492,
+          "validation_status": "Assimilated nominal, not leave-one-out: in-sample"
+        },
+        "competitive_codex": {
+          "first_mjd": 60994.0,
+          "last_mjd": 61014.0,
+          "median_cadence_seconds": 599.9999994412065,
+          "maximum_cadence_seconds": 600.0000050989911,
+          "validation_status": "Post-cutoff temporal holdout, but model selected after validation"
+        },
+        "nasa_ccmc_ambient": {
+          "first_mjd": 60949.0005,
+          "last_mjd": 61018.0006,
+          "median_cadence_seconds": 224.63999998290092,
+          "maximum_cadence_seconds": 233.2800003932789,
+          "validation_status": "Independent retrospective comparison; archived N is proton-density proxy with unresolved alpha convention"
+        },
+        "persistence_24h": {
+          "first_mjd": 61009.0,
+          "last_mjd": 61014.0,
+          "median_cadence_seconds": 432000.0,
+          "maximum_cadence_seconds": 432000.0,
+          "validation_status": "Precutoff24h median density and speed, held fixed; no fit to evaluation interval"
+        }
+      }
+    }
+  },
+  "sources": {
+    "mhd_llm/argon/outputs/runs/res_fine_224x48x240_probes.tsv": {
+      "path": "mhd_llm/argon/outputs/runs/res_fine_224x48x240_probes.tsv",
+      "sha256": "ec5831d69d4a370184a43f29dcd62db3d6df04fbbc0339f750cd5818259b80c1",
+      "bytes": 2578805,
+      "description": "Selected fine model3 output",
+      "columns_and_time": "mjd_utc; probe; n_cm3; vmag_kms"
+    },
+    "mhd_llm/claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/probes.bin": {
+      "path": "mhd_llm/claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/probes.bin",
+      "sha256": "032aef551b8578ca066126a3416261a1020288ba7ad36d60aaaf671cf606ef04",
+      "bytes": 632944,
+      "description": "Selected one-degree nominal",
+      "columns_and_time": "Little-endian int32 nb,nf header; each record float64 seconds since2025-10-01UTC followed by float32[nb,nf]; body1earth,body2stereo_a; fields0n,1vr,2vt,3vp; cm^-3 and km/s"
+    },
+    "mhd_llm/codex/results/ct156_w30_theta40_phi192/probe.csv": {
+      "path": "mhd_llm/codex/results/ct156_w30_theta40_phi192/probe.csv",
+      "sha256": "92a22f35655454792047cd22d44f8a3c836c84d5ce6adb475c2b6806e4a5c062",
+      "bytes": 1986802,
+      "description": "Selected native CT solution",
+      "columns_and_time": "day since2025-11-01UTC=MJD60980; probe_id1Wind,2STEREO-A; n_cm3; speed_kms"
+    },
+    "mhd_llm_adversarial/argon/results/ts_argon_high.csv": {
+      "path": "mhd_llm_adversarial/argon/results/ts_argon_high.csv",
+      "sha256": "53d38139bc31e56a337b1e5a318231186864634aa43dd5dbb0149c0707803080",
+      "bytes": 292176,
+      "description": "Selected high-grid model",
+      "columns_and_time": "mjd_utc; wind_np,wind_vmag; stereo_a_np,stereo_a_vmag"
+    },
+    "mhd_llm_adversarial/claude/runs/p2_med_d/probes/earth.csv": {
+      "path": "mhd_llm_adversarial/claude/runs/p2_med_d/probes/earth.csv",
+      "sha256": "5ca55e3c7444a5a69f5278f977f2c1380ea08a20fd3feeb86717d4cc85211afe",
+      "bytes": 886701,
+      "description": "Selected nominal p2_med_d",
+      "columns_and_time": "t_sec since2025-10-01UTC=MJD60949; n; vmag"
+    },
+    "mhd_llm_adversarial/claude/runs/p2_med_d/probes/stereo_a.csv": {
+      "path": "mhd_llm_adversarial/claude/runs/p2_med_d/probes/stereo_a.csv",
+      "sha256": "bf4c898710a7d0d96a3a338e1ef378f94fa22c1b5cf42ff478e6d0906b259e36",
+      "bytes": 885922,
+      "description": "Selected nominal p2_med_d",
+      "columns_and_time": "t_sec since2025-10-01UTC=MJD60949; n; vmag"
+    },
+    "mhd_llm_adversarial/codex/outputs/runs/nominal_full48_coupled224/samples.csv": {
+      "path": "mhd_llm_adversarial/codex/outputs/runs/nominal_full48_coupled224/samples.csv",
+      "sha256": "22568a4f628de88232fe2adf5337efd07e477b507283270ec578a697e5875f56",
+      "bytes": 3396128,
+      "description": "Selected nominal224",
+      "columns_and_time": "time_day since2025-12-01UTC=MJD61010; target earth,stereo_a; n_cm3; speed_kms"
+    },
+    "mhd_llm_adversarial/codex/data/solar/evo_earth2amb_20251001T00.dat": {
+      "path": "mhd_llm_adversarial/codex/data/solar/evo_earth2amb_20251001T00.dat",
+      "sha256": "e7ceeaf6054568c64ae2f6f02271553191974c3c1b62ec1f446b54ee5bf12113",
+      "bytes": 3493514,
+      "description": "Actual archived NASA CCMC Jan_Deca_120925_SH_1 ambient",
+      "columns_and_time": "Whitespace columns0MJD,5N,7:10Vr/Vt/Vn(km/s); use unscaled N proton-density proxy; MJD rather than rounded UTC text"
+    },
+    "mhd_llm_adversarial/codex/data/solar/evo_stereoa2amb_20251001T00.dat": {
+      "path": "mhd_llm_adversarial/codex/data/solar/evo_stereoa2amb_20251001T00.dat",
+      "sha256": "c9edc6d5f1dfc635f26c30479fea36f57045ed74750a14bee1f1fe7ade749005",
+      "bytes": 3493518,
+      "description": "Actual archived NASA CCMC Jan_Deca_120925_SH_1 ambient",
+      "columns_and_time": "Whitespace columns0MJD,5N,7:10Vr/Vt/Vn(km/s); use unscaled N proton-density proxy; MJD rather than rounded UTC text"
+    },
+    "mhd_llm_adversarial/codex/data/observations/wind.csv": {
+      "path": "mhd_llm_adversarial/codex/data/observations/wind.csv",
+      "sha256": "e0409c60c1fd06137cf52f3de206027e70887411ed1ea4df83c230ec984a0261",
+      "bytes": 146330,
+      "description": "Fixed common native hourly reference curated from archived HAPI/preprint observations",
+      "columns_and_time": "utc,mjd_utc,density_cm3,speed_kms; positive finite n and speed; no smoothing/rescaling"
+    },
+    "mhd_llm_adversarial/codex/data/observations/stereo_a.csv": {
+      "path": "mhd_llm_adversarial/codex/data/observations/stereo_a.csv",
+      "sha256": "bc736f8c9e44254fe7b2c63f4d8d5809e59fcda7f56d4b0ebb7280a128c7ddfa",
+      "bytes": 152397,
+      "description": "Fixed common native hourly reference curated from archived HAPI/preprint observations",
+      "columns_and_time": "utc,mjd_utc,density_cm3,speed_kms; positive finite n and speed; no smoothing/rescaling"
+    },
+    "mhd_llm/claude/src/py/heliopy.py": {
+      "path": "mhd_llm/claude/src/py/heliopy.py",
+      "sha256": "362e4f2ca85d2644cd28b05c3aa8e32721b9d66a23adfdaa8506f460f0b7360d",
+      "bytes": 4322,
+      "description": "Binary reader schema inspected without import",
+      "columns_and_time": "Provenance definition only; not executed/imported"
+    },
+    "mhd_llm/claude/src/py/inputs.py": {
+      "path": "mhd_llm/claude/src/py/inputs.py",
+      "sha256": "0a57781227d3a5c71bc2100908d6580ceac094c8658c442caacb8a2ec0e4faff",
+      "bytes": 4231,
+      "description": "Binary body order and epoch",
+      "columns_and_time": "Provenance definition only; not executed/imported"
+    },
+    "mhd_llm/codex/inputs/probe_ids.json": {
+      "path": "mhd_llm/codex/inputs/probe_ids.json",
+      "sha256": "0ee640b46b9d38a682a602ec708237dcc7bf200ca550fa7080a0facadfa794f8",
+      "bytes": 77,
+      "description": "Collaborative Codex probe identities",
+      "columns_and_time": "Provenance definition only; not executed/imported"
+    },
+    "mhd_llm_adversarial/claude/src/py/ephem.py": {
+      "path": "mhd_llm_adversarial/claude/src/py/ephem.py",
+      "sha256": "2c5e82278ccca91afc51bce0ad86ec18dcc0525ee32f1ebd0f6a9ac6d1ae10f7",
+      "bytes": 2518,
+      "description": "Competitive Claude epoch",
+      "columns_and_time": "Provenance definition only; not executed/imported"
+    },
+    "mhd_llm_adversarial/codex/scripts/validate_monitors.py": {
+      "path": "mhd_llm_adversarial/codex/scripts/validate_monitors.py",
+      "sha256": "f9bdf9ca4c6f8afe866e5f8a7b4ac4c7baaf25fa29a37c80fe8b71b0095a3b23",
+      "bytes": 20736,
+      "description": "External profile schema independently reimplemented",
+      "columns_and_time": "Provenance definition only; not executed/imported"
+    }
+  },
+  "native_model_source_paths": {
+    "collaborative_argon": [
+      "mhd_llm/argon/outputs/runs/res_fine_224x48x240_probes.tsv"
+    ],
+    "collaborative_claude": [
+      "mhd_llm/claude/runs/prod_da3_ccmc_prod_t4_L1ref_L2/probes.bin"
+    ],
+    "collaborative_codex": [
+      "mhd_llm/codex/results/ct156_w30_theta40_phi192/probe.csv"
+    ],
+    "competitive_argon": [
+      "mhd_llm_adversarial/argon/results/ts_argon_high.csv"
+    ],
+    "competitive_claude": [
+      "mhd_llm_adversarial/claude/runs/p2_med_d/probes/earth.csv",
+      "mhd_llm_adversarial/claude/runs/p2_med_d/probes/stereo_a.csv"
+    ],
+    "competitive_codex": [
+      "mhd_llm_adversarial/codex/outputs/runs/nominal_full48_coupled224/samples.csv"
+    ],
+    "nasa_ccmc_ambient": [
+      "mhd_llm_adversarial/codex/data/solar/evo_earth2amb_20251001T00.dat",
+      "mhd_llm_adversarial/codex/data/solar/evo_stereoa2amb_20251001T00.dat"
+    ],
+    "persistence_24h": [
+      "mhd_llm_adversarial/codex/data/observations/wind.csv",
+      "mhd_llm_adversarial/codex/data/observations/stereo_a.csv"
+    ]
+  },
+  "reproduction": {
+    "script": "mhd_agent_report/derive_validation.py",
+    "numpy_version": "2.3.5",
+    "command": "python -B mhd_agent_report/derive_validation.py"
+  }
+}

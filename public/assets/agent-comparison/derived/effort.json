@@ -1,0 +1,449 @@
+{
+  "records": [
+    {
+      "model": "collaborative_argon",
+      "agent": "Argon",
+      "setting": "collaborative",
+      "subagents": 3,
+      "output_tokens": 371756,
+      "non_cache_read_tokens": 1923234,
+      "reasoning_tokens": null,
+      "observed_span_h": 1.3491666666666666,
+      "first_utc": "2026-10-16T22:32:09Z",
+      "last_utc": "2026-10-16T23:53:06Z",
+      "thinking_summary_words": 13141,
+      "usage": {
+        "input_tokens": 1551478,
+        "cache_read_tokens": 22753949,
+        "output_tokens": 371756
+      },
+      "delivery_h": 1.3492,
+      "plot_elapsed_h": 1.3492
+    },
+    {
+      "model": "competitive_argon",
+      "agent": "Argon",
+      "setting": "competitive",
+      "subagents": 3,
+      "output_tokens": 427821,
+      "non_cache_read_tokens": 2058496,
+      "reasoning_tokens": null,
+      "observed_span_h": 4.015,
+      "first_utc": "2026-10-18T11:42:36Z",
+      "last_utc": "2026-10-18T15:43:30Z",
+      "thinking_summary_words": 20513,
+      "usage": {
+        "input_tokens": 1630675,
+        "cache_read_tokens": 26895556,
+        "output_tokens": 427821
+      },
+      "delivery_h": 4.015,
+      "plot_elapsed_h": 4.015
+    },
+    {
+      "model": "collaborative_claude",
+      "agent": "Claude",
+      "setting": "collaborative",
+      "subagents": 9,
+      "output_tokens": 552687,
+      "non_cache_read_tokens": 5260157,
+      "reasoning_tokens": 270414,
+      "observed_span_h": 4.8887672222222225,
+      "first_utc": "2026-10-16T22:32:57.935Z",
+      "last_utc": "2026-10-17T03:26:17.497Z",
+      "thinking_summary_words": null,
+      "usage": {
+        "input_tokens": 2594,
+        "cache_creation_input_tokens": 4704876,
+        "cache_read_input_tokens": 352229222,
+        "output_tokens": 552687,
+        "reasoning_output_tokens": 270414
+      },
+      "delivery_h": 4.704,
+      "plot_elapsed_h": 4.704
+    },
+    {
+      "model": "competitive_claude",
+      "agent": "Claude",
+      "setting": "competitive",
+      "subagents": 12,
+      "output_tokens": 318290,
+      "non_cache_read_tokens": 5482105,
+      "reasoning_tokens": 147473,
+      "observed_span_h": 4.8555552777777775,
+      "first_utc": "2026-10-18T11:44:03.292Z",
+      "last_utc": "2026-10-18T16:35:23.291Z",
+      "thinking_summary_words": null,
+      "usage": {
+        "input_tokens": 2468,
+        "cache_creation_input_tokens": 5161347,
+        "cache_read_input_tokens": 234352465,
+        "output_tokens": 318290,
+        "reasoning_output_tokens": 147473
+      },
+      "delivery_h": 4.5131,
+      "plot_elapsed_h": 4.5131
+    },
+    {
+      "model": "collaborative_codex",
+      "agent": "Codex",
+      "setting": "collaborative",
+      "subagents": 3,
+      "output_tokens": 2569363,
+      "non_cache_read_tokens": 10851538,
+      "reasoning_tokens": 1200450,
+      "observed_span_h": 7.917231388888888,
+      "first_utc": "2026-10-16T22:32:24.914Z",
+      "last_utc": "2026-10-17T06:27:26.947Z",
+      "thinking_summary_words": null,
+      "usage": {
+        "input_tokens": 544240447,
+        "cached_input_tokens": 535958272,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 2569363,
+        "reasoning_output_tokens": 1200450,
+        "total_tokens": 546809810
+      },
+      "delivery_h": 7.9172,
+      "plot_elapsed_h": 7.9172
+    },
+    {
+      "model": "competitive_codex",
+      "agent": "Codex",
+      "setting": "competitive",
+      "subagents": 3,
+      "output_tokens": 1419321,
+      "non_cache_read_tokens": 6339353,
+      "reasoning_tokens": 743329,
+      "observed_span_h": 10.959656111111112,
+      "first_utc": "2026-10-18T11:42:09.585Z",
+      "last_utc": "2026-10-18T22:39:44.347Z",
+      "thinking_summary_words": null,
+      "usage": {
+        "input_tokens": 373042528,
+        "cached_input_tokens": 368122496,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 1419321,
+        "reasoning_output_tokens": 743329,
+        "total_tokens": 374461849
+      },
+      "delivery_h": null,
+      "plot_elapsed_h": 10.959656111111112
+    }
+  ],
+  "sources": [
+    {
+      "agent": "Argon",
+      "setting": "collaborative",
+      "session_file": "transcript.jsonl",
+      "session_id": "b3d3df79-0b74-4e57-8d1f-8f7268882191",
+      "sha256": "99b7186bb030144a99b6b1aae00dac80dc13e53a658ca1eb1a4b8a92f1003793",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Argon",
+      "setting": "collaborative",
+      "session_file": "transcript.jsonl",
+      "session_id": "8adf310f-c9cf-42ef-a977-86a233e679f1",
+      "sha256": "b6dda08fedf91a6ed29bcf608b28ac0aaafb1b012797358be052526e932bf1bc",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Argon",
+      "setting": "collaborative",
+      "session_file": "transcript.jsonl",
+      "session_id": "fc6f5fce-dcf5-4681-a158-510dac649666",
+      "sha256": "762c3c47be6abb773509d5dc274c377127678866e5cca268bba66174939657d3",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Argon",
+      "setting": "collaborative",
+      "session_file": "transcript.jsonl",
+      "session_id": "4cce4343-a01f-4d6d-b12e-9ee5e4bd0a9d",
+      "sha256": "5f785ac40fbf9aa99819b472174dfffd0c670ea509036b69a5b0b497c56777c3",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Argon",
+      "setting": "competitive",
+      "session_file": "transcript.jsonl",
+      "session_id": "e646cea4-8a18-476e-8b69-d32559e8a7b1",
+      "sha256": "1bfabe508992b7a2100ada9c4b00b5ec1f17269295b6e6044097f4735d3249ec",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Argon",
+      "setting": "competitive",
+      "session_file": "transcript.jsonl",
+      "session_id": "c0417340-7d5b-4be7-84c6-fb45945a1602",
+      "sha256": "2b30bbc4c056aa295b0fd527e706de10c9e91d03627308044d1e4a699c1b0bcc",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Argon",
+      "setting": "competitive",
+      "session_file": "transcript.jsonl",
+      "session_id": "62eb31f3-f5ec-485b-a066-88d89f6dfd09",
+      "sha256": "1a0b230904cd86f17fa3f4d07850aead95a4d5327014302f75a6544825da886e",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Argon",
+      "setting": "competitive",
+      "session_file": "transcript.jsonl",
+      "session_id": "cb0e1e65-5e10-4dd8-a13b-4ed730b85df8",
+      "sha256": "2f180731f8b367333ad9b7d4f8184a172cb767c62bb35e41dfcd4c0ad57ab148",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "collaborative",
+      "session_file": "c4794a53-4881-4aa9-8b9b-7c033457fa8b.jsonl",
+      "session_id": null,
+      "sha256": "7b6c1892b5f1d01ad984aa433a78e8296d571662c6f842aacd71fbd3436777f3",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Claude",
+      "setting": "collaborative",
+      "session_file": "agent-a0c613da7528ba808.jsonl",
+      "session_id": null,
+      "sha256": "5e25e6b0b530d754fe6596c31dc63c97251025f4b760c587dc5e357c65f7cfcb",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Claude",
+      "setting": "collaborative",
+      "session_file": "agent-a1112199f56c2f48c.jsonl",
+      "session_id": null,
+      "sha256": "d0f475ff01db588a455a3403d84fac66ec68c3854350afda0edf97383dba1e04",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Claude",
+      "setting": "collaborative",
+      "session_file": "agent-a2dc22f7233e44814.jsonl",
+      "session_id": null,
+      "sha256": "f9aa74edbb733f48e86838c50c1101f34364393aac87d8f347c627dd802fd37b",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Claude",
+      "setting": "collaborative",
+      "session_file": "agent-a565396b771d81874.jsonl",
+      "session_id": null,
+      "sha256": "028950c4a868cb09630c3c9efcac0929f2fbf088282b80dbe46f207b80e7224f",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Claude",
+      "setting": "collaborative",
+      "session_file": "agent-a6a65d984680bb2f9.jsonl",
+      "session_id": null,
+      "sha256": "fc03ce36d4dcd05a33c265bfa21aef50914384c4b296d9b87c305c122e51674a",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Claude",
+      "setting": "collaborative",
+      "session_file": "agent-a8a5af8cb3492c750.jsonl",
+      "session_id": null,
+      "sha256": "64224ff37274ee3b5b8d0aed29588fa88036b45ee964c3c9d931229187642ba2",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Claude",
+      "setting": "collaborative",
+      "session_file": "agent-ab07a67e669c740dd.jsonl",
+      "session_id": null,
+      "sha256": "284282c4fc16e543d0801ac210a40c2ec3b0ccf683f1999379ad5f4614c7fb5f",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Claude",
+      "setting": "collaborative",
+      "session_file": "agent-ab3d8ec2d81477ab6.jsonl",
+      "session_id": null,
+      "sha256": "cd45e25fe560906580dde67e620dcf912ef4f3c7cc954ca27a84dc186b964bfa",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Claude",
+      "setting": "collaborative",
+      "session_file": "agent-aedb747a6c86fd789.jsonl",
+      "session_id": null,
+      "sha256": "e68ca29f6f09b82128dc967e343036af0952fb1105ca10a90eadaea698396398",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "e27f95b8-a8f0-48aa-9384-f471118fd435.jsonl",
+      "session_id": null,
+      "sha256": "6853cba47f9f8daa975ab8a508a7769d2fe035fa00e07347997a013970c000aa",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-a05068541e8924fe3.jsonl",
+      "session_id": null,
+      "sha256": "83a20ed407b0e8effdad8c88de24886639c0b17bf2b7dc5da7ceda8117c83457",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-a23fe5169b2704bca.jsonl",
+      "session_id": null,
+      "sha256": "5d83bfa9115722360d5154e50cfaef3eff0dd6a3ad5f9a15379d587d5701f418",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-a3de65f8a3e08fa88.jsonl",
+      "session_id": null,
+      "sha256": "a960bd327fc61e58d9a1d6a5a883a4af7fe0aa83f35940c9c46d872348670670",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-a5585731071ab4ad1.jsonl",
+      "session_id": null,
+      "sha256": "defdc5808566cb145bfd1dde86a19fe150fe26155eb2db0a95e91a7efadb123f",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-a955aa31b94b22b0a.jsonl",
+      "session_id": null,
+      "sha256": "fbc16f76993a47e33fff78638052688a4d518e9a5a6b80b70043afaff9e2fd1d",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-aa97f3144b462ba7a.jsonl",
+      "session_id": null,
+      "sha256": "2e099ea84c955ff4c673fc70a714e9b4671db582d008d2a80ed2c58deefb0670",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-aad99caa6ee21507b.jsonl",
+      "session_id": null,
+      "sha256": "0e2d064114197bb07bb6a97c5021f2d49ebf889d712f71df1da3ef77f10396a3",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-abf9668a604bbf49c.jsonl",
+      "session_id": null,
+      "sha256": "37a9757f5dddc7bb558f61a2129833278fe037a20bc1379e69f5148b19c4028b",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-ac981b915fcfd4600.jsonl",
+      "session_id": null,
+      "sha256": "a6dfa4a3fb2000ca42380e8ddfdec3faa20e9595777b4cb6e4dac0a645ae1879",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-ae8908511cd63c02b.jsonl",
+      "session_id": null,
+      "sha256": "b93eb7033456ee34feeeaa67c37081795e9bf38a1291c709bead21c9d8846028",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-aefff0043aca3bfa7.jsonl",
+      "session_id": null,
+      "sha256": "0aff49ff8fdc9eb88062e96685ff16b014fc0b8a2f97e39501b04387ec17ad4c",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Claude",
+      "setting": "competitive",
+      "session_file": "agent-af81adfc4e70fbef0.jsonl",
+      "session_id": null,
+      "sha256": "add16a46bdada9c15341b719d60dc8efef4481a1135be3e23cbe5c10221da31f",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Codex",
+      "setting": "collaborative",
+      "session_file": "rollout-2026-10-16T23-33-17-01a146d9-2083-7a11-8823-e28ea980059a.jsonl",
+      "session_id": null,
+      "sha256": "7cb91093c897c92d8d29b4c2ae73c0ff94e520d1884c6c5fd8d1a6a560a144a3",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Codex",
+      "setting": "collaborative",
+      "session_file": "rollout-2026-10-16T23-00-00-01a146ba-a9cd-76b3-aed6-4038d965cff7.jsonl",
+      "session_id": null,
+      "sha256": "8d398cdcc00477eb91173473453a207cb9aab5a9e5f7c50e4bdd9c5edc5320a4",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Codex",
+      "setting": "collaborative",
+      "session_file": "rollout-2026-10-16T23-33-06-01a146d8-f6cf-7220-af40-c04b63e46d5a.jsonl",
+      "session_id": null,
+      "sha256": "e4b8f9290c982f926b6d6c9319053f9359ea893fdcc95636b6e42fefbd52a877",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Codex",
+      "setting": "collaborative",
+      "session_file": "rollout-2026-10-16T23-33-01-01a146d8-e4b4-7911-bce2-ed7d65e2115e.jsonl",
+      "session_id": null,
+      "sha256": "af17fd6d7d5fe31e17e2bca649064ed761d5919bfc0783f8fc4bdd66911db161",
+      "cutoff": "2026-10-17T07"
+    },
+    {
+      "agent": "Codex",
+      "setting": "competitive",
+      "session_file": "rollout-2026-10-18T12-42-44-01a14ed2-418e-78f0-aa79-b8dd42ef84d4.jsonl",
+      "session_id": null,
+      "sha256": "3cb9f37333ebabeec62c734f55e0b7a3b4307baebf4ed4d52539e3153721950b",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Codex",
+      "setting": "competitive",
+      "session_file": "rollout-2026-10-18T12-30-31-01a14ec7-11e9-73f1-a863-0238b42761f0.jsonl",
+      "session_id": null,
+      "sha256": "1c2b76a2362a50b9cc5d508576bce379fc7456024dbdef156c1883e16b11e9b1",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Codex",
+      "setting": "competitive",
+      "session_file": "rollout-2026-10-18T12-42-36-01a14ed2-20b4-7792-b0e6-25ab50cbae2e.jsonl",
+      "session_id": null,
+      "sha256": "ffa4a55bde79a6265e9af6f176ed27e3b954bbdbd64cca91fc298c51cc862dde",
+      "cutoff": "2026-10-19T00"
+    },
+    {
+      "agent": "Codex",
+      "setting": "competitive",
+      "session_file": "rollout-2026-10-18T12-42-27-01a14ed1-fdf6-7773-90cf-3b2087dc660f.jsonl",
+      "session_id": null,
+      "sha256": "4ef6dbf304077dea09445e36d46ff68e16f7c709284350b5e7dd5ec9055878e4",
+      "cutoff": "2026-10-19T00"
+    }
+  ],
+  "method": "Task-scoped root and delegated records. Claude deduplicated globally by message ID, keeping the chronologically latest usage record (output count breaks ties); Codex final cumulative counters per session. Reasoning is a subset of output. No raw transcript content is bundled. Delivery time and last recorded activity are distinct."
+}

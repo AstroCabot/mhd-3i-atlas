@@ -1,0 +1,7 @@
+model,agent,setting,subagents,output_tokens,non_cache_read_tokens,reasoning_tokens,observed_span_h,first_utc,last_utc,thinking_summary_words,delivery_h,plot_elapsed_h
+collaborative_argon,Argon,collaborative,3,371756,1923234,,1.3491666666666666,2026-10-16T22:32:09Z,2026-10-16T23:53:06Z,13141.0,1.3492,1.3492
+competitive_argon,Argon,competitive,3,427821,2058496,,4.015,2026-10-18T11:42:36Z,2026-10-18T15:43:30Z,20513.0,4.015,4.015
+collaborative_claude,Claude,collaborative,9,552687,5260157,270414.0,4.8887672222222225,2026-10-16T22:32:57.935Z,2026-10-17T03:26:17.497Z,,4.704,4.704
+competitive_claude,Claude,competitive,12,318290,5482105,147473.0,4.8555552777777775,2026-10-18T11:44:03.292Z,2026-10-18T16:35:23.291Z,,4.5131,4.5131
+collaborative_codex,Codex,collaborative,3,2569363,10851538,1200450.0,7.917231388888888,2026-10-16T22:32:24.914Z,2026-10-17T06:27:26.947Z,,7.9172,7.9172
+competitive_codex,Codex,competitive,3,1419321,6339353,743329.0,10.959656111111112,2026-10-18T11:42:09.585Z,2026-10-18T22:39:44.347Z,,,10.959656111111112

@@ -86,6 +86,7 @@ The opening science dataset excludes the verification, spacecraft and provenance
 9. **Solver code:** thirteen verbatim CUDA, C++ and Python source files with method jumps, search, line permalinks, raw downloads and checksums. Codex files match the selected production run's frozen receipts; Athena++ attribution and BSD license accompany its numerical core.
 10. **Model writeups:** each agent's supplied Markdown account with equations, tables, figures, evidence links and original downloads. Further submissions follow the [writeup guide](docs/model-writeups.md); the Pages workflow packages them automatically.
 11. **Resources and provenance:** scoped CPU/GPU/token accounting, source discrepancies and SHA-256 receipts.
+12. **Cooperation & competition:** a concise account of the six research runs, matched spacecraft errors, elapsed time and output, verified quotations, and the analyzer’s complete report/data/figure bundle. The source is `../mhd_agent_report`; import it with `python scripts/build_agent_comparison.py` when that report changes.
 
 ## Source organisation
 
@@ -167,6 +168,7 @@ node tests/solar-player.mjs
 node tests/solar-interactions.mjs
 node tests/research.mjs
 npm run test:review
+npm run test:cooperation
 ```
 
 `TEST_URL` selects a different serving address. `CHROMIUM_PATH` is an optional browser executable override; use the installed matching browser unless diagnosing the host. Browser checks cover navigation, model/spacecraft selection, math, source archives, exports and mobile layout. Playback checks additionally examine decoded fields, clock advancement, seeking, synchronization and persistence of the image/SVG elements. Scientific checks compare native outputs, flux units, PN exposures, light-time conversion, resampling and source hashes.

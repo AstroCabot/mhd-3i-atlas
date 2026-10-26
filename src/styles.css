@@ -610,3 +610,39 @@ h1, .section-heading h2, .panel-title, .insight h3, .prose h3, .record-guide h2 
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
   .boot-orbit { animation: none; }
 }
+
+/* Section 12 keeps the site's report typography while supporting a short article. */
+.cooperation-column { width: 100%; max-width: 860px; margin-inline: auto; }
+.cooperation-article { color: var(--text); font: 16px/1.8 var(--serif); }
+.cooperation-article > p { margin: 0 0 1.25em; }
+.cooperation-article a { color: var(--accent); }
+.cooperation-article .cooperation-meta { color: var(--muted); font: 10px/1.7 var(--mono); margin-block: 0 20px; }
+.cooperation-article .cooperation-lead { font-size: 18px; line-height: 1.7; }
+.cooperation-article .section-heading { margin-top: 30px; }
+.cooperation-table-scroll { margin: 20px 0 12px; }
+.cooperation-table { min-width: 470px; }
+.cooperation-table caption { text-align: left; color: var(--muted); padding-bottom: 9px; font: 11px/1.6 var(--mono); }
+.cooperation-table th:first-child { white-space: nowrap; }
+.cooperation-table td, .cooperation-table thead th:not(:first-child) { text-align: right; }
+.cooperation-table .cooperation-mean th, .cooperation-table .cooperation-mean td { border-top: 1px solid var(--line); font-weight: 600; }
+.cooperation-article .cooperation-note { color: var(--muted); font: 12px/1.7 var(--sans); }
+.cooperation-figure { margin: 24px 0 30px; }
+.cooperation-figure-scroll { overflow-x: auto; border: 1px solid var(--line); background: #fff; }
+.cooperation-figure img { display: block; width: 100%; min-width: 620px; height: auto; }
+.cooperation-figure figcaption { margin-top: 10px; color: var(--muted); font: 12px/1.7 var(--sans); }
+.cooperation-details { margin: 24px 0; padding-top: 14px; border-top: 1px solid var(--line); }
+.cooperation-details > summary { cursor: pointer; color: var(--text); font: 600 13px/1.7 var(--sans); }
+.cooperation-details[open] > summary { margin-bottom: 16px; }
+.cooperation-details > p, .cooperation-details > ul { font-size: 13px; }
+.cooperation-details li { margin-block: 7px; }
+.cooperation-quote { margin: 24px 0; padding-left: 16px; border-left: 2px solid var(--line); }
+.cooperation-quote figcaption { margin-bottom: 9px; font: 11px/1.6 var(--mono); color: var(--muted); }
+.cooperation-quote figcaption strong { display: block; color: var(--text); }
+.cooperation-quote blockquote { margin: 0; }
+.cooperation-quote blockquote p { margin: 0 0 10px; }
+.cooperation-quote-note { margin-bottom: 0; color: var(--muted); font: 12px/1.7 var(--sans); }
+@media (max-width: 760px) {
+  .cooperation-article { font-size: 15px; }
+  .cooperation-article .cooperation-lead { font-size: 17px; }
+  .cooperation-figure figcaption { font-size: 11px; }
+}

@@ -1,0 +1,24 @@
+{
+  "checked_utc": "2026-10-26T13:32:04.881375+00:00",
+  "html": {
+    "tables": 4,
+    "embedded_svg_figures": 3,
+    "featured_quotation_records": 8,
+    "unique_ids": 27,
+    "local_links_and_anchor_targets_verified": true,
+    "svg_xml_valid": true
+  },
+  "pdf": {
+    "pages": 10,
+    "all_ten_quotation_register_entries_present": true,
+    "all_pages_visually_reviewed": true
+  },
+  "data": {
+    "matched_metric_rows": 32,
+    "paired_model_observation_rows": 1536,
+    "same_96_hourly_slots_per_probe_for_all_8_series": true,
+    "competitive_wind_rmse_lower_and_stereo_a_rmse_higher_for_each_agent_in_both_windows": true,
+    "independent_arithmetic_check": "derived/matched_monitor_verification.json"
+  },
+  "scope": "Only the new report directory was written. Original experiments were not modified or rerun."
+}

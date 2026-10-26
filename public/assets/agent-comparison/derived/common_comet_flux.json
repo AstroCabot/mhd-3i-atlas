@@ -1,0 +1,52 @@
+{
+  "window_mjd": [
+    61012.5028587963,
+    61013.4249305556
+  ],
+  "duration_seconds": 79667,
+  "definition": "Average instantaneous n*full-vector-speed, piecewise-linear in physical UTC. No GTI weighting or common light-time correction. NASA reported N is unscaled proxy.",
+  "records": [
+    {
+      "model": "collaborative_argon",
+      "mean_bulk_flux_cm2_s": 185580561.17062446,
+      "source": "mhd_llm/argon/outputs/runs/res_fine_224x48x240_probes.tsv",
+      "sha256": "ec5831d69d4a370184a43f29dcd62db3d6df04fbbc0339f750cd5818259b80c1"
+    },
+    {
+      "model": "collaborative_claude",
+      "mean_bulk_flux_cm2_s": 187759047.33235195,
+      "source": "mhd_llm/claude/figs/timeseries_3i_atlas.csv",
+      "sha256": "0532ed042a0265082e5f83a3813c90857d8a725333c9008f52e61265067407a1"
+    },
+    {
+      "model": "collaborative_codex",
+      "mean_bulk_flux_cm2_s": 136601576.1698869,
+      "source": "mhd_llm/codex/results/comet_timeseries.csv",
+      "sha256": "8106be5125dccedbdecc5c0ec5efb415e53c9110d240f8f1308d12d8086243de"
+    },
+    {
+      "model": "competitive_argon",
+      "mean_bulk_flux_cm2_s": 112840273.32304358,
+      "source": "mhd_llm_adversarial/argon/results/ts_argon_high.csv",
+      "sha256": "53d38139bc31e56a337b1e5a318231186864634aa43dd5dbb0149c0707803080"
+    },
+    {
+      "model": "competitive_claude",
+      "mean_bulk_flux_cm2_s": 198270073.1049049,
+      "source": "mhd_llm_adversarial/claude/products/timeseries_3I.csv",
+      "sha256": "bf3bc30a76a74db31f88bb9abadd0698664c9e045d4930f3a245e5e86a70b5c8"
+    },
+    {
+      "model": "competitive_codex",
+      "mean_bulk_flux_cm2_s": 59435152.92317151,
+      "source": "mhd_llm_adversarial/codex/outputs/products/comet_timeseries.csv",
+      "sha256": "c0a904190726bf9ce1a289b3dbc8118f364b56569e89409189b5b397022c670d"
+    },
+    {
+      "model": "nasa_full_N_proxy",
+      "mean_bulk_flux_cm2_s": 44712212.031830594,
+      "source": "outputs/enlil_3i_dec4_2025/Jan_Deca_120925_SH_1_evo_3I-Atlas1_20251001T00.dat",
+      "sha256": "e5ddf5b65ae69a4a374b54cb67cfe9c6f92e06e83b1c6bc1b8c2445cba8141bd"
+    }
+  ]
+}

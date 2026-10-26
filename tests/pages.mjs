@@ -37,13 +37,19 @@ try {
       assert.match(await page.locator('h1').innerText(),/Solar-wind reconstructions/);
       assert.equal(await page.locator('[data-solar-image]').count(),2);
       await page.evaluate(()=>document.fonts.ready);
-      for (const route of ['solar-wind','verification','observations','nasa','xray','methods','code','writeups','resources','transcripts']) {
+      for (const route of ['solar-wind','verification','observations','nasa','xray','methods','code','writeups','resources','transcripts','cooperation']) {
         await page.locator(`[data-nav="${route}"]`).evaluate(node=>node.click());
         await page.waitForFunction(route=>window.__HELIOS__.state.route===route,route,{polling:100});
         assert.equal(await page.locator('h1').count(),1);
         if(route==='nasa')await page.waitForSelector('#reference-metrics');
         if(route==='code')await page.waitForSelector('.source-line');
         if(route==='writeups')await page.waitForSelector('.writeup-article, .writeup-pending');
+        if(route==='cooperation'){
+          await page.waitForSelector('#cooperation-time');
+          assert.equal(await page.locator('h1 .section-number').innerText(),'12');
+          const downloads=await page.locator('.cooperation-column a[download]').evaluateAll(nodes=>nodes.map(node=>node.href));
+          for(const url of downloads){assert.ok(new URL(url).pathname.startsWith(prefix));assert.equal((await page.request.head(url)).status(),200);}
+        }
         if (route==='solar-wind') {
           await page.waitForFunction(()=>document.querySelectorAll('[data-image-ready=true]').length===4&&window.__HELIOS__.player?.getState().status==='paused',null,{polling:100});
           await page.locator('[data-field=fluxR2]').evaluate(node=>node.click());
@@ -82,7 +88,7 @@ try {
       const entry = requestUrls.find(url=>url.pathname===prefix+'app.js');
       const version = entry?.searchParams.get('v');
       assert.match(version||'',/^[a-f0-9]{12}$/,'The deployed entry point must be content-versioned');
-      for(const name of ['solar-player.js','solar-labels.js','frame-cache.js','site-paths.js','theme.js','research-pages.js','report-math.js']) {
+      for(const name of ['solar-player.js','solar-labels.js','frame-cache.js','site-paths.js','theme.js','research-pages.js','report-math.js','cooperation-page.js']) {
         const module=requestUrls.find(url=>url.pathname===prefix+name);
         assert.equal(module?.searchParams.get('v'),version,`${name} must share the deployment version`);
       }
@@ -90,7 +96,7 @@ try {
       assert.ok(jsonRequests.length>=7,'The routes must request packaged scientific and archive data');
       assert.ok(jsonRequests.every(url=>url.searchParams.get('v')===version),'Data requests must revalidate with the deployed modules');
       assert.deepEqual(errors,[],'JavaScript or HTTP failure');
-      results.push({prefix,passed:true,requests:requests.length,checks:['eleven views','768 px images and field switching','eight video downloads','equations and local fonts','NASA comparison, solver sources and submitted writeups','data and methods downloads','transcript chunks, search and notes','hash deep-link reload','no escaped-prefix requests','consistent module and JSON deployment versions']});
+      results.push({prefix,passed:true,requests:requests.length,checks:['twelve views','768 px images and field switching','eight video downloads','equations and local fonts','NASA comparison, solver sources and submitted writeups','cooperation article and publication downloads','data and methods downloads','transcript chunks, search and notes','hash deep-link reload','no escaped-prefix requests','consistent module and JSON deployment versions']});
       console.log(`PASS: strict static host at ${prefix}; ${requests.length} repository-relative requests.`);
     } finally {
       await page.close();

@@ -25,7 +25,7 @@ def check(directory):
     directory = Path(directory).resolve()
     required = ('index.html', '.nojekyll', 'app.js', 'site-paths.js', 'solar-player.js', 'solar-labels.js', 'frame-cache.js',
                 'styles.css', 'theme.js', 'data/science.json', 'data/models.json',
-                'research-pages.js', 'report-math.js', 'data/nasa-comparison.json', 'data/solver-code.json',
+                'research-pages.js', 'report-math.js', 'cooperation-page.js', 'data/agent-comparison.json', 'data/nasa-comparison.json', 'data/solver-code.json',
                 'data/model-writeups.json', 'data/ccmc-movie-provenance.json', 'docs/ccmc-movie-audit.md', 'docs/model-writeups.md', 'docs/nasa-comparison-audit.md',
                 'data/transcripts.json', 'data/physics-comparison.json', 'data/animation-v2.json',
                 'data/animation-playback.json', 'data/science-overview.json', 'data/equations.json')
@@ -76,6 +76,11 @@ def check(directory):
     for url in (catalogue['athena']['licenseUrl'], '/docs/model-writeups.md'):
         if not (directory / url.lstrip('/')).is_file():
             raise SystemExit(f'Missing source/report documentation: {url}')
+    comparison = json.loads((directory / 'data/agent-comparison.json').read_text())
+    for row in comparison['files']:
+        path = directory / row['url'].lstrip('/')
+        if not path.is_file() or path.stat().st_size != row['bytes'] or hashlib.sha256(path.read_bytes()).hexdigest() != row['sha256']:
+            raise SystemExit(f'Missing or changed analyzer product: {path}')
     source = json.loads((directory / 'data/animation-v2.json').read_text())
     playback = json.loads((directory / 'data/animation-playback.json').read_text())
     for model, product in playback['models'].items():

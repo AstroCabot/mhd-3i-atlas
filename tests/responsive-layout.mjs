@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 const base=process.env.TEST_URL||'http://127.0.0.1:8080';
 const engine=process.env.TEST_BROWSER==='firefox'?firefox:chromium;
 const browser=await engine.launch({headless:true,...(engine===chromium?{args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage']}:{})});
-const selectors={overview:'.fact-list','solar-wind':'.solar-grid',verification:'[data-bench]',observations:'[data-craft]',nasa:'#reference-metrics',xray:'#xray-shape',transcripts:'.message',methods:'.model-tabs',code:'.source-line',writeups:'.writeup-body',resources:'.source-manifest'};
+const selectors={overview:'.fact-list','solar-wind':'.solar-grid',verification:'[data-bench]',observations:'[data-craft]',nasa:'#reference-metrics',xray:'#xray-shape',transcripts:'.message',methods:'.model-tabs',code:'.source-line',writeups:'.writeup-body',resources:'.source-manifest',cooperation:'.cooperation-article'};
 try{
   const page=await browser.newPage({viewport:{width:1280,height:900},reducedMotion:'reduce'});
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
@@ -49,5 +49,5 @@ try{
     }
   }
   assert.deepEqual(errors,[]);
-  console.log('PASS: eleven views, both themes and five viewport widths; maps and source controls fit their panels');
+  console.log('PASS: twelve views, both themes and five viewport widths; maps and source controls fit their panels');
 }finally{await browser.close();}

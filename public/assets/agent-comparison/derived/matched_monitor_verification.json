@@ -1,0 +1,105 @@
+{
+  "method": "Independent standard-library reconstruction from saved pairs CSV; no reuse of numpy derivation functions",
+  "all_metrics_rmse_bias_ratio_correlation_pass": true,
+  "no_duplicate_utc": true,
+  "same96timestamps_perprobe_all8models": true,
+  "project_relative_provenance_only": true,
+  "groups": [
+    {
+      "probe": "wind",
+      "model": "collaborative_argon",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "wind",
+      "model": "collaborative_claude",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "wind",
+      "model": "collaborative_codex",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "wind",
+      "model": "competitive_argon",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "wind",
+      "model": "competitive_claude",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "wind",
+      "model": "competitive_codex",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "wind",
+      "model": "nasa_ccmc_ambient",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "wind",
+      "model": "persistence_24h",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "stereo_a",
+      "model": "collaborative_argon",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "stereo_a",
+      "model": "collaborative_claude",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "stereo_a",
+      "model": "collaborative_codex",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "stereo_a",
+      "model": "competitive_argon",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "stereo_a",
+      "model": "competitive_claude",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "stereo_a",
+      "model": "competitive_codex",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "stereo_a",
+      "model": "nasa_ccmc_ambient",
+      "N": 96,
+      "unique_utc": 96
+    },
+    {
+      "probe": "stereo_a",
+      "model": "persistence_24h",
+      "N": 96,
+      "unique_utc": 96
+    }
+  ]
+}

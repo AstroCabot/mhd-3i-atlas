@@ -1,0 +1,145 @@
+{
+  "title": "When AI agents model the solar wind",
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 228515,
+      "sha256": "611d8bf46ccefb21127d3d54162f4eaa186226facb24060a7fe313b114d5afe0"
+    },
+    {
+      "path": "report.pdf",
+      "bytes": 397690,
+      "sha256": "bb1ee6f7bec94a76f2227ef1ce24a09a9b6a21e7acb0ee3d6df11c4d63db259a"
+    },
+    {
+      "path": "article.html.j2",
+      "bytes": 38758,
+      "sha256": "bb12ea4461df70eba0e5fc207e70e0202f6375d927edd56ae8553cd8193d8f87"
+    },
+    {
+      "path": "build_report.py",
+      "bytes": 18716,
+      "sha256": "d2c17ea6a20bb547a52b87ff9fdacdb6038efbafb7e5f216cd5f3b8a656cf0be"
+    },
+    {
+      "path": "collect_quotes.py",
+      "bytes": 6856,
+      "sha256": "b1f3971cb9ca4db6ca892019a994ef21b7e66c873455f2e28007d69c82d161ec"
+    },
+    {
+      "path": "derive_validation.py",
+      "bytes": 13820,
+      "sha256": "287c19e76d3bd40e1ed6d4d9e9fbf5496bbcfb4d9b0f02a44bbf1ab89da2700e"
+    },
+    {
+      "path": "render_report.py",
+      "bytes": 2391,
+      "sha256": "9adfa1b520e81b65764bc5bff8a612a1c339bb61469e384e03ffa85a93ee5854"
+    },
+    {
+      "path": "README.txt",
+      "bytes": 2619,
+      "sha256": "ef8b9a5aed5437f680edd9cabf888868e469593a8f644d0d88ecd698906f27d5"
+    },
+    {
+      "path": "validation.json",
+      "bytes": 823,
+      "sha256": "35639f7ff29068aee9c8c83a03826aa7bdc789c0516a9da8d1dd21054419538d"
+    },
+    {
+      "path": "derived/common_comet_flux.csv",
+      "bytes": 1153,
+      "sha256": "c98ba089d1b9a4bf952ef301c684a778a850ac62d12884d350249847093922fe"
+    },
+    {
+      "path": "derived/common_comet_flux.json",
+      "bytes": 2103,
+      "sha256": "15d3ac5456690f0c9e4ce35c951fb1d8d7f3e741332e15a9d2c8f094e4acbc42"
+    },
+    {
+      "path": "derived/effort.csv",
+      "bytes": 1034,
+      "sha256": "7453717a843e5b583e879a8cb769529789124868a408192d1077ef66b3d6343a"
+    },
+    {
+      "path": "derived/effort.json",
+      "bytes": 15356,
+      "sha256": "3a7606a3bd85d010b1dac7fe4b0acc17bdce9e918bc936b50273010380981419"
+    },
+    {
+      "path": "derived/matched_monitor_metrics.csv",
+      "bytes": 14825,
+      "sha256": "d11d3962cd1bf34ffbb002ecda4bf7632c078a6d742dfe621b7dd2fb747173ad"
+    },
+    {
+      "path": "derived/matched_monitor_pairs.csv",
+      "bytes": 212538,
+      "sha256": "13bae36604e3dd6ad7dc619b1faf36facdd672143330ca1c0eef673d71f9dd96"
+    },
+    {
+      "path": "derived/matched_monitor_provenance.json",
+      "bytes": 15736,
+      "sha256": "fc48ff353bde6d111561a11021d20a9c6b1a4d9d23952079a5253292ffa95c90"
+    },
+    {
+      "path": "derived/matched_monitor_verification.json",
+      "bytes": 2121,
+      "sha256": "cd7147d133e5931f378c1d0fcbc8351496e6adb30847f60bb45d6e97ea2ec2f5"
+    },
+    {
+      "path": "derived/quotes.json",
+      "bytes": 9233,
+      "sha256": "0adf89202fb557dcd5d61d98e0aecb55393f4661dcdbc735159aee5b1385d882"
+    },
+    {
+      "path": "derived/token_curve.csv",
+      "bytes": 663284,
+      "sha256": "d17b2706d44c70ce6c841103e6975fd3fd80b8e9ec7d2cd16416c300c6d9b4f0"
+    },
+    {
+      "path": "figures/comet_flux.pdf",
+      "bytes": 19832,
+      "sha256": "468488fda3dc7958f5234593c9261fc25d82f88932a1c53f28a600a3e9813fd6"
+    },
+    {
+      "path": "figures/comet_flux.png",
+      "bytes": 92328,
+      "sha256": "5441ff36ca64329bcf89e8d4c8a177752d83f14bf2cd4025928f0376361a454a"
+    },
+    {
+      "path": "figures/comet_flux.svg",
+      "bytes": 12167,
+      "sha256": "50172432a7b9186f5f6e6d1abae84555700c0f3427826708d5268df2499f583b"
+    },
+    {
+      "path": "figures/effort.pdf",
+      "bytes": 17215,
+      "sha256": "0b277db447dfd0bffb1fa6dc387f220efb25aceb972c53607f73671165ff0025"
+    },
+    {
+      "path": "figures/effort.png",
+      "bytes": 91449,
+      "sha256": "219acca8c5715eeb8c9ec7859b44038634de95fcc87bf7fdc51305df3c922e9b"
+    },
+    {
+      "path": "figures/effort.svg",
+      "bytes": 19648,
+      "sha256": "8e3b032d34890214d8c58e075599ed9d4430d53a871fa0f3e4fea6ad91fd5c96"
+    },
+    {
+      "path": "figures/monitor_comparison.pdf",
+      "bytes": 45225,
+      "sha256": "247f99bf9550d8b6765d44a70fab5a310a1cf42f4c7766e3c62d6dc9cfe3380d"
+    },
+    {
+      "path": "figures/monitor_comparison.png",
+      "bytes": 417989,
+      "sha256": "ca09e646e9700ec5e4c2bd86ee6e8957c020f93c920887f4a029d44e06848b96"
+    },
+    {
+      "path": "figures/monitor_comparison.svg",
+      "bytes": 103740,
+      "sha256": "f7a72970e55166ca7460162198e0225f59fbe4d0b1a0a2d9972c637f06d52e86"
+    }
+  ]
+}

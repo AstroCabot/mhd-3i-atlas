@@ -1,6 +1,7 @@
 import { mountSolarPlayers } from './solar-player.js';
 import { siteUrl } from './site-paths.js';
 import { nasaPage, codePage, writeupsPage } from './research-pages.js';
+import { cooperationPage } from './cooperation-page.js';
 import { chartColors, chartColor, readPalette } from './theme.js';
 const COLORS = {argon:'var(--argon)',codex:'var(--codex)',claude:'var(--claude)',enlil:'var(--comparator)'};
 const XRAY_EQUATION = String.raw`F_X \propto \int n_n\,n_p\,f_{q}\,v_{\mathrm{rel}}\,\sigma_{\mathrm{CX}}\,Y_X\,\mathrm{d}V`;
@@ -45,7 +46,7 @@ const date = (v,full=false) => {
 const num = (v,d=2) => typeof v==='number'&&isFinite(v)?v.toLocaleString('en-GB',{maximumFractionDigits:d,minimumFractionDigits:d}):'—';
 const fmt = v => v===null||v===undefined?'—':typeof v==='object'?JSON.stringify(v):String(v);
 const S = {route:'overview',active:new Set(IDS),charts:[],physics:null,models:null,science:null,transcripts:null,anim:null,frame:806,progress:25/31,playing:!matchMedia('(prefers-reduced-motion: reduce)').matches,animModel:'argon',field:'flux',speed:1,method:'argon',band:false,bench:'sod',craft:'STEREO-A',session:null,chunk:0,search:'',recordMode:'sessions',recordThread:'',role:'all',recordAgent:'all',sessionData:null,notes:null,searchIndexes:new Map(),renderKey:0};
-const nav = [ ['overview','grid','Overview','01'], ['solar-wind','wind','Solar wind','02'], ['verification','check','Verification','03'], ['observations','signal','Observations','04'], ['nasa','signal','NASA comparison','05'], ['xray','chart','X-ray comparison','06'], ['transcripts','record','Agent conversations','07'], ['methods','atom','Model physics','08'], ['code','cpu','Solver code','09'], ['writeups','record','Model writeups','10'], ['resources','cpu','Resources & provenance','11'] ];
+const nav = [ ['overview','grid','Overview','01'], ['solar-wind','wind','Solar wind','02'], ['verification','check','Verification','03'], ['observations','signal','Observations','04'], ['nasa','signal','NASA comparison','05'], ['xray','chart','X-ray comparison','06'], ['transcripts','record','Agent conversations','07'], ['methods','atom','Model physics','08'], ['code','cpu','Solver code','09'], ['writeups','record','Model writeups','10'], ['resources','cpu','Resources & provenance','11'], ['cooperation','record','Cooperation & competition','12'] ];
 const mobileNavigation=matchMedia('(max-width: 760px)');
 function shell(){
  document.getElementById('app').innerHTML=`<aside class="sidebar" id="sidebar"><a class="brand" href="#overview" aria-label="3I/ATLAS model comparison"><div><div class="brand-name">3I/ATLAS</div><div class="brand-sub">SOLAR-WIND MODELS</div></div></a><div class="nav-label">CONTENTS</div><nav aria-label="Main navigation">${nav.map(([id,icon,label,index])=>`<a class="nav-link" href="#${id}" data-nav="${id}"><span class="nav-index">${Number(index)}</span><span>${label}</span></a>`).join('')}</nav><div class="sidebar-bottom"><div class="research-note"><span class="micro">XMM–NEWTON</span><p>0963720201<br>3–4 December 2025</p><span class="source-path">Argon · Codex · Claude</span></div><div class="sidebar-foot">Results: 17 October 2026</div></div></aside><div class="workspace"><header class="topbar"><button class="menu-button" id="menu" aria-label="Open navigation" aria-expanded="false">${ic('menu',19)}</button><div class="breadcrumbs"><strong>3I/ATLAS</strong> <span>/</span> <span id="crumb">Overview</span></div><div class="top-actions"><button id="theme-toggle" class="button theme-toggle" type="button" role="switch" aria-label="Light mode" aria-checked="false"></button></div></header><main class="main" id="main" tabindex="-1"></main></div>`;
@@ -411,7 +412,7 @@ async function rerender(){
   try{await loadFullScience();}catch(error){if(key===S.renderKey)document.getElementById('main').innerHTML=heading('',route[2],'The comparison could not be loaded.')+`<button class="button" id="retry-page">Retry</button>`;document.getElementById('retry-page')?.addEventListener('click',rerender);return;}
   if(key!==S.renderKey)return;
  }
- ({overview, 'solar-wind':solarPage,verification:verificationPage,observations:observationsPage,xray:xrayPage,transcripts:researchPage,methods:methodsPage,nasa:()=>nasaPage(researchContext()),code:()=>codePage(researchContext()),writeups:()=>writeupsPage(researchContext()),resources:resourcesPage}[S.route]||overview)();bindCommon();
+ ({overview, 'solar-wind':solarPage,verification:verificationPage,observations:observationsPage,xray:xrayPage,transcripts:researchPage,methods:methodsPage,nasa:()=>nasaPage(researchContext()),code:()=>codePage(researchContext()),writeups:()=>writeupsPage(researchContext()),resources:resourcesPage,cooperation:()=>cooperationPage(researchContext())}[S.route]||overview)();bindCommon();
 }
 function route(){
  const [hash,query='']=location.hash.slice(1).split('?');S.route=nav.some(n=>n[0]===hash)?hash:'overview';
