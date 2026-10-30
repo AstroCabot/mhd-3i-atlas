@@ -125,7 +125,7 @@ def geometry():
     ax.add_patch(Arc((0, 0), 1.0, 1.0, theta1=min(angles), theta2=max(angles), color=MUTED, lw=1.1))
     mean = np.deg2rad(np.mean(angles))
     ax.text(.62 * np.cos(mean) - .12, .62 * np.sin(mean), f'{abs(angles[1]-angles[0]):.1f}°', color=MUTED, fontsize=10)
-    note.text(0, 1, 'Latitude matters', fontsize=11, weight='bold', va='top')
+    note.text(0, 1, 'Solar latitudes', fontsize=11, weight='bold', va='top')
     note.text(0, .89, 'Latitude relative to the\nSun’s equator', fontsize=10, color=MUTED, va='top', linespacing=1.5)
     for index, (name, label, color) in enumerate([
             ('3i_atlas', '3I/ATLAS', RUST), ('stereo_a', 'STEREO-A', TEAL),
@@ -136,7 +136,7 @@ def geometry():
               color=MUTED, va='top', linespacing=1.6)
     fig.text(.075, .97, 'Where the comet and the measurements were', fontsize=14, weight='bold', va='top')
     fig.text(.075, .925, '3 December 2025, 23:00 UTC · top-down projection from ecliptic north', color=MUTED, fontsize=10)
-    fig.text(.075, .025, 'Dashed circles mark distances, not orbits. Small inner circle: 0.1 AU model boundary. Body symbols are enlarged.', fontsize=9, color=MUTED)
+    fig.text(.075, .025, 'Dashed circles lie 1 and 2 AU from the Sun. The small inner circle is the 0.1 AU model boundary. Symbols are enlarged.', fontsize=9, color=MUTED)
     save(fig, 'geometry')
     return {'epochUtc': EPOCH, 'positions': {name: {'xEclipticAu': row['xyz'][0], 'yEclipticAu': row['xyz'][1],
                      'zEclipticAu': row['xyz'][2], 'radiusAu': float(row['r_au']), 'solarLatitudeDeg': float(row['hgi_lat_deg'])}
@@ -179,14 +179,14 @@ def gong_wsa():
     axs[0].set_xticklabels([])
     axs[1].set_xlabel('Carrington longitude / degrees')
     axs[0].set_title('A  GONG surface magnetic map · inferred radial field', loc='left', fontsize=11, pad=10, weight='bold')
-    axs[1].set_title('B  WSA wind speed at 21.5 solar radii · before agent calibration', loc='left', fontsize=11, pad=10, weight='bold')
+    axs[1].set_title('B  WSA wind speed at 21.5 solar radii · before any agent adjustment', loc='left', fontsize=11, pad=10, weight='bold')
     cb1 = fig.colorbar(field_image, cax=fig.add_axes([.875, .56, .017, .30]), extend='both')
     cb1.set_label('Radial field / G'); cb1.set_ticks([-50, 0, 50]); cb1.set_ticklabels(['−50', '0', '+50'])
     cb2 = fig.colorbar(speed_image, cax=fig.add_axes([.875, .13, .017, .30]))
     cb2.set_label('Speed / km s⁻¹'); cb2.set_ticks([300, 500, 700, 850])
-    fig.text(.09, .98, 'From an observation to a modeled boundary', fontsize=14, weight='bold', va='top')
+    fig.text(.09, .98, 'From a surface magnetic map to a wind speed', fontsize=14, weight='bold', va='top')
     fig.text(.09, .925, 'Archived 25 November 2025, 00:04 UTC products · NSO/GONG and NASA CCMC/iSWA WSA 5.4', color=MUTED, fontsize=10)
-    fig.text(.09, .025, 'Blue/red show opposite magnetic polarities; they are not speeds. The lower panel adds coronal modeling and an empirical rule.', fontsize=9, color=MUTED)
+    fig.text(.09, .025, 'Red and blue are opposite magnetic polarities. The lower panel comes from a coronal model and an empirical speed rule.', fontsize=9, color=MUTED)
     save(fig, 'gong-wsa')
     return {'gongShape': list(field.shape), 'wsaShape': list(speed.shape), 'commonSourceFilelist': header['FILELIST'],
             'gongDisplayLimitGauss': 50, 'gongActualRangeGauss': [float(np.min(field)), float(np.max(field))],
@@ -224,8 +224,8 @@ def field_and_cme():
         a = np.array([np.cos(angle), np.sin(angle)])
         left.annotate('', xy=1.43*a, xytext=.98*a, arrowprops={'arrowstyle': '-|>', 'color': MUTED, 'lw': 1.5})
     left.set(xlim=(-1.9, 1.9), ylim=(-1.85, 1.85))
-    left.set_title('A  A field line is not a particle track', loc='left', fontsize=11, weight='bold', pad=15)
-    left.text(-1.8, -1.88, 'Teal: field direction at one instant\nGrey: approximately radial bulk flow', fontsize=10, color=MUTED, va='top', linespacing=1.5)
+    left.set_title('A  Parker spiral: field lines and wind', loc='left', fontsize=11, weight='bold', pad=15)
+    left.text(-1.8, -1.88, 'Teal: magnetic field lines at one instant\nGrey: direction of the wind, nearly radial', fontsize=10, color=MUTED, va='top', linespacing=1.5)
     # Generic cone geometry: rays give an angular envelope, while a spherical
     # cloud crossing the inner boundary supplies a finite injection footprint.
     r0, center, cloud_radius, half = .7, 1.2, .6, np.deg2rad(30)
@@ -242,14 +242,14 @@ def field_and_cme():
     right.annotate('injection boundary\n0.1 AU', (.7*np.cos(np.deg2rad(135)), .7*np.sin(np.deg2rad(135))),
                    xytext=(-.78, .92), fontsize=9.5, color=MUTED, arrowprops={'arrowstyle': '-', 'color': MUTED, 'lw': .8})
     right.annotate('cloud', (1.2, .23), ha='center', fontsize=11, color=RUST)
-    right.text(1.2, .06, 'speed\ndensity\ntemperature', ha='center', va='top', fontsize=8.5, color=RUST, linespacing=1.5)
+    right.text(1.2, -.05, 'speed\ndensity\ntemperature', ha='center', va='top', fontsize=8.5, color=RUST, linespacing=1.5)
     right.annotate('', xy=(2.05, .05), xytext=(1.84, .05), arrowprops={'arrowstyle': '-|>', 'color': RUST, 'lw': 1.8})
     right.text(2.08, .23, 'outward', fontsize=9.5, color=RUST, ha='center')
     right.set(xlim=(-.85, 2.35), ylim=(-1.35, 1.4))
-    right.set_title('B  What a cone prescription supplies', loc='left', fontsize=11, weight='bold', pad=15)
-    right.text(-.8, -1.30, 'Dashed rays: angular envelope; w is half-width.\nA moving cloud sets the boundary patch.', fontsize=10, color=MUTED, va='top', linespacing=1.5)
-    fig.text(.035, .97, 'Two geometries used in heliospheric modeling', fontsize=14, weight='bold', va='top')
-    fig.text(.035, .025, 'Conceptual diagrams, not reconstructed field lines or a particular CME. The cone is not filled with ejecta all the way to the Sun.', fontsize=9, color=MUTED)
+    right.set_title('B  Cone model of a CME', loc='left', fontsize=11, weight='bold', pad=15)
+    right.text(-.8, -1.30, 'Dashed lines: edges of the cone; w is the half-width.\nThick arc: boundary cells that take the cloud’s values.', fontsize=10, color=MUTED, va='top', linespacing=1.5)
+    fig.text(.035, .97, 'The Parker spiral and the cone model', fontsize=14, weight='bold', va='top')
+    fig.text(.035, .025, 'Sketches for illustration. Between the cloud and the Sun, the cone holds only ordinary wind.', fontsize=9, color=MUTED)
     save(fig, 'field-and-cme')
 
 

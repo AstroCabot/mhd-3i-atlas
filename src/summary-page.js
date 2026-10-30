@@ -4,7 +4,7 @@ import {renderReportMath} from './report-math.js';
 export async function summaryPage(ctx){
   const current=ctx.state.renderKey;
   const main=document.getElementById('main');
-  const intro='The measurements, magnetic physics and modeling choices behind the reconstructions.';
+  const intro='How the solar-wind estimates at the comet were made.';
   main.innerHTML=ctx.heading('','Summary',intro)+'<p class="loading" role="status">Opening the summary…</p>';
   try{
     const data=await ctx.fetchJson('/data/summary.json');

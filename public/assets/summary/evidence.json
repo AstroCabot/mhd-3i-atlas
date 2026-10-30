@@ -95,55 +95,55 @@
     },
     {
       "url": "/assets/summary/figures/field-and-cme.pdf",
-      "bytes": 25461,
-      "sha256": "86da190eab65b3405545e2ebbb0d397e7efbf2b1e12b133f73697a9ec8e3f298"
+      "bytes": 25118,
+      "sha256": "0ca04b45084e7f79bf7b78f65844a7bbc7d583b434ab199bd88856818563d10b"
     },
     {
       "url": "/assets/summary/figures/field-and-cme.png",
-      "bytes": 182031,
-      "sha256": "9f2b43d3cfea113020946c98f9321ca57cb8a0759bc2087245d35a39e3c3d088"
+      "bytes": 177494,
+      "sha256": "e5f26875768a799a0aeb9340f5d8199af3103dcf9d85ffa527b6029393dc3c59"
     },
     {
       "url": "/assets/summary/figures/field-and-cme.svg",
-      "bytes": 77315,
-      "sha256": "c40ac2c80ba60ae541fd4e69b9c0ccbd99c21449f8412ad9767c3ba2fb9447cd"
+      "bytes": 74845,
+      "sha256": "ee5b6d5cba483a47d1afe045ba39f21780e337f3c0e1ef88c7234a128d8f98da"
     },
     {
       "url": "/assets/summary/figures/geometry.pdf",
-      "bytes": 26681,
-      "sha256": "b510dd4723e76a530ce706a1f5e719ca8d6cfad9ee1e05c7349a7a4e41737b1c"
+      "bytes": 26574,
+      "sha256": "efd047b5b8b901f5ef1c40b5fa4f7c3fd77b9248cdeaeae7a1351d7f198f12e2"
     },
     {
       "url": "/assets/summary/figures/geometry.png",
-      "bytes": 239233,
-      "sha256": "d1c4ed6000af27a1330342badaeca2739c77d6ff78520f6c8b35c88e6bc0ac25"
+      "bytes": 238199,
+      "sha256": "3384dd097e50db5959ba4fbf42b261a9f798c4e3c0aa6392c01efb48f5104914"
     },
     {
       "url": "/assets/summary/figures/geometry.svg",
-      "bytes": 100099,
-      "sha256": "53d52d5c5ecff706f23d87973f740f494812707cddcd8571a86aa4e38476ff83"
+      "bytes": 100311,
+      "sha256": "b1286cd6912fb56829433f754a5921057ff97ae0e8ce4c23c0d1a3913d3ab504"
     },
     {
       "url": "/assets/summary/figures/gong-wsa.pdf",
-      "bytes": 137721,
-      "sha256": "0d26467ad57ba19170c06e65b4b38b50529b9bef5ff393ae6e31bc2cafed40b4"
+      "bytes": 137031,
+      "sha256": "3e6db172eb80c0f8279f9c15f298507d28cb1a21a951a0d3830900457445f6cd"
     },
     {
       "url": "/assets/summary/figures/gong-wsa.png",
-      "bytes": 388503,
-      "sha256": "6e197c6238836865d4a08edbeb4cbd130a0226ea2aa3b8ca0603329b21a7e85e"
+      "bytes": 388914,
+      "sha256": "9303081e8daf78b6dc66f845f6868f22c704651b1f0d37bbda130871a2ca0a78"
     },
     {
       "url": "/assets/summary/figures/gong-wsa.svg",
-      "bytes": 380154,
-      "sha256": "19f2a81ddd3fd3f3c69c6eb0f99e2f6da430951615d750c0d6b06ccbbaa6207c"
+      "bytes": 379093,
+      "sha256": "12ff3f9ee51e4718e59eabc25984c2935032adabb81285e8f70013b29166236b"
     }
   ],
   "applicationInputs": [
     {
       "path": "content/summary.html",
-      "bytes": 31706,
-      "sha256": "5992166d60021b584eddc936a2c5e7070acb3acf30d15b073ef3dbf4a2a077bd"
+      "bytes": 41511,
+      "sha256": "8622f262f4992f1a134852762a3ec40f1dd813bcc12f82ed6c6e4b744f281e4e"
     },
     {
       "path": "public/data/models.json",
@@ -163,7 +163,7 @@
     {
       "path": "public/assets/summary/figure-manifest.json",
       "bytes": 9259,
-      "sha256": "da4381c6436bb01bcbaebde92d3ea384faf0d7e42cf5f22b037285a975a4f152"
+      "sha256": "de0169e3f489bee90c79ebbfde17e6f2bf4202a0166a1a80fe5dfd4215b61e17"
     }
   ],
   "figureDerivations": {

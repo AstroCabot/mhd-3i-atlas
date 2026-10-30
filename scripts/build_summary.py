@@ -109,25 +109,30 @@ def build(source=None):
     if not re.search(r'^runpar=g53q5\b', control, re.M):
         raise ValueError('The archived ENLIL thermal setting changed')
 
-    methods = table('summary-methods', 'What the selected models actually use',
-                    ['Model', 'Thermal / numerical choices', 'Spacecraft information', 'Explicit CMEs'], [
-        ['Argon', 'γ 1.5; HLL + GLM', 'Back-projected speed and density blended into one rotating WSA map', 'Absent in reference'],
-        ['Codex', 'γ 1.5; Athena++ HLLD + CT', 'Two-spacecraft scalar normalization; evolving WSA maps', 'Absent in reference'],
-        ['Claude', 'γ 5/3, no heating; HLLD + GLM', 'Iterative corrections to daily WSA maps in space and source time', 'Selected DONKI cones'],
-        ['NASA/CCMC ENLIL', 'γ 5/3 with heating; FCT', 'Remote GONG/WSA forcing; no agent-style in-situ correction', 'Archived cone catalogue'],
+    methods = table('summary-methods', 'What each reference model uses',
+                    ['Model', 'Heat and numerical method', 'How spacecraft wind data are used', 'CMEs'], [
+        ['Argon', 'γ = 1.5; HLL + GLM', 'Measured speed and density traced back and blended into one rotating WSA map', 'None in the reference run'],
+        ['Codex', 'γ = 1.5; Athena++ HLLD + CT', 'Overall density, temperature and field scales fitted to two spacecraft; daily WSA maps otherwise unchanged', 'None in the reference run'],
+        ['Claude', 'γ = 5/3, no heating; HLLD + GLM', 'Daily WSA maps corrected iteratively in longitude, latitude and time', 'Cones selected from DONKI'],
+        ['NASA/CCMC ENLIL', 'γ = 5/3 with heating; ENLIL’s own solver', 'Not used; driven by GONG/WSA maps alone', 'Cones selected from DONKI'],
     ])
-    roles = ['Retrospective map assimilation', 'Normalization fit; later family selection',
-             'Retrospective iterative assimilation', 'Remote-driven comparison']
-    confidence = table('summary-confidence', 'Common spacecraft comparison and conditional comet estimates',
-                       ['Model', 'STEREO-A speed RMSE / km s⁻¹', 'Comet bulk flux / 10⁸ cm⁻² s⁻¹', 'Role of spacecraft data'],
-                       [[name, f'{errors[model]:.1f}', f"{nasa['comet']['models'][model]['gtiMeans']['flux'] / 1e8:.3f}", role]
-                        for model, name, role in zip(order, names, roles)])
-    runtime = table('summary-runtimes', 'Recorded cost of one selected forward run',
-                    ['Model', 'Reference cells', 'Hardware / precision', 'Elapsed time'], [
-        ['Argon', '2.58 million', 'Shared RTX 4080 SUPER / float32', f"{argon['wall_time_s'] / 60:.1f} min"],
-        ['Codex', '1.20 million', 'Four CPU threads / float64', f"{codex['wall_seconds_including_inputs'] / 60:.1f} min"],
-        ['Claude', '22.12 million', 'Shared RTX 4080 SUPER / float32', f"{claude['wall_s'] / 60:.1f} min"],
-        ['NASA/CCMC ENLIL', '1.24 million', 'CPU job; 64 processes requested', 'Not recorded in this archive'],
+    confidence = table('summary-confidence', 'Spacecraft fit and estimated flux at the comet',
+                       ['Model', 'STEREO-A speed RMSE / km s⁻¹', 'Proton flux at the comet / 10⁸ cm⁻² s⁻¹'],
+                       [[name, f'{errors[model]:.1f}', f"{nasa['comet']['models'][model]['gtiMeans']['flux'] / 1e8:.2g}"]
+                        for model, name in zip(order, names)])
+    movies = table('summary-movies', 'What each movie shows',
+                   ['Model', 'Run shown', 'Surface', 'Colored by', 'Time between saved frames'], [
+        ['Argon', 'Coarser run (921,600 cells)', 'Constant solar latitude', 'nₚ|v|', 'About 3 hours'],
+        ['Codex', 'Reference run', 'Ecliptic plane', 'nₚ|v|', 'About 6 hours'],
+        ['Claude', 'Reference run', 'Ecliptic plane', 'nₚvᵣ', '30 minutes'],
+        ['NASA/CCMC ENLIL', 'Archived run', 'Ecliptic plane', 'nₚ|v|', '6 hours'],
+    ])
+    runtime = table('summary-runtimes', 'Computing cost of each reference run',
+                    ['Model', 'Cells', 'Hardware and precision', 'Elapsed time'], [
+        ['Argon', '2.58 million', 'Shared RTX 4080 SUPER / single precision', f"{argon['wall_time_s'] / 60:.1f} min"],
+        ['Codex', '1.20 million', 'Four CPU threads / double precision', f"{codex['wall_seconds_including_inputs'] / 60:.1f} min"],
+        ['Claude', '22.12 million', 'Shared RTX 4080 SUPER / single precision', f"{claude['wall_s'] / 60:.1f} min"],
+        ['NASA/CCMC ENLIL', '1.24 million', 'CPU job; 64 processes requested', 'Not recorded'],
     ])
     figures = {row['id']: row for row in figure_manifest['figures']}
 
@@ -142,31 +147,31 @@ def build(source=None):
 
     geometry_figure = figure('geometry',
         'Projected positions of 3I/ATLAS, Earth, inner planets, STEREO-A and Solar Orbiter during the XMM observation; a side panel compares their solar latitudes.',
-        'Figure 13.1. Exact archived positions at 23:00 UTC on 3 December 2025, close to the observation midpoint. '
-        'This is an ecliptic projection; Solar Orbiter is about 0.17 AU above that plane. The latitude list uses the Sun’s equator. '
-        'The dotted rays mark a longitude separation, not a measured magnetic connection. '
+        'Figure 13.1. Positions at 23:00 UTC on 3 December 2025, close to the middle of the observation, seen from above the ecliptic plane. '
+        'Solar Orbiter sits about 0.17 AU above that plane. Latitudes in the side list are measured from the Sun’s equator. '
+        'The dotted lines mark the 25° in longitude between STEREO-A and the comet. '
         '<a href="/assets/summary/figure-inputs/positions.csv" download>Position data</a>.')
     gong_figure = figure('gong-wsa',
         'A real GONG synoptic radial magnetic map above the corresponding WSA 5.4 wind-speed estimate, both based on the 25 November 2025 GONG source.',
-        'Figure 13.2. The upper panel is an observed-map product: positive radial field is red, negative blue, with saturation beyond ±50 G. '
-        'The lower panel is a modeled speed, obtained after coronal extrapolation and an empirical rule. The products name the same GONG input; '
-        'they sample different radii and have different grids. This is an input example, not a final assimilated reconstruction. '
+        'Figure 13.2. The top panel is a GONG map of the Sun’s surface field: red is positive radial field, blue is negative, and the color scale saturates at ±50 G. '
+        'The bottom panel is the wind speed that WSA derives from the same GONG data at 21.5 solar radii, before any agent adjusted it. '
+        'The two panels have different grids. Carrington longitude is fixed to the rotating Sun. '
         '<a href="/assets/summary/figure-inputs/gong-20251125.fits.gz" download>GONG FITS</a> · '
         '<a href="/assets/summary/figure-inputs/wsa-speed-20251125.fits" download>WSA FITS</a>.')
     schematic_figure = figure('field-and-cme',
         'Conceptual comparison of a spiral magnetic field with radial bulk flow, and a moving spherical CME cloud with an angular cone envelope crossing a model boundary.',
-        'Figure 13.3. Left: an idealized equatorial Parker pattern at one instant, with one magnetic polarity illustrated; grey arrows show bulk flow. '
-        'Right: a generic cone prescription in cross-section. The dashed rays describe angular extent; the highlighted boundary patch receives cloud inputs. '
-        'These are explanatory sketches, not fitted field lines or an identified eruption. The cloud carries no prescribed magnetic flux rope.')
+        'Figure 13.3. Left: an idealized Parker spiral near the Sun’s equator at one instant, for one magnetic polarity. '
+        'Teal curves are field lines and grey arrows show the wind. Right: a cone model in cross-section. The dashed lines mark the cone’s half-width, w, '
+        'and the thick arc marks the part of the boundary where the cloud’s values are imposed.')
     examples = figure_manifest['magnetogramAndWsa']['examplesKms']
-    example_text = (f'{round(examples["f3_d0p2"], -1):.0f} km s⁻¹ for fₛ = 3 and d = 0.2°, '
-                    f'versus {round(examples["f3_d4"], -1):.0f} km s⁻¹ at d = 4°. '
-                    f'At d = 4° but fₛ = 30, the estimate drops to about {round(examples["f30_d4"], -1):.0f} km s⁻¹')
-    substitutions = {'METHOD_TABLE': methods, 'CONFIDENCE_TABLE': confidence, 'RUNTIME_TABLE': runtime,
+    example_text = (f'With the formula used here, a bundle with fₛ = 3 starting 0.2° from the edge gets about {round(examples["f3_d0p2"], -1):.0f} km s⁻¹. '
+                    f'Starting 4° inside the hole instead gives about {round(examples["f3_d4"], -1):.0f} km s⁻¹, '
+                    f'and increasing the expansion to fₛ = 30 brings that down to about {round(examples["f30_d4"], -1):.0f} km s⁻¹')
+    substitutions = {'METHOD_TABLE': methods, 'CONFIDENCE_TABLE': confidence, 'MOVIE_TABLE': movies, 'RUNTIME_TABLE': runtime,
                      'GEOMETRY_FIGURE': geometry_figure, 'GONG_FIGURE': gong_figure, 'SCHEMATIC_FIGURE': schematic_figure,
                      'WSA_EXAMPLES': example_text,
                      'NASA_CME_PERCENT': f"{nasa['comet']['cmeRelativeFluxChange'] * 100:.2f}",
-                     'XRAY_CORRELATIONS': ', '.join(f"{science['xray']['models'][model]['pearsonR']:+.2f}" for model in order[:3]),
+                     'XRAY_CORRELATIONS': ', '.join(f"{science['xray']['models'][model]['pearsonR']:+.2f}".replace('-', '−') for model in order[:3]),
                      'CLAUDE_MUPDATES': f'{claude_updates:.0f}', 'CODEX_MUPDATES': f'{codex_updates:.1f}',
                      'CODEX_BUSY_CORES': f'{busy_cores:.2f}'}
     article_path = ROOT / 'content/summary.html'
@@ -202,7 +207,7 @@ def build(source=None):
                                  {'url': '/assets/summary/figure-manifest.json', **receipt(figure_manifest_path)},
                                  {'url': '/assets/summary/evidence.json', **receipt(ASSETS / 'evidence.json')}]
     output = {'schemaVersion': 1, 'title': 'Summary',
-              'intro': 'The measurements, magnetic physics and modeling choices behind the reconstructions.',
+              'intro': 'How the solar-wind estimates at the comet were made.',
               'articleHtml': article, 'files': files, 'evidence': record['derivations']}
     (ROOT / 'public/data/summary.json').write_text(json.dumps(output, ensure_ascii=False, separators=(',', ':')) + '\n')
     print(f'Built section 13: {len(valid)} common samples checked, {len(manifest["files"])} research sources verified.')
